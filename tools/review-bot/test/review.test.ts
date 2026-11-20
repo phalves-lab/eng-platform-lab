@@ -7,6 +7,7 @@ import {
   filesOutsideCatalog,
   loadCatalog,
   loadPullCatalog,
+  loadReviewCatalog,
   loadRiskRules,
   matchesPath,
   mergeCatalogs,
@@ -184,6 +185,23 @@ describe('catálogo do PR', () => {
     expect(pull.modules.map((m) => m.name)).toEqual(['painel'])
     expect(pull.invalid).toEqual(['quebrado.yaml'])
     expect(await loadPullCatalog(join(dir, 'nao-existe'))).toEqual({ modules: [], invalid: [] })
+  })
+
+  it('junta base e PR no review e tolera cadastro inválido quando são a mesma pasta', async () => {
+    const yaml = (name: string) =>
+      `name: ${name}\ndescription: d\nowner: o\ntier: tier-3\nbusinessUnits: [x]\nusers: u\nconfluencePageId: null\npaths: [tools/${name}/]\n`
+    const base = await mkdtemp(join(tmpdir(), 'base-'))
+    const pull = await mkdtemp(join(tmpdir(), 'pull-'))
+    await writeFile(join(base, 'api.yaml'), yaml('api'))
+    await writeFile(join(pull, 'api.yaml'), yaml('api'))
+    await writeFile(join(pull, 'painel.yaml'), yaml('painel'))
+    await writeFile(join(pull, 'quebrado.yaml'), 'name: quebrado\n')
+    const separate = await loadReviewCatalog(base, pull)
+    expect(separate.modules.map((m) => m.name)).toEqual(['api', 'painel'])
+    expect(separate).toMatchObject({ added: ['painel'], invalid: ['quebrado.yaml'] })
+    const same = await loadReviewCatalog(pull, pull)
+    expect(same).toMatchObject({ added: [], invalid: ['quebrado.yaml'] })
+    expect(same.modules.map((m) => m.name)).toEqual(['api', 'painel'])
   })
 
   it('marca cadastro inválido como pendência e cita módulo novo no comentário', () => {

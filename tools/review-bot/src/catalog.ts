@@ -79,6 +79,24 @@ export const mergeCatalogs = (base: CatalogModule[], pull: CatalogModule[]): Mer
   return { modules: [...modules, ...added], added: added.map((m) => m.name) }
 }
 
+export interface ReviewCatalog extends MergedCatalog {
+  invalid: string[]
+}
+
+/**
+ * Catálogo usado no review: o da base junto com o do PR. Quando base e PR são a mesma pasta
+ * (review local), a pasta é lida uma vez com a leitura tolerante, para cadastro inválido virar
+ * pendência em vez de derrubar o review.
+ */
+export const loadReviewCatalog = async (
+  baseDir: string,
+  pullDir: string,
+): Promise<ReviewCatalog> => {
+  const pull = await loadPullCatalog(pullDir)
+  const base = baseDir === pullDir ? pull.modules : await loadCatalog(baseDir)
+  return { ...mergeCatalogs(base, pull.modules), invalid: pull.invalid }
+}
+
 export const loadRiskRules = async (path: string): Promise<RiskRule[]> =>
   z.array(riskRuleSchema).parse(parse(await readFile(path, 'utf8')))
 
