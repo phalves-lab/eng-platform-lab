@@ -56,3 +56,13 @@ export const modulesForFiles = (catalog: CatalogModule[], files: string[]): Cata
 
 export const riskLabelsForFiles = (rules: RiskRule[], files: string[]): RiskRule[] =>
   rules.filter((rule) => files.some((file) => rule.paths.some((p) => matchesPath(file, p))))
+
+const MODULE_ROOTS = ['apps/', 'tools/']
+
+/** Arquivos de código de produto que nenhum módulo do catálogo reivindica. */
+export const filesOutsideCatalog = (catalog: CatalogModule[], files: string[]): string[] =>
+  files.filter(
+    (file) =>
+      MODULE_ROOTS.some((root) => file.startsWith(root)) &&
+      !catalog.some((module) => module.paths.some((p) => matchesPath(file, p))),
+  )

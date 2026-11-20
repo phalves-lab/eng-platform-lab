@@ -11,6 +11,31 @@ interface IssueComment {
   body?: string
 }
 
+export const listPullFiles = async (
+  options: GitHubOptions,
+  pullNumber: number,
+): Promise<string[]> => {
+  const fetchImpl = options.fetchImpl ?? fetch
+  const files: string[] = []
+  for (let page = 1; page <= 30; page += 1) {
+    const response = await fetchImpl(
+      `https://api.github.com/repos/${options.repository}/pulls/${pullNumber}/files?per_page=100&page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${options.token}`,
+          Accept: 'application/vnd.github+json',
+        },
+      },
+    )
+    if (!response.ok)
+      throw new Error(`GitHub respondeu ${response.status} ao listar arquivos do PR.`)
+    const batch = (await response.json()) as { filename: string }[]
+    files.push(...batch.map((f) => f.filename))
+    if (batch.length < 100) break
+  }
+  return files
+}
+
 /**
  * Publica ou atualiza o comentário fixo do bot. Usa só a API de comentários de issue: o bot
  * não tem caminho de código para aprovar, pedir mudanças ou mergear.

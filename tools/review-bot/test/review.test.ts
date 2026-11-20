@@ -1,18 +1,22 @@
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it, vi } from 'vitest'
 import {
+  filesOutsideCatalog,
   loadCatalog,
   loadRiskRules,
   matchesPath,
   modulesForFiles,
   riskLabelsForFiles,
 } from '../src/catalog.js'
-import { upsertStickyComment } from '../src/github.js'
+import { listPullFiles, upsertStickyComment } from '../src/github.js'
 import { GeminiProvider } from '../src/llm/gemini.js'
-import { checkHygiene } from '../src/pr-hygiene.js'
+import { checkHygiene, sectionContent, type PullRequestFacts } from '../src/pr-hygiene.js'
 import {
   COMMENT_MARKER,
+  applyVerification,
   buildPrompt,
+  buildVerificationPrompt,
+  computeSignal,
   renderComment,
   type Review,
   type ReviewContext,
@@ -23,21 +27,49 @@ const root = fileURLToPath(new URL('../../../', import.meta.url))
 const review: Review = {
   businessSummary: 'Permite aprovar campanhas de alto orçamento com dois aprovadores.',
   acceptance: [
-    {
-      criterion: 'Dois aprovadores acima de R$ 50 mil',
-      status: 'atendido',
-      evidence: 'teste approve',
-    },
-    { criterion: 'Bloquear autoaprovação', status: 'nao_encontrado', evidence: 'sem teste' },
+    { criterion: 'Dois aprovadores acima de R$ 50 mil', status: 'atendido', evidence: 'teste' },
+    { criterion: 'Bloquear autoaprovação', status: 'parcial', evidence: 'sem teste' },
   ],
   outOfScope: ['Renomeou variáveis no módulo de relatórios'],
   findings: [
-    { severity: 'baixa', file: 'a.ts', line: null, title: 'Nome', detail: 'Pouco claro' },
-    { severity: 'critica', file: 'b.ts', line: 10, title: 'Bug', detail: 'Ignora status' },
+    {
+      layer: 'padrao',
+      severity: 'baixa',
+      file: 'a.ts',
+      line: null,
+      title: 'Nome',
+      detail: 'Pouco claro',
+    },
+    {
+      layer: 'correcao',
+      severity: 'critica',
+      file: 'b.ts',
+      line: 10,
+      title: 'Bug',
+      detail: 'Ignora status',
+    },
+    {
+      layer: 'correcao',
+      severity: 'media',
+      file: 'c.ts',
+      line: 3,
+      title: 'Borda',
+      detail: 'Data vazia',
+    },
   ],
   missingTests: ['Autoaprovação'],
   suggestedRiskLabels: ['risk:db-migration', 'risk:billing'],
   docsNeedUpdate: true,
+}
+
+const clean: Review = {
+  ...review,
+  acceptance: [{ criterion: 'x', status: 'atendido', evidence: 'y' }],
+  findings: [],
+  outOfScope: [],
+  missingTests: [],
+  suggestedRiskLabels: [],
+  docsNeedUpdate: false,
 }
 
 const context = (overrides: Partial<ReviewContext> = {}): ReviewContext => ({
@@ -64,6 +96,7 @@ const context = (overrides: Partial<ReviewContext> = {}): ReviewContext => ({
       paths: ['apps/api/'],
     },
   ],
+  uncataloged: [],
   docs: [{ id: 'p1', title: 'Doc', text: 'texto', updatedAt: null, url: null }],
   riskRules: [
     { label: 'risk:db-migration', description: 'migração', paths: ['apps/api/migrations/'] },
@@ -91,10 +124,13 @@ describe('catálogo e risco', () => {
     expect(modulesForFiles(catalog, files).map((m) => m.name)).toContain('campaign-requests')
     expect(riskLabelsForFiles(rules, files).map((r) => r.label)).toContain('risk:db-migration')
     expect(riskLabelsForFiles(rules, ['README.md'])).toEqual([])
+    expect(filesOutsideCatalog(catalog, [...files, 'apps/web/page.tsx', 'README.md'])).toEqual([
+      'apps/web/page.tsx',
+    ])
   })
 })
 
-describe('buildPrompt', () => {
+describe('prompts', () => {
   it('preenche o template e isola dados não confiáveis', () => {
     const prompt = buildPrompt(
       '{{RUBRIC}}|{{TASK}}|{{DIFF}}|{{RISK_LABELS}}|{{UNKNOWN}}',
@@ -119,86 +155,193 @@ describe('buildPrompt', () => {
       'LAB-9 não encontrada',
     )
   })
+
+  it('monta o prompt de verificação com o achado isolado', () => {
+    const finding = review.findings[1]
+    if (!finding) throw new Error('setup')
+    const prompt = buildVerificationPrompt('{{FINDING}}|{{TASK}}|{{DIFF}}', finding, context())
+    expect(prompt).toContain('<untrusted_data>\n[critica] Bug\nArquivo: b.ts:10')
+    expect(prompt).toContain('Chave: LAB-1')
+  })
+})
+
+describe('verificação adversarial e sinal', () => {
+  it('verifica só achados graves e descarta os refutados', async () => {
+    const verify = vi.fn(async () => ({ holds: false, reason: 'já tratado' }))
+    const result = await applyVerification(review, verify)
+    expect(verify).toHaveBeenCalledTimes(1)
+    expect(result.refuted.map((f) => f.title)).toEqual(['Bug'])
+    expect(result.review.findings.map((f) => f.title)).toEqual(['Nome', 'Borda'])
+  })
+
+  it('mantém achado grave que se sustenta', async () => {
+    const result = await applyVerification(review, async () => ({ holds: true, reason: 'ok' }))
+    expect(result.refuted).toEqual([])
+    expect(result.review.findings).toHaveLength(3)
+  })
+
+  it('calcula o sinal pela ordem ajustes, gate, pronto', () => {
+    expect(computeSignal(review, context())).toBe('ajustes')
+    expect(
+      computeSignal(
+        { ...clean, acceptance: [{ criterion: 'x', status: 'nao_encontrado', evidence: '' }] },
+        context(),
+      ),
+    ).toBe('ajustes')
+    expect(computeSignal({ ...clean, docsNeedUpdate: true }, context())).toBe('gate')
+    expect(computeSignal(clean, context({ uncataloged: ['apps/web/x.ts'] }))).toBe('gate')
+    expect(computeSignal(clean, context())).toBe('pronto')
+  })
 })
 
 describe('renderComment', () => {
-  it('ordena achados por severidade e separa rótulos sugeridos', () => {
-    const comment = renderComment(review, context(), { model: 'gemini-x', promptVersion: '1.0.0' })
+  it('separa camadas, ordena por severidade e separa rótulos sugeridos', () => {
+    const comment = renderComment(review, context(), {
+      model: 'gemini-x',
+      promptVersion: '1.1.0',
+      refuted: 2,
+    })
     expect(comment.startsWith(COMMENT_MARKER)).toBe(true)
-    expect(comment.indexOf('critica')).toBeLessThan(comment.indexOf('baixa'))
+    expect(comment).toContain('**Sinal:** Ajustes recomendados')
+    const layer1 = comment.slice(comment.indexOf('Camada 1'), comment.indexOf('Camada 2'))
+    expect(layer1.indexOf('critica')).toBeLessThan(layer1.indexOf('media'))
+    expect(layer1).not.toContain('Nome')
+    expect(comment.slice(comment.indexOf('Camada 2'))).toContain('Nome')
     expect(comment).toContain('`b.ts:10`')
-    expect(comment).toContain('Não encontrado')
+    expect(comment).toContain('Parcial')
     expect(comment).toContain('`risk:billing`')
     expect(comment).not.toMatch(/sugeridos.*risk:db-migration/)
+    expect(comment).toContain('2 achado(s) grave(s) descartado(s)')
     expect(comment).toContain('não aprova nem bloqueia')
   })
 
-  it('cobre task ausente e listas vazias', () => {
+  it('cobre task ausente, catálogo pendente e listas vazias', () => {
     const comment = renderComment(
-      {
-        ...review,
-        acceptance: [],
-        findings: [],
-        outOfScope: [],
-        missingTests: [],
-        suggestedRiskLabels: [],
-        docsNeedUpdate: false,
-      },
-      context({ task: null, taskKey: null, modules: [], riskRules: [] }),
-      { model: 'm', promptVersion: 'v' },
+      { ...clean, acceptance: [] },
+      context({
+        task: null,
+        taskKey: null,
+        modules: [],
+        riskRules: [],
+        uncataloged: ['apps/web/x.ts'],
+      }),
+      { model: 'm', promptVersion: 'v', refuted: 0 },
     )
     expect(comment).toContain('não identificada')
     expect(comment).toContain('RN-05')
     expect(comment).toContain('Nenhum achado.')
+    expect(comment).toContain('`apps/web/x.ts`')
+    expect(comment).toContain('Gate pendente')
   })
 })
 
 describe('checkHygiene', () => {
-  const body =
-    '## Contexto de negócio\nPermite aprovar campanhas grandes.\n## O que mudou\nRegra de dois aprovadores.\n## Como testar\nnpm test no pacote da API.'
+  const body = [
+    '**Task:** [LAB-1](https://exemplo/browse/LAB-1)',
+    '## Contexto de negócio',
+    'Permite aprovar campanhas grandes.',
+    '## O que mudou',
+    'Regra de dois aprovadores.',
+    '## Como testar',
+    'npm test no pacote da API.',
+    '## SQL (se aplicável)',
+    '```sql',
+    '-- migrations ou alterações de banco desta entrega',
+    '```',
+    '## ENV (se aplicável)',
+    '<!-- variáveis -->',
+  ].join('\n')
+
+  const pr = (overrides: Partial<PullRequestFacts> = {}): PullRequestFacts => ({
+    title: 'feat(api): aprovação dupla',
+    body,
+    headRef: 'feat/LAB-1-aprovacao',
+    baseRef: 'develop',
+    files: ['apps/api/src/domain/campaign-request.ts'],
+    ...overrides,
+  })
 
   it('aceita PR no padrão', () => {
+    expect(checkHygiene(pr())).toEqual([])
+  })
+
+  it('aponta título, branch, task e seções', () => {
+    const issues = checkHygiene(
+      pr({
+        title: 'Ajustes',
+        body: '## Contexto de negócio\n<!-- preencher -->',
+        headRef: 'minha-branch',
+      }),
+    )
+    expect(issues.map((i) => i.rule)).toEqual([
+      'RN-08',
+      'RN-06',
+      'RN-11',
+      'RN-11',
+      'RN-11',
+      'RN-11',
+    ])
+  })
+
+  it('recusa placeholder e task diferente da branch', () => {
+    expect(checkHygiene(pr({ body: body.replace(/LAB-1/g, 'CHAVE-123') }))[0]?.message).toContain(
+      'sem a chave',
+    )
+    expect(checkHygiene(pr({ headRef: 'feat/LAB-2-outra' }))[0]?.message).toContain('diferente')
+  })
+
+  it('exige SQL quando há migração e ENV quando há variável nova', () => {
+    const issues = checkHygiene(pr({ files: ['apps/api/migrations/002_x.sql', '.env.example'] }))
+    expect(issues.map((i) => i.rule)).toEqual(['RN-27', 'RN-11'])
+    const filled = body
+      .replace(
+        '-- migrations ou alterações de banco desta entrega',
+        'ALTER TABLE x ADD COLUMN y INT;',
+      )
+      .replace('<!-- variáveis -->', 'NOVA_VAR em todos os ambientes')
     expect(
-      checkHygiene({ title: 'feat(api): aprovação dupla', body, headRef: 'feat/LAB-1-aprovacao' }),
+      checkHygiene(pr({ body: filled, files: ['apps/api/migrations/002_x.sql', '.env.example'] })),
     ).toEqual([])
   })
 
-  it('aponta título, branch e seções', () => {
-    const issues = checkHygiene({
-      title: 'Ajustes',
-      body: '## Contexto de negócio\n<!-- preencher -->',
-      headRef: 'minha-branch',
-    })
-    expect(issues.map((i) => i.rule)).toEqual(['RN-08', 'RN-06', 'RN-11', 'RN-11', 'RN-11'])
+  it('só aceita PR para main vindo de develop ou hotfix', () => {
+    expect(checkHygiene(pr({ baseRef: 'main' })).map((i) => i.rule)).toContain('RN-22')
+    expect(
+      checkHygiene(pr({ baseRef: 'main', headRef: 'develop', title: 'chore: release' })),
+    ).toEqual([])
+    expect(checkHygiene(pr({ baseRef: 'main', headRef: 'hotfix/LAB-1-corrige' }))).toEqual([])
   })
 
   it('libera branch do dependabot de task e template', () => {
     expect(
-      checkHygiene({
-        title: 'build(deps): bump zod',
-        body: '',
-        headRef: 'dependabot/npm_and_yarn/zod-4',
-      }),
+      checkHygiene(
+        pr({ title: 'build(deps): bump zod', body: '', headRef: 'dependabot/npm_and_yarn/zod-4' }),
+      ),
     ).toEqual([])
+  })
+
+  it('limpa comentários, cercas e linhas SQL de exemplo das seções', () => {
+    expect(sectionContent(body, 'SQL')).toBe('')
+    expect(sectionContent(body, 'Inexistente')).toBeNull()
   })
 })
 
 describe('integrações externas', () => {
-  it('Gemini devolve review validado', async () => {
-    const fetchImpl = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
-            candidates: [{ content: { parts: [{ text: JSON.stringify(review) }] } }],
-          }),
-          {
-            status: 200,
-          },
-        ),
-    )
+  const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status })
+
+  it('Gemini devolve review e verificação validados', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(
+        json({ candidates: [{ content: { parts: [{ text: JSON.stringify(review) }] } }] }),
+      )
+      .mockResolvedValueOnce(
+        json({ candidates: [{ content: { parts: [{ text: '{"holds":true,"reason":"r"}' }] } }] }),
+      )
     const provider = new GeminiProvider({ apiKey: 'k', model: 'gemini-x', fetchImpl })
     expect(await provider.review('p')).toEqual(review)
-    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit]
+    expect(await provider.verify('p')).toEqual({ holds: true, reason: 'r' })
+    const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit]
     expect(url).toContain('/models/gemini-x:generateContent')
     expect((init.headers as Record<string, string>)['x-goog-api-key']).toBe('k')
   })
@@ -213,9 +356,8 @@ describe('integrações externas', () => {
     const bad = new GeminiProvider({
       apiKey: 'k',
       model: 'm',
-      fetchImpl: vi.fn(
-        async () =>
-          new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: '{}' }] } }] })),
+      fetchImpl: vi.fn(async () =>
+        json({ candidates: [{ content: { parts: [{ text: '{}' }] } }] }),
       ),
     })
     await expect(bad.review('p')).rejects.toThrow()
@@ -224,19 +366,14 @@ describe('integrações externas', () => {
   it('GitHub atualiza comentário existente e cria quando não há', async () => {
     const update = vi
       .fn()
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify([{ id: 5, body: `${COMMENT_MARKER} antigo` }])),
-      )
-      .mockResolvedValueOnce(new Response('{}'))
+      .mockResolvedValueOnce(json([{ id: 5, body: `${COMMENT_MARKER} antigo` }]))
+      .mockResolvedValueOnce(json({}))
     expect(
       await upsertStickyComment({ token: 't', repository: 'o/r', fetchImpl: update }, 3, 'novo'),
     ).toBe('updated')
     expect((update.mock.calls[1] as [string, RequestInit])[1].method).toBe('PATCH')
 
-    const create = vi
-      .fn()
-      .mockResolvedValueOnce(new Response('[]'))
-      .mockResolvedValueOnce(new Response('{}', { status: 201 }))
+    const create = vi.fn().mockResolvedValueOnce(json([])).mockResolvedValueOnce(json({}, 201))
     expect(
       await upsertStickyComment({ token: 't', repository: 'o/r', fetchImpl: create }, 3, 'novo'),
     ).toBe('created')
@@ -246,5 +383,21 @@ describe('integrações externas', () => {
     await expect(
       upsertStickyComment({ token: 't', repository: 'o/r', fetchImpl: failing }, 3, 'x'),
     ).rejects.toThrow('403')
+  })
+
+  it('GitHub lista arquivos do PR com paginação', async () => {
+    const page1 = Array.from({ length: 100 }, (_, i) => ({ filename: `f${i}.ts` }))
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(json(page1))
+      .mockResolvedValueOnce(json([{ filename: 'last.ts' }]))
+    const files = await listPullFiles({ token: 't', repository: 'o/r', fetchImpl }, 7)
+    expect(files).toHaveLength(101)
+    expect((fetchImpl.mock.calls[1] as [string])[0]).toContain('page=2')
+
+    const failing = vi.fn().mockResolvedValueOnce(new Response('', { status: 404 }))
+    await expect(
+      listPullFiles({ token: 't', repository: 'o/r', fetchImpl: failing }, 7),
+    ).rejects.toThrow('404')
   })
 })

@@ -1,8 +1,9 @@
-import { reviewSchema, type Review } from '../review.js'
+import { reviewSchema, verificationSchema, type Review, type Verification } from '../review.js'
 
 export interface LlmProvider {
   readonly model: string
   review(prompt: string): Promise<Review>
+  verify(prompt: string): Promise<Verification>
 }
 
 export interface GeminiOptions {
@@ -26,6 +27,14 @@ export class GeminiProvider implements LlmProvider {
   }
 
   async review(prompt: string): Promise<Review> {
+    return reviewSchema.parse(await this.generateJson(prompt))
+  }
+
+  async verify(prompt: string): Promise<Verification> {
+    return verificationSchema.parse(await this.generateJson(prompt))
+  }
+
+  private async generateJson(prompt: string): Promise<unknown> {
     const response = await this.fetchImpl(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.model)}:generateContent`,
       {
@@ -45,6 +54,6 @@ export class GeminiProvider implements LlmProvider {
     }
     const data = (await response.json()) as GeminiResponse
     const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? ''
-    return reviewSchema.parse(JSON.parse(text))
+    return JSON.parse(text)
   }
 }

@@ -2,6 +2,17 @@ import { z } from 'zod'
 import type { CatalogModule, RiskRule } from './catalog.js'
 import type { DocPage, Task } from './sources/types.js'
 
+const findingSchema = z.object({
+  layer: z.enum(['correcao', 'padrao']),
+  severity: z.enum(['critica', 'alta', 'media', 'baixa']),
+  file: z.string(),
+  line: z.number().int().nullable(),
+  title: z.string(),
+  detail: z.string(),
+})
+
+export type Finding = z.infer<typeof findingSchema>
+
 export const reviewSchema = z.object({
   businessSummary: z.string(),
   acceptance: z.array(
@@ -12,15 +23,7 @@ export const reviewSchema = z.object({
     }),
   ),
   outOfScope: z.array(z.string()),
-  findings: z.array(
-    z.object({
-      severity: z.enum(['critica', 'alta', 'media', 'baixa']),
-      file: z.string(),
-      line: z.number().int().nullable(),
-      title: z.string(),
-      detail: z.string(),
-    }),
-  ),
+  findings: z.array(findingSchema),
   missingTests: z.array(z.string()),
   suggestedRiskLabels: z.array(z.string()),
   docsNeedUpdate: z.boolean(),
@@ -28,10 +31,18 @@ export const reviewSchema = z.object({
 
 export type Review = z.infer<typeof reviewSchema>
 
+export const verificationSchema = z.object({
+  holds: z.boolean(),
+  reason: z.string(),
+})
+
+export type Verification = z.infer<typeof verificationSchema>
+
 export interface ReviewContext {
   task: Task | null
   taskKey: string | null
   modules: CatalogModule[]
+  uncataloged: string[]
   docs: DocPage[]
   riskRules: RiskRule[]
   files: string[]
@@ -72,12 +83,15 @@ const describeModules = (modules: CatalogModule[]): string =>
         .join('\n')
     : 'Nenhum módulo do catálogo cobre os arquivos alterados.'
 
+const fill = (template: string, values: Record<string, string>) =>
+  template.replace(/\{\{([A-Z_]+)\}\}/g, (match, key: string) => values[key] ?? match)
+
 /**
  * Monta o prompt a partir do template versionado. Todo conteúdo vindo do PR, da task ou
  * da documentação entra em blocos marcados como dados não confiáveis.
  */
-export const buildPrompt = (template: string, context: ReviewContext): string => {
-  const values: Record<string, string> = {
+export const buildPrompt = (template: string, context: ReviewContext): string =>
+  fill(template, {
     RUBRIC: context.rubric,
     AGENTS: block('untrusted_data', context.agentsGuide),
     TASK: block('untrusted_data', describeTask(context)),
@@ -97,8 +111,64 @@ export const buildPrompt = (template: string, context: ReviewContext): string =>
       context.riskRules.map((r) => `${r.label}: ${r.description}`).join('\n') || 'nenhum',
     FILES: context.files.join('\n'),
     DIFF: block('untrusted_data', context.patch),
-  }
-  return template.replace(/\{\{([A-Z_]+)\}\}/g, (match, key: string) => values[key] ?? match)
+  })
+
+export const buildVerificationPrompt = (
+  template: string,
+  finding: Finding,
+  context: ReviewContext,
+): string =>
+  fill(template, {
+    FINDING: block(
+      'untrusted_data',
+      `[${finding.severity}] ${finding.title}\nArquivo: ${finding.file}${finding.line ? `:${finding.line}` : ''}\n${finding.detail}`,
+    ),
+    TASK: block('untrusted_data', describeTask(context)),
+    DIFF: block('untrusted_data', context.patch),
+  })
+
+/** Severidades que passam por verificação adversarial antes de aparecer no comentário. */
+export const NEEDS_VERIFICATION = new Set<Finding['severity']>(['critica', 'alta'])
+
+/**
+ * Mantém só os achados graves que sobreviveram à tentativa de refutação. Achados médios e
+ * baixos passam direto, porque o custo de um falso positivo neles é baixo.
+ */
+export const applyVerification = (
+  review: Review,
+  verify: (finding: Finding) => Promise<Verification>,
+): Promise<{ review: Review; refuted: Finding[] }> =>
+  Promise.all(
+    review.findings.map(async (finding) => ({
+      finding,
+      verdict: NEEDS_VERIFICATION.has(finding.severity) ? await verify(finding) : null,
+    })),
+  ).then((results) => ({
+    review: {
+      ...review,
+      findings: results.filter((r) => !r.verdict || r.verdict.holds).map((r) => r.finding),
+    },
+    refuted: results.filter((r) => r.verdict && !r.verdict.holds).map((r) => r.finding),
+  }))
+
+export type Signal = 'ajustes' | 'gate' | 'pronto'
+
+/**
+ * Sinal para o revisor humano, calculado de forma determinística a partir do review já
+ * verificado. Não é aprovação: só ordena a fila de quem revisa.
+ */
+export const computeSignal = (review: Review, context: ReviewContext): Signal => {
+  const blockingFinding = review.findings.some((f) => NEEDS_VERIFICATION.has(f.severity))
+  const missingCriterion = review.acceptance.some((a) => a.status === 'nao_encontrado')
+  if (blockingFinding || missingCriterion) return 'ajustes'
+  if (review.docsNeedUpdate || context.uncataloged.length > 0) return 'gate'
+  return 'pronto'
+}
+
+const SIGNAL_TEXT: Record<Signal, string> = {
+  ajustes: 'Ajustes recomendados antes da revisão humana',
+  gate: 'Gate pendente (documentação ou catálogo)',
+  pronto: 'Pronto para revisão humana',
 }
 
 const SEVERITY_ORDER = { critica: 0, alta: 1, media: 2, baixa: 3 } as const
@@ -110,17 +180,39 @@ const STATUS_TEXT = {
 
 export const COMMENT_MARKER = '<!-- eng-platform-lab:ai-review -->'
 
+const findingsTable = (findings: Finding[]): string[] => {
+  if (!findings.length) return ['Nenhum achado.']
+  const sorted = [...findings].sort(
+    (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity],
+  )
+  return [
+    '| Severidade | Onde | Achado |',
+    '|---|---|---|',
+    ...sorted.map(
+      (f) =>
+        `| ${f.severity} | \`${f.file}${f.line ? `:${f.line}` : ''}\` | **${f.title}.** ${f.detail} |`,
+    ),
+  ]
+}
+
 export const renderComment = (
   review: Review,
   context: ReviewContext,
-  meta: { model: string; promptVersion: string },
+  meta: { model: string; promptVersion: string; refuted: number },
 ): string => {
-  const lines: string[] = [COMMENT_MARKER, '## Review com contexto', '']
+  const signal = computeSignal(review, context)
+  const lines: string[] = [
+    COMMENT_MARKER,
+    '## Review com contexto',
+    '',
+    `**Sinal:** ${SIGNAL_TEXT[signal]}`,
+  ]
 
-  const taskLine = context.task
-    ? `**Task:** ${context.task.url ? `[${context.task.key}](${context.task.url})` : context.task.key}, ${context.task.title}`
-    : `**Task:** ${context.taskKey ?? 'não identificada'} (sem contexto da task)`
-  lines.push(taskLine)
+  lines.push(
+    context.task
+      ? `**Task:** ${context.task.url ? `[${context.task.key}](${context.task.url})` : context.task.key}, ${context.task.title}`
+      : `**Task:** ${context.taskKey ?? 'não identificada'} (sem contexto da task)`,
+  )
   if (context.modules.length) {
     lines.push(
       `**Módulos:** ${context.modules.map((m) => `${m.name} (${m.tier}, dono ${m.owner})`).join('; ')}`,
@@ -131,7 +223,7 @@ export const renderComment = (
   }
   lines.push('', '### Para que serve e impacto', review.businessSummary, '')
 
-  lines.push('### Critérios de aceite')
+  lines.push('### Aderência à task')
   if (review.acceptance.length) {
     lines.push('| Critério | Situação | Evidência |', '|---|---|---|')
     for (const item of review.acceptance) {
@@ -142,51 +234,46 @@ export const renderComment = (
       'A task não tem critérios de aceite escritos. Pela regra RN-05, ela não deveria estar em desenvolvimento.',
     )
   }
-  lines.push('')
-
   if (review.outOfScope.length) {
-    lines.push('### Fora do escopo da task', ...review.outOfScope.map((s) => `- ${s}`), '')
-  }
-
-  const findings = [...review.findings].sort(
-    (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity],
-  )
-  lines.push('### Achados')
-  if (findings.length) {
-    lines.push('| Severidade | Onde | Achado |', '|---|---|---|')
-    for (const f of findings) {
-      lines.push(
-        `| ${f.severity} | \`${f.file}${f.line ? `:${f.line}` : ''}\` | **${f.title}.** ${f.detail} |`,
-      )
-    }
-  } else {
-    lines.push('Nenhum achado.')
+    lines.push('', '**Fora do escopo da task:**', ...review.outOfScope.map((s) => `- ${s}`))
   }
   lines.push('')
 
+  lines.push('### Camada 1: correção')
+  lines.push(...findingsTable(review.findings.filter((f) => f.layer === 'correcao')))
   if (review.missingTests.length) {
-    lines.push('### Testes faltando', ...review.missingTests.map((t) => `- ${t}`), '')
+    lines.push('', '**Testes faltando:**', ...review.missingTests.map((t) => `- ${t}`))
   }
+  lines.push('')
 
+  lines.push('### Camada 2: padrão do repositório')
+  lines.push(...findingsTable(review.findings.filter((f) => f.layer === 'padrao')))
+  lines.push('')
+
+  lines.push('### Camada 3: gates')
+  lines.push(
+    review.docsNeedUpdate
+      ? '- Documentação: o comportamento mudou; a página do módulo precisa refletir a mudança antes do merge.'
+      : '- Documentação: sem mudança de comportamento que exija atualização.',
+  )
+  lines.push(
+    context.uncataloged.length
+      ? `- Catálogo: arquivos fora de qualquer módulo cadastrado (${context.uncataloged.map((f) => `\`${f}\``).join(', ')}). Módulo novo exige cadastro em \`catalog/modules/\`.`
+      : '- Catálogo: todos os arquivos alterados pertencem a módulos cadastrados.',
+  )
   const extraLabels = review.suggestedRiskLabels.filter(
     (l) => !context.riskRules.some((r) => r.label === l),
   )
   if (extraLabels.length) {
     lines.push(
-      `**Rótulos sugeridos pela IA (exigem confirmação humana):** ${extraLabels.map((l) => `\`${l}\``).join(' ')}`,
-      '',
+      `- Rótulos sugeridos pela IA (exigem confirmação humana): ${extraLabels.map((l) => `\`${l}\``).join(' ')}`,
     )
   }
-  if (review.docsNeedUpdate) {
-    lines.push(
-      '**Documentação:** o comportamento mudou; confira se a página do módulo foi atualizada.',
-      '',
-    )
-  }
+  lines.push('')
 
   lines.push(
     '---',
-    `Gerado por IA (${meta.model}, prompt ${meta.promptVersion}). Este comentário não aprova nem bloqueia o PR; quem responde pelo código é o autor e quem aprova é o revisor.`,
+    `Gerado por IA (${meta.model}, prompt ${meta.promptVersion}). ${meta.refuted} achado(s) grave(s) descartado(s) na verificação adversarial. Este comentário não aprova nem bloqueia o PR; quem responde pelo código é o autor e quem aprova é o revisor.`,
   )
   return lines.join('\n')
 }

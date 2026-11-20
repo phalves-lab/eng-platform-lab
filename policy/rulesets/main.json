@@ -4,14 +4,18 @@
   "enforcement": "active",
   "conditions": {
     "ref_name": {
-      "include": ["~DEFAULT_BRANCH"],
+      "include": ["refs/heads/main", "refs/heads/develop"],
       "exclude": []
     }
   },
   "bypass_actors": [],
   "rules": [
-    { "type": "deletion" },
-    { "type": "non_fast_forward" },
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    },
     {
       "type": "pull_request",
       "parameters": {
@@ -29,11 +33,21 @@
         "strict_required_status_checks_policy": false,
         "do_not_enforce_on_create": false,
         "required_status_checks": [
-          { "context": "verify / gates" },
-          { "context": "security / secrets" },
-          { "context": "security / dependencies" },
-          { "context": "security / sast" },
-          { "context": "hygiene" }
+          {
+            "context": "verify / gates"
+          },
+          {
+            "context": "security / secrets"
+          },
+          {
+            "context": "security / dependencies"
+          },
+          {
+            "context": "security / sast"
+          },
+          {
+            "context": "hygiene"
+          }
         ]
       }
     },
