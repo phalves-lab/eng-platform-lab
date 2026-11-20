@@ -83,6 +83,7 @@ const context = (overrides: Partial<ReviewContext> = {}): ReviewContext => ({
     epic: null,
     url: 'https://x/browse/LAB-1',
   },
+  taskOrigin: 'base',
   taskKey: 'LAB-1',
   modules: [
     {
@@ -191,6 +192,12 @@ describe('verificação adversarial e sinal', () => {
     expect(computeSignal({ ...clean, docsNeedUpdate: true }, context())).toBe('gate')
     expect(computeSignal(clean, context({ uncataloged: ['apps/web/x.ts'] }))).toBe('gate')
     expect(computeSignal(clean, context())).toBe('pronto')
+    expect(
+      computeSignal(
+        { ...clean, acceptance: [{ criterion: 'x', status: 'parcial', evidence: '' }] },
+        context(),
+      ),
+    ).toBe('gate')
   })
 })
 
@@ -231,7 +238,7 @@ describe('renderComment', () => {
     expect(comment).toContain('RN-05')
     expect(comment).toContain('Nenhum achado.')
     expect(comment).toContain('`apps/web/x.ts`')
-    expect(comment).toContain('Gate pendente')
+    expect(comment).toContain('Pendências antes do merge')
   })
 })
 
@@ -399,5 +406,16 @@ describe('integrações externas', () => {
     await expect(
       listPullFiles({ token: 't', repository: 'o/r', fetchImpl: failing }, 7),
     ).rejects.toThrow('404')
+  })
+})
+
+describe('origem da task', () => {
+  it('avisa no prompt e no comentário quando a task veio do próprio PR', () => {
+    const fromPr = context({ taskOrigin: 'pr' })
+    expect(buildPrompt('{{TASK}}', fromPr)).toContain('arquivo do próprio PR')
+    expect(buildPrompt('{{TASK}}', context())).not.toContain('arquivo do próprio PR')
+    expect(renderComment(clean, fromPr, { model: 'm', promptVersion: 'v', refuted: 0 })).toContain(
+      '(lida do próprio PR)',
+    )
   })
 })

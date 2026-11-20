@@ -12,8 +12,10 @@ const readJson = async <T>(path: string): Promise<T | null> => {
 }
 
 export class FixtureTaskSource implements TaskSource {
-  readonly name = 'fixtures'
-  constructor(private readonly directory: string) {}
+  constructor(
+    private readonly directory: string,
+    readonly name = 'fixtures',
+  ) {}
 
   getTask(key: string): Promise<Task | null> {
     return readJson<Task>(join(this.directory, `${key}.json`))
@@ -21,8 +23,10 @@ export class FixtureTaskSource implements TaskSource {
 }
 
 export class FixtureDocSource implements DocSource {
-  readonly name = 'fixtures'
-  constructor(private readonly directory: string) {}
+  constructor(
+    private readonly directory: string,
+    readonly name = 'fixtures',
+  ) {}
 
   getPage(id: string): Promise<DocPage | null> {
     return readJson<DocPage>(join(this.directory, `${id}.json`))
