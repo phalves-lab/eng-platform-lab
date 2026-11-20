@@ -50,7 +50,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**', 'tools/review-bot/src/cli.ts'],
+    files: ['scripts/**', 'tools/*/src/cli.ts'],
     rules: { 'no-console': 'off' },
   },
 )

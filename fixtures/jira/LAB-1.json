@@ -11,5 +11,11 @@
   "status": "Em andamento",
   "labels": ["financeiro", "aprovacao"],
   "epic": "LAB-0 Governança de campanhas",
-  "url": null
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-12T13:00:00Z"
+    }
+  ]
 }

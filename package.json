@@ -21,7 +21,8 @@
     "quality": "node scripts/quality-report.mjs",
     "pre-pr": "node scripts/pre-pr.mjs",
     "verify": "npm run lint && npm run format && npm run typecheck && npm run test:coverage && npm run build",
-    "review": "npm run review --workspace @lab/review-bot --"
+    "review": "npm run review --workspace @lab/review-bot --",
+    "panel": "npm run panel --workspace @lab/eng-metrics --"
   },
   "lint-staged": {
     "*.{ts,js,mjs}": [
