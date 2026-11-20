@@ -1,7 +1,7 @@
 {
   "id": "lab-campaign-requests",
   "title": "Módulo de solicitações de campanha",
-  "text": "Fluxo: rascunho, enviada, aprovada ou rejeitada, agendada. Cancelamento só antes da aprovação. Mídia paga exige orçamento. Acima de R$ 50 mil, dois aprovadores distintos. Antecedência mínima de 2 dias.",
+  "text": "Fluxo: rascunho, enviada, aprovada ou rejeitada, agendada. Cancelamento só antes da aprovação. Mídia paga exige orçamento. Acima de R$ 50 mil, dois aprovadores distintos. Antecedência mínima de 2 dias. Rejeição exige motivo entre 10 e 500 caracteres, registrado na solicitação e exibido na consulta.",
   "updatedAt": "2026-11-20",
   "url": null
 }

@@ -13,6 +13,7 @@ interface Row {
   end_date: string
   status: Status
   approvals: string[]
+  rejection_reason: string | null
   created_at: Date
 }
 
@@ -27,12 +28,13 @@ const toDomain = (row: Row): CampaignRequest => ({
   endDate: row.end_date,
   status: row.status,
   approvals: row.approvals,
+  rejectionReason: row.rejection_reason,
   createdAt: row.created_at.toISOString(),
 })
 
 const SELECT_COLUMNS = `id, title, requester_id, business_unit, channel, budget_cents,
   to_char(start_date, 'YYYY-MM-DD') AS start_date, to_char(end_date, 'YYYY-MM-DD') AS end_date,
-  status, approvals, created_at`
+  status, approvals, rejection_reason, created_at`
 
 export class PostgresCampaignRequestRepository implements CampaignRequestRepository {
   constructor(private readonly pool: pg.Pool) {}
@@ -40,8 +42,8 @@ export class PostgresCampaignRequestRepository implements CampaignRequestReposit
   async insert(request: CampaignRequest): Promise<void> {
     await this.pool.query(
       `INSERT INTO campaign_requests
-        (id, title, requester_id, business_unit, channel, budget_cents, start_date, end_date, status, approvals, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        (id, title, requester_id, business_unit, channel, budget_cents, start_date, end_date, status, approvals, rejection_reason, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
         request.id,
         request.title,
@@ -53,6 +55,7 @@ export class PostgresCampaignRequestRepository implements CampaignRequestReposit
         request.endDate,
         request.status,
         request.approvals,
+        request.rejectionReason,
         request.createdAt,
       ],
     )
@@ -69,8 +72,8 @@ export class PostgresCampaignRequestRepository implements CampaignRequestReposit
 
   async update(request: CampaignRequest): Promise<void> {
     await this.pool.query(
-      `UPDATE campaign_requests SET status = $2, approvals = $3 WHERE id = $1`,
-      [request.id, request.status, request.approvals],
+      `UPDATE campaign_requests SET status = $2, approvals = $3, rejection_reason = $4 WHERE id = $1`,
+      [request.id, request.status, request.approvals, request.rejectionReason],
     )
   }
 }

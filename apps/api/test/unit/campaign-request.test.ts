@@ -120,7 +120,10 @@ describe('transições', () => {
   })
 
   it('rejeita solicitação enviada', () => {
-    expect(reject(submittedOf())).toMatchObject({ ok: true, value: { status: 'rejected' } })
+    expect(reject(submittedOf(), 'Fora do calendário da BU')).toMatchObject({
+      ok: true,
+      value: { status: 'rejected' },
+    })
   })
 
   it('cancela rascunho e enviada, mas não aprovada', () => {
@@ -170,5 +173,41 @@ describe('approve', () => {
 
   it('exige um aprovador até R$ 50.000 inclusive', () => {
     expect(requiredApprovals({ budgetCents: HIGH_BUDGET_CENTS })).toBe(1)
+  })
+})
+
+describe('reject com motivo', () => {
+  it.each([
+    ['vazio', ''],
+    ['curto', '  curto  '],
+    ['longo', 'x'.repeat(501)],
+  ])('recusa motivo %s', (_label, reason) => {
+    expect(reject(submittedOf(), reason)).toMatchObject({
+      ok: false,
+      error: { code: 'INVALID_REASON' },
+    })
+  })
+
+  it('registra o motivo sem espaços nas pontas', () => {
+    expect(reject(submittedOf(), '  Orçamento acima do teto da BU  ')).toMatchObject({
+      ok: true,
+      value: { status: 'rejected', rejectionReason: 'Orçamento acima do teto da BU' },
+    })
+  })
+
+  it('aceita os limites de 10 e 500 caracteres', () => {
+    expect(reject(submittedOf(), 'x'.repeat(10)).ok).toBe(true)
+    expect(reject(submittedOf(), 'x'.repeat(500)).ok).toBe(true)
+  })
+
+  it('não rejeita o que não foi enviado, mesmo com motivo válido', () => {
+    expect(reject(draftOf(), 'Motivo válido para teste')).toMatchObject({
+      ok: false,
+      error: { code: 'INVALID_TRANSITION' },
+    })
+  })
+
+  it('rascunho nasce sem motivo de rejeição', () => {
+    expect(draftOf().rejectionReason).toBeNull()
   })
 })

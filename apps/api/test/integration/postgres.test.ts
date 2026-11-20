@@ -50,12 +50,45 @@ describe.skipIf(!databaseUrl)('PostgresCampaignRequestRepository', () => {
       approvals: [],
     })
 
+    expect((await repository.findById(id))?.rejectionReason).toBeNull()
+    await repository.update({
+      ...draft.value,
+      status: 'rejected',
+      approvals: ['bruno'],
+      rejectionReason: 'Orçamento acima do teto da BU',
+    })
+    expect((await repository.findById(id))?.rejectionReason).toBe('Orçamento acima do teto da BU')
     await repository.update({ ...draft.value, status: 'submitted', approvals: ['bruno'] })
     expect(await repository.findById(id)).toMatchObject({
       status: 'submitted',
       approvals: ['bruno'],
     })
     expect(await repository.findById(randomUUID())).toBeNull()
+  })
+
+  it('lê solicitação rejeitada antes da mudança, sem motivo gravado', async () => {
+    const id = randomUUID()
+    await pool.query(
+      `INSERT INTO campaign_requests (id, title, requester_id, business_unit, channel, budget_cents, start_date, end_date, status, approvals)
+       VALUES ($1, 'Legado', 'ana', 'ead', 'email', 0, '2026-12-01', '2026-12-10', 'rejected', '{}')`,
+      [id],
+    )
+    expect(await new PostgresCampaignRequestRepository(pool).findById(id)).toMatchObject({
+      status: 'rejected',
+      rejectionReason: null,
+    })
+  })
+
+  it('banco recusa motivo de rejeição curto mesmo sem passar pelo domínio', async () => {
+    const id = randomUUID()
+    await pool.query(
+      `INSERT INTO campaign_requests (id, title, requester_id, business_unit, channel, budget_cents, start_date, end_date, status)
+       VALUES ($1, 'Teste', 'ana', 'ead', 'email', 0, '2026-12-01', '2026-12-10', 'submitted')`,
+      [id],
+    )
+    await expect(
+      pool.query(`UPDATE campaign_requests SET rejection_reason = 'curto' WHERE id = $1`, [id]),
+    ).rejects.toThrow()
   })
 
   it('banco recusa período invertido mesmo sem passar pelo domínio', async () => {

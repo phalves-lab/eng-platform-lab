@@ -1,0 +1,17 @@
+{
+  "key": "LAB-8",
+  "title": "Exigir motivo ao rejeitar solicitação de campanha",
+  "area": "Marketing",
+  "demandType": "Melhorias",
+  "description": "Quem pede a campanha não sabe por que ela foi rejeitada e abre chamado para perguntar. O aprovador passa a informar o motivo, que fica registrado na solicitação.",
+  "acceptanceCriteria": [
+    "Rejeitar sem motivo, ou com menos de 10 caracteres, é recusado com mensagem clara",
+    "Motivo com mais de 500 caracteres é recusado",
+    "O motivo fica salvo na solicitação e aparece na consulta",
+    "Solicitações rejeitadas antes desta mudança continuam consultáveis, sem motivo"
+  ],
+  "status": "Em andamento",
+  "labels": ["aprovacao"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null
+}

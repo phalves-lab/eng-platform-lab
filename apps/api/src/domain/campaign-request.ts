@@ -22,6 +22,7 @@ export interface CampaignRequest {
   endDate: string
   status: Status
   approvals: string[]
+  rejectionReason: string | null
   createdAt: string
 }
 
@@ -43,6 +44,7 @@ export type DomainErrorCode =
   | 'INVALID_TRANSITION'
   | 'SELF_APPROVAL'
   | 'DUPLICATE_APPROVAL'
+  | 'INVALID_REASON'
 
 export interface DomainError {
   code: DomainErrorCode
@@ -118,6 +120,7 @@ export const createDraft = (
     endDate: input.endDate,
     status: 'draft',
     approvals: [],
+    rejectionReason: null,
     createdAt: context.now,
   })
 }
@@ -136,8 +139,24 @@ const transition = (
 export const submit = (request: CampaignRequest): Result<CampaignRequest> =>
   transition(request, ['draft'], 'submitted')
 
-export const reject = (request: CampaignRequest): Result<CampaignRequest> =>
-  transition(request, ['submitted'], 'rejected')
+/** Tamanho aceito para o motivo de rejeição, em caracteres, depois de remover espaços das pontas. */
+export const REJECTION_REASON_LIMITS = { min: 10, max: 500 } as const
+
+/** Rejeita a solicitação registrando o motivo, que é exibido para quem pediu a campanha. */
+export const reject = (request: CampaignRequest, reason: string): Result<CampaignRequest> => {
+  const trimmed = reason.trim()
+  if (
+    trimmed.length < REJECTION_REASON_LIMITS.min ||
+    trimmed.length > REJECTION_REASON_LIMITS.max
+  ) {
+    return fail(
+      'INVALID_REASON',
+      `O motivo da rejeição deve ter entre ${REJECTION_REASON_LIMITS.min} e ${REJECTION_REASON_LIMITS.max} caracteres.`,
+    )
+  }
+  const result = transition(request, ['submitted'], 'rejected')
+  return result.ok ? ok({ ...result.value, rejectionReason: trimmed }) : result
+}
 
 export const schedule = (request: CampaignRequest): Result<CampaignRequest> =>
   transition(request, ['approved'], 'scheduled')
