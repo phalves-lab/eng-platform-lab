@@ -1,4 +1,11 @@
-* @PhAlves23
-/policy/ @PhAlves23
-/.github/ @PhAlves23
-/review/ @PhAlves23
+* @phalves-lab/platform
+
+/apps/api/ @phalves-lab/api-owners
+/apps/api/migrations/ @phalves-lab/api-owners @phalves-lab/platform
+/apps/api/src/db/ @phalves-lab/api-owners @phalves-lab/platform
+
+/tools/review-bot/ @phalves-lab/platform
+/review/ @phalves-lab/platform
+/policy/ @phalves-lab/platform
+/catalog/ @phalves-lab/platform
+/.github/ @phalves-lab/platform

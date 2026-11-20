@@ -3,12 +3,24 @@ import { join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { parseArgs } from 'node:util'
 import { decideWrite, describePlan, executeWritePlan, type WritePlan } from './atlassian-write.js'
-import { loadCatalog, loadRiskRules, modulesForFiles, riskLabelsForFiles } from './catalog.js'
+import {
+  filesOutsideCatalog,
+  loadCatalog,
+  loadRiskRules,
+  modulesForFiles,
+  riskLabelsForFiles,
+} from './catalog.js'
 import { collectDiff } from './diff.js'
-import { upsertStickyComment } from './github.js'
+import { listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
 import { checkHygiene } from './pr-hygiene.js'
-import { buildPrompt, renderComment, type ReviewContext } from './review.js'
+import {
+  applyVerification,
+  buildPrompt,
+  buildVerificationPrompt,
+  renderComment,
+  type ReviewContext,
+} from './review.js'
 import { ConfluenceDocSource, JiraTaskSource } from './sources/atlassian.js'
 import { FixtureDocSource, FixtureTaskSource } from './sources/fixtures.js'
 import { extractTaskKey } from './sources/text.js'
@@ -89,6 +101,7 @@ const runReview = async (argv: string[]) => {
     diff.files,
   )
   const modules = modulesForFiles(catalog, diff.files)
+  const uncataloged = filesOutsideCatalog(catalog, diff.files)
   const taskKey = values.task ?? extractTaskKey(values.branch, values.title)
   const task = taskKey ? await tasks.getTask(taskKey) : null
 
@@ -103,6 +116,7 @@ const runReview = async (argv: string[]) => {
     task,
     taskKey,
     modules,
+    uncataloged,
     docs: pages,
     riskRules,
     files: diff.files,
@@ -122,10 +136,14 @@ const runReview = async (argv: string[]) => {
     apiKey: requireEnv('GEMINI_API_KEY'),
     model: requireEnv('GEMINI_MODEL'),
   })
-  const review = await provider.review(prompt)
+  const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
+  const { review, refuted } = await applyVerification(await provider.review(prompt), (finding) =>
+    provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+  )
   const comment = renderComment(review, context, {
     model: provider.model,
     promptVersion: promptVersion(template),
+    refuted: refuted.length,
   })
 
   if (values.out) await writeFile(values.out, comment)
@@ -159,16 +177,28 @@ const runTask = async (argv: string[]) => {
 
 const runHygiene = async () => {
   const event = JSON.parse(await readFile(requireEnv('GITHUB_EVENT_PATH'), 'utf8')) as {
-    pull_request?: { title: string; body: string | null; head: { ref: string } }
+    pull_request?: {
+      number: number
+      title: string
+      body: string | null
+      head: { ref: string }
+      base: { ref: string }
+    }
   }
   if (!event.pull_request) {
     console.log('Evento sem pull request; nada a checar.')
     return
   }
+  const files = await listPullFiles(
+    { token: requireEnv('GITHUB_TOKEN'), repository: requireEnv('GITHUB_REPOSITORY') },
+    event.pull_request.number,
+  )
   const issues = checkHygiene({
     title: event.pull_request.title,
     body: event.pull_request.body ?? '',
     headRef: event.pull_request.head.ref,
+    baseRef: event.pull_request.base.ref,
+    files,
   })
   if (issues.length === 0) {
     console.log('Higiene do PR ok.')
