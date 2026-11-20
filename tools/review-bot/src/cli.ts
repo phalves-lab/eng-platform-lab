@@ -15,6 +15,7 @@ import {
 import { decideWrite, describePlan, executeWritePlan, type WritePlan } from './atlassian-write.js'
 import {
   filesOutsideCatalog,
+  type CatalogModule,
   loadCatalog,
   loadRiskRules,
   modulesForFiles,
@@ -114,6 +115,34 @@ const readChangedFiles = async (repoDir: string, files: string[]) => {
   return contents
 }
 
+const MODULE_SOURCE = /\.(ts|mjs|sql|ya?ml)$/
+const TEST_FILE = /(^|\/)test\/|\.(test|spec)\.ts$/
+
+/**
+ * Arquivos de código dos módulos afetados que o PR não altera. Dão à verificação o contexto
+ * em volta da mudança (ex.: o repositório que ainda lê a coluna removida). Arquivos alterados
+ * ficam de fora para a versão antiga não ser confundida com a nova.
+ */
+const readModuleFiles = async (
+  repoDir: string,
+  modules: CatalogModule[],
+  exclude: string[],
+): Promise<Record<string, string>> => {
+  const tracked = execFileSync('git', ['ls-files', ...modules.flatMap((m) => m.paths)], {
+    cwd: repoDir,
+    encoding: 'utf8',
+  })
+    .split('\n')
+    .filter((file) => file && MODULE_SOURCE.test(file) && !TEST_FILE.test(file))
+    .filter((file) => !exclude.includes(file))
+  const contents: Record<string, string> = {}
+  for (const file of tracked) {
+    const content = await readOptional(join(repoDir, file))
+    if (content) contents[file] = content
+  }
+  return contents
+}
+
 /** Resultado dos checks do commit, quando roda no CI com token; o próprio review fica de fora. */
 const readChecks = async (sha: string) => {
   const token = process.env.GITHUB_TOKEN
@@ -198,8 +227,9 @@ const runReview = async (argv: string[]) => {
 
   const provider = geminiFromEnv()
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
+  const changedContents = await readChangedFiles(repoDir, diff.files)
   const evidence: VerificationEvidence = {
-    files: await readChangedFiles(repoDir, diff.files),
+    files: { ...changedContents, ...(await readModuleFiles(repoDir, modules, diff.files)) },
     checks: await readChecks(values.head),
   }
   const { review, refuted, uncertain } = await applyVerification(
@@ -430,7 +460,13 @@ const runEval = async (argv: string[]) => {
       continue
     }
     const evidence: VerificationEvidence = {
-      files: evalCase.fileContents,
+      files: {
+        ...evalCase.fileContents,
+        ...(await readModuleFiles(configDir, context.modules, [
+          ...files,
+          ...Object.keys(evalCase.fileContents),
+        ])),
+      },
       checks: evalCase.checks,
     }
     const { review, uncertain } = await applyVerification(
