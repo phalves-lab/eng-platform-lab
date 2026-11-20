@@ -29,6 +29,8 @@ const draftBody = z.object({
   endDate: z.string(),
 })
 
+const rejectBody = z.object({ reason: z.string() })
+
 const userHeader = z.object({ 'x-user-id': z.string().min(1) })
 
 const idParams = z.object({ id: z.string().uuid() })
@@ -41,6 +43,7 @@ const STATUS_BY_ERROR: Record<DomainError['code'], number> = {
   INVALID_TRANSITION: 409,
   SELF_APPROVAL: 403,
   DUPLICATE_APPROVAL: 409,
+  INVALID_REASON: 422,
 }
 
 const sendDomainError = (reply: FastifyReply, error: DomainError) =>
@@ -79,7 +82,7 @@ export const buildApp = (deps: AppDependencies): FastifyInstance => {
 
   const registerTransition = (
     action: string,
-    apply: (current: CampaignRequest, userId: string) => Result<CampaignRequest>,
+    apply: (current: CampaignRequest, userId: string, body: unknown) => Result<CampaignRequest>,
   ) => {
     app.post(`/campaign-requests/:id/${action}`, async (request, reply) => {
       const headers = userHeader.safeParse(request.headers)
@@ -90,7 +93,7 @@ export const buildApp = (deps: AppDependencies): FastifyInstance => {
       const current = await deps.repository.findById(params.data.id)
       if (!current) return reply.status(404).send({ error: { code: 'NOT_FOUND' } })
 
-      const result = apply(current, headers.data['x-user-id'])
+      const result = apply(current, headers.data['x-user-id'], request.body)
       if (!result.ok) return sendDomainError(reply, result.error)
 
       await deps.repository.update(result.value)
@@ -100,7 +103,9 @@ export const buildApp = (deps: AppDependencies): FastifyInstance => {
 
   registerTransition('submit', (current) => submit(current))
   registerTransition('approve', (current, userId) => approve(current, userId))
-  registerTransition('reject', (current) => reject(current))
+  registerTransition('reject', (current, _userId, body) =>
+    reject(current, rejectBody.safeParse(body).data?.reason ?? ''),
+  )
   registerTransition('schedule', (current) => schedule(current))
   registerTransition('cancel', (current) => cancel(current))
 

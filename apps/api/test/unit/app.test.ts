@@ -122,3 +122,48 @@ describe('API de solicitações', () => {
     expect(response.statusCode).toBe(409)
   })
 })
+
+describe('rejeição com motivo pela API', () => {
+  const createAndSubmit = async () => {
+    const app = setup()
+    await app.inject({
+      method: 'POST',
+      url: '/campaign-requests',
+      headers: { 'x-user-id': 'ana' },
+      payload: body,
+    })
+    await app.inject({
+      method: 'POST',
+      url: `/campaign-requests/${ID}/submit`,
+      headers: { 'x-user-id': 'ana' },
+    })
+    return app
+  }
+
+  it('devolve 422 sem motivo', async () => {
+    const app = await createAndSubmit()
+    const response = await app.inject({
+      method: 'POST',
+      url: `/campaign-requests/${ID}/reject`,
+      headers: { 'x-user-id': 'bruno' },
+    })
+    expect(response.statusCode).toBe(422)
+    expect(response.json()).toMatchObject({ error: { code: 'INVALID_REASON' } })
+  })
+
+  it('rejeita e devolve o motivo na consulta', async () => {
+    const app = await createAndSubmit()
+    const rejected = await app.inject({
+      method: 'POST',
+      url: `/campaign-requests/${ID}/reject`,
+      headers: { 'x-user-id': 'bruno' },
+      payload: { reason: 'Período conflita com outra campanha' },
+    })
+    expect(rejected.statusCode).toBe(200)
+    const fetched = await app.inject({ method: 'GET', url: `/campaign-requests/${ID}` })
+    expect(fetched.json()).toMatchObject({
+      status: 'rejected',
+      rejectionReason: 'Período conflita com outra campanha',
+    })
+  })
+})
