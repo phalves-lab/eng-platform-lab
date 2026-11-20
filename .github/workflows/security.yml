@@ -43,3 +43,19 @@ jobs:
           persist-credentials: false
       - run: python3 -m pip install --quiet semgrep==1.186.0
       - run: semgrep scan --config policy/semgrep --error --metrics=off
+
+  dependency-review:
+    name: dependency-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Revisão de dependências novas
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1
+        with:
+          fail-on-severity: high
+          deny-licenses: AGPL-1.0-only, AGPL-1.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, SSPL-1.0
+          comment-summary-in-pr: on-failure
+      - name: Fora de pull request
+        if: github.event_name != 'pull_request'
+        run: echo "Revisão de dependências roda só em pull request; a fila de merge reaproveita o resultado do PR."
