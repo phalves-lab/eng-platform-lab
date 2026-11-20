@@ -40,6 +40,7 @@ export type Verification = z.infer<typeof verificationSchema>
 
 export interface ReviewContext {
   task: Task | null
+  taskOrigin: string | null
   taskKey: string | null
   modules: CatalogModule[]
   uncataloged: string[]
@@ -65,6 +66,9 @@ const describeTask = (context: ReviewContext): string => {
     : 'Nenhum critério de aceite escrito na task.'
   return [
     `Chave: ${task.key}`,
+    ...(context.taskOrigin === 'pr'
+      ? ['Fonte: arquivo do próprio PR, ainda não validado no sistema de tasks.']
+      : []),
     `Título: ${task.title}`,
     `Área: ${task.area ?? 'não informada'}`,
     `Tipo de demanda: ${task.demandType ?? 'não informado'}`,
@@ -162,14 +166,15 @@ export type Signal = 'ajustes' | 'gate' | 'pronto'
 export const computeSignal = (review: Review, context: ReviewContext): Signal => {
   const blockingFinding = review.findings.some((f) => NEEDS_VERIFICATION.has(f.severity))
   const missingCriterion = review.acceptance.some((a) => a.status === 'nao_encontrado')
+  const partialCriterion = review.acceptance.some((a) => a.status === 'parcial')
   if (blockingFinding || missingCriterion) return 'ajustes'
-  if (review.docsNeedUpdate || context.uncataloged.length > 0) return 'gate'
+  if (partialCriterion || review.docsNeedUpdate || context.uncataloged.length > 0) return 'gate'
   return 'pronto'
 }
 
 const SIGNAL_TEXT: Record<Signal, string> = {
   ajustes: 'Ajustes recomendados antes da revisão humana',
-  gate: 'Gate pendente (documentação ou catálogo)',
+  gate: 'Pendências antes do merge (critério parcial, documentação ou catálogo)',
   pronto: 'Pronto para revisão humana',
 }
 
@@ -212,7 +217,7 @@ export const renderComment = (
 
   lines.push(
     context.task
-      ? `**Task:** ${context.task.url ? `[${context.task.key}](${context.task.url})` : context.task.key}, ${context.task.title}`
+      ? `**Task:** ${context.task.url ? `[${context.task.key}](${context.task.url})` : context.task.key}, ${context.task.title}${context.taskOrigin === 'pr' ? ' (lida do próprio PR)' : ''}`
       : `**Task:** ${context.taskKey ?? 'não identificada'} (sem contexto da task)`,
   )
   if (context.modules.length) {

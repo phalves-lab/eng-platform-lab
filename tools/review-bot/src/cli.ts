@@ -33,6 +33,7 @@ import {
 } from './review.js'
 import { ConfluenceDocSource, JiraTaskSource } from './sources/atlassian.js'
 import { FixtureDocSource, FixtureTaskSource } from './sources/fixtures.js'
+import { findPage, findTask } from './sources/fallback.js'
 import { extractTaskKey } from './sources/text.js'
 import type { DocPage, DocSource, TaskSource } from './sources/types.js'
 
@@ -60,19 +61,31 @@ const atlassianOptions = () => ({
     : {}),
 })
 
+/**
+ * Monta as fontes de contexto em ordem de consulta. Com fixtures, a task vem primeiro da base
+ * (confiável) e, se não existir lá, do próprio PR; a documentação vem primeiro do PR, porque é a
+ * versão que vai ser mergeada junto com o código.
+ */
 const buildSources = (
   source: string,
   configDir: string,
-): { tasks: TaskSource; docs: DocSource } => {
+  repoDir: string,
+): { tasks: TaskSource[]; docs: DocSource[] } => {
   if (source === 'atlassian') {
     if (isCI) throw new Error('A fonte atlassian só roda localmente. No CI use --source fixtures.')
     const options = atlassianOptions()
-    return { tasks: new JiraTaskSource(options), docs: new ConfluenceDocSource(options) }
+    return { tasks: [new JiraTaskSource(options)], docs: [new ConfluenceDocSource(options)] }
   }
   if (source === 'fixtures') {
     return {
-      tasks: new FixtureTaskSource(join(configDir, 'fixtures/jira')),
-      docs: new FixtureDocSource(join(configDir, 'fixtures/confluence')),
+      tasks: [
+        new FixtureTaskSource(join(configDir, 'fixtures/jira'), 'base'),
+        new FixtureTaskSource(join(repoDir, 'fixtures/jira'), 'pr'),
+      ],
+      docs: [
+        new FixtureDocSource(join(repoDir, 'fixtures/confluence'), 'pr'),
+        new FixtureDocSource(join(configDir, 'fixtures/confluence'), 'base'),
+      ],
     }
   }
   throw new Error(`Fonte desconhecida: ${source}. Use fixtures ou atlassian.`)
@@ -114,7 +127,7 @@ const runReview = async (argv: string[]) => {
   })
   const repoDir = resolve(values['repo-dir'])
   const configDir = resolve(values['config-dir'])
-  const { tasks, docs } = buildSources(values.source, configDir)
+  const { tasks, docs } = buildSources(values.source, configDir, repoDir)
 
   const diff = collectDiff(repoDir, values.base, values.head, 60_000)
   const catalog = await loadCatalog(join(configDir, 'catalog/modules'))
@@ -125,17 +138,18 @@ const runReview = async (argv: string[]) => {
   const modules = modulesForFiles(catalog, diff.files)
   const uncataloged = filesOutsideCatalog(catalog, diff.files)
   const taskKey = values.task ?? extractTaskKey(values.branch, values.title)
-  const task = taskKey ? await tasks.getTask(taskKey) : null
+  const foundTask = taskKey ? await findTask(tasks, taskKey) : null
 
   const pages: DocPage[] = []
   for (const module of modules) {
     if (!module.confluencePageId) continue
-    const page = await docs.getPage(module.confluencePageId)
-    if (page) pages.push(page)
+    const page = await findPage(docs, module.confluencePageId)
+    if (page) pages.push(page.value)
   }
 
   const context: ReviewContext = {
-    task,
+    task: foundTask?.value ?? null,
+    taskOrigin: foundTask?.origin ?? null,
     taskKey,
     modules,
     uncataloged,
@@ -190,8 +204,9 @@ const runTask = async (argv: string[]) => {
   })
   const key = positionals[0]
   if (!key) throw new Error('Informe a chave da task, ex.: task ABC-1234.')
-  const { tasks } = buildSources(values.source, resolve(values['config-dir']))
-  console.log(JSON.stringify(await tasks.getTask(key), null, 2))
+  const dir = resolve(values['config-dir'])
+  const { tasks } = buildSources(values.source, dir, dir)
+  console.log(JSON.stringify((await findTask(tasks, key))?.value ?? null, null, 2))
 }
 
 const runHygiene = async () => {
@@ -306,6 +321,7 @@ const runEval = async (argv: string[]) => {
     const files = filesFromPatch(evalCase.patch)
     const context: ReviewContext = {
       task: evalCase.task,
+      taskOrigin: 'caso',
       taskKey: evalCase.task?.key ?? null,
       modules: modulesForFiles(catalog, files),
       uncataloged: filesOutsideCatalog(catalog, files),
