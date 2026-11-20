@@ -1,0 +1,27 @@
+{
+  "key": "LAB-13",
+  "title": "Bot de review reconhece módulo cadastrado no próprio PR",
+  "area": "Plataforma",
+  "demandType": "Correção",
+  "description": "O bot lê o catálogo de módulos só da base. Quando o PR cria um módulo e o cadastra no mesmo PR, o bot acusa arquivos fora do catálogo e marca pendência que não existe.",
+  "acceptanceCriteria": [
+    "Módulo cadastrado no próprio PR cobre os arquivos dele e não gera pendência de catálogo",
+    "Módulo que já existe na base mantém dono, tier e página da base; o PR só acrescenta caminhos",
+    "Cadastro inválido no PR não derruba o review e aparece como pendência no comentário",
+    "O comentário avisa quando há módulo cadastrado no PR, para o revisor conferir"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T22:38:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T22:50:00Z"
+    }
+  ]
+}

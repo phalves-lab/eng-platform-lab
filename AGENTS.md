@@ -34,6 +34,7 @@ Laboratório da esteira de engenharia: gates, segurança, review de IA com conte
 - PR para `main` só sai de `develop` (release) ou de `hotfix/*`. Hotfix volta para `develop`.
 - Merge só pela merge queue, com squash.
 - Mudança de comportamento atualiza a documentação do módulo antes do merge. Módulo novo entra no catálogo.
+- Módulo novo pode ser cadastrado no próprio PR que o cria. O bot lê o catálogo da base e do PR; para módulo que já existe, dono, tier e página valem da base e o PR só acrescenta caminhos.
 
 ## Padrões deste repo
 

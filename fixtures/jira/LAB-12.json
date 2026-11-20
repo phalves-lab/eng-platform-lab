@@ -11,7 +11,7 @@
     "Métricas de 30 dias e carga de review por pessoa, apresentada como reconhecimento e não como meta",
     "O painel é publicado sozinho a partir do GitHub, só com leitura, sem chamar API externa no navegador"
   ],
-  "status": "Code Review",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
   "url": null,
@@ -23,6 +23,10 @@
     {
       "status": "Code Review",
       "at": "2026-11-20T17:31:48Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T22:35:50Z"
     }
   ]
 }

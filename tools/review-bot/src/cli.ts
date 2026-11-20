@@ -17,6 +17,7 @@ import {
   filesOutsideCatalog,
   type CatalogModule,
   loadCatalog,
+  loadReviewCatalog,
   loadRiskRules,
   modulesForFiles,
   riskLabelsForFiles,
@@ -187,7 +188,11 @@ const runReview = async (argv: string[]) => {
   const { tasks, docs } = buildSources(values.source, configDir, repoDir)
 
   const diff = collectDiff(repoDir, values.base, values.head, 60_000)
-  const catalog = await loadCatalog(join(configDir, 'catalog/modules'))
+  const {
+    modules: catalog,
+    added: catalogAdded,
+    invalid: catalogInvalid,
+  } = await loadReviewCatalog(join(configDir, 'catalog/modules'), join(repoDir, 'catalog/modules'))
   const riskRules = riskLabelsForFiles(
     await loadRiskRules(join(configDir, 'policy/risk-rules.yaml')),
     diff.files,
@@ -210,6 +215,8 @@ const runReview = async (argv: string[]) => {
     taskKey,
     modules,
     uncataloged,
+    catalogAdded,
+    catalogInvalid,
     docs: pages,
     riskRules,
     files: diff.files,
