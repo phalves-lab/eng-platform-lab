@@ -66,6 +66,8 @@ const describeTask = (context: ReviewContext): string => {
   return [
     `Chave: ${task.key}`,
     `Título: ${task.title}`,
+    `Área: ${task.area ?? 'não informada'}`,
+    `Tipo de demanda: ${task.demandType ?? 'não informado'}`,
     `Status: ${task.status}`,
     `Épico: ${task.epic ?? 'nenhum'}`,
     `Descrição:\n${task.description}`,

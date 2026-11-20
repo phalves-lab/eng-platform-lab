@@ -1,5 +1,5 @@
 import { ReadOnlyHttp } from './read-only-http.js'
-import { adfToText, extractAcceptanceCriteria, storageToText } from './text.js'
+import { adfToText, extractAcceptanceCriteria, parseTaskTitle, storageToText } from './text.js'
 import type { DocPage, DocSource, Task, TaskSource } from './types.js'
 
 interface JiraIssue {
@@ -62,9 +62,12 @@ export class JiraTaskSource implements TaskSource {
       : []
     const parent = issue.fields.parent
 
+    const titleParts = parseTaskTitle(issue.fields.summary)
     return {
       key: issue.key,
-      title: issue.fields.summary,
+      title: titleParts.title,
+      area: titleParts.area,
+      demandType: titleParts.demandType,
       description,
       acceptanceCriteria: fromField.length > 0 ? fromField : extractAcceptanceCriteria(description),
       status: issue.fields.status?.name ?? 'desconhecido',

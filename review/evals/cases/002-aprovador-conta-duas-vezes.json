@@ -1,0 +1,37 @@
+{
+  "id": "002-aprovador-conta-duas-vezes",
+  "description": "Remove a checagem de aprovação duplicada; o mesmo aprovador libera campanha de alto orçamento sozinho.",
+  "task": {
+    "key": "LAB-1",
+    "title": "Exigir dois aprovadores para campanhas acima de R$ 50 mil",
+    "description": "Campanhas de alto orçamento estão sendo aprovadas por uma pessoa só. A área financeira pediu dupla checagem acima de R$ 50 mil.",
+    "acceptanceCriteria": [
+      "Solicitação com orçamento acima de R$ 50.000 só fica aprovada depois de dois aprovadores distintos",
+      "Até R$ 50.000 inclusive, um aprovador basta",
+      "O mesmo aprovador não conta duas vezes",
+      "Quem solicitou não pode aprovar a própria campanha"
+    ],
+    "status": "Em andamento",
+    "labels": ["financeiro", "aprovacao"],
+    "epic": "LAB-0 Governança de campanhas",
+    "url": null
+  },
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@ -159,9 +159,6 @@\n   if (approverId === request.requesterId) {\n     return fail('SELF_APPROVAL', 'Quem solicitou não pode aprovar a própria campanha.')\n   }\n-  if (request.approvals.includes(approverId)) {\n-    return fail('DUPLICATE_APPROVAL', 'Este aprovador já aprovou a solicitação.')\n-  }\n \n   const approvals = [...request.approvals, approverId]\n   const status: Status = approvals.length >= requiredApprovals(request) ? 'approved' : 'submitted'\n",
+  "expect": {
+    "findings": [
+      {
+        "files": ["apps/api/src/domain/campaign-request.ts"],
+        "minSeverity": "alta",
+        "layer": "correcao"
+      }
+    ],
+    "acceptance": [
+      {
+        "criterion": "O mesmo aprovador não conta duas vezes",
+        "status": ["nao_encontrado", "parcial"]
+      }
+    ],
+    "signal": ["ajustes"]
+  },
+  "confidential": false
+}

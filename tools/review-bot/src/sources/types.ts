@@ -7,6 +7,8 @@ export interface Task {
   labels: string[]
   epic: string | null
   url: string | null
+  area?: string | null
+  demandType?: string | null
 }
 
 export interface DocPage {

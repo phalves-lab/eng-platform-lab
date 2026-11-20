@@ -6,6 +6,7 @@ import {
   adfToText,
   extractAcceptanceCriteria,
   extractTaskKey,
+  parseTaskTitle,
   storageToText,
 } from '../src/sources/text.js'
 
@@ -176,5 +177,46 @@ describe('fontes Atlassian (somente leitura)', () => {
     const fetchImpl = vi.fn(async () => new Response('', { status: 404 }))
     expect(await new JiraTaskSource({ ...options, fetchImpl }).getTask('X-1')).toBeNull()
     expect(await new ConfluenceDocSource({ ...options, fetchImpl }).getPage('1')).toBeNull()
+  })
+})
+
+describe('formato real das tasks do time', () => {
+  it('lê título em negrito com dois-pontos e itens com checkbox', () => {
+    const text = [
+      '**Descrição:**',
+      'Texto livre.',
+      '',
+      '**Critérios de Aceitação:**',
+      '',
+      '- [x] Primeiro critério com `codigo`.',
+      '- [ ] Segundo critério.',
+      '1. [x] Terceiro numerado.',
+      '',
+      '**Como testar:**',
+      '- não é critério',
+    ].join('\n')
+    expect(extractAcceptanceCriteria(text)).toEqual([
+      'Primeiro critério com `codigo`.',
+      'Segundo critério.',
+      'Terceiro numerado.',
+    ])
+  })
+
+  it('aceita título markdown e sublinhado', () => {
+    expect(extractAcceptanceCriteria('## Critérios de aceite\n* item')).toEqual(['item'])
+    expect(extractAcceptanceCriteria('__Critério de Aceitação__\n+ item')).toEqual(['item'])
+  })
+
+  it('separa área, título e tipo de demanda, inclusive com colchetes no meio', () => {
+    expect(parseTaskTitle('[Marketing][[Módulo] Novo campo de exclusão][Melhorias]')).toEqual({
+      area: 'Marketing',
+      title: '[Módulo] Novo campo de exclusão',
+      demandType: 'Melhorias',
+    })
+    expect(parseTaskTitle('Título sem padrão')).toEqual({
+      area: null,
+      title: 'Título sem padrão',
+      demandType: null,
+    })
   })
 })

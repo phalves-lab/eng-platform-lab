@@ -17,7 +17,7 @@ const TITLE =
   /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .{3,}$/
 const BRANCH = /^(feat|fix|chore|docs|hotfix|refactor|test|ci)\/([A-Z][A-Z0-9]+-\d+)(-[a-z0-9-]+)?$/
 const DEPENDENCY_BRANCH = /^dependabot\//
-const TASK_LINE = /\*\*Task:\*\*[^\n]*?\b([A-Z][A-Z0-9]+-\d+)\b/
+const TASK_LINE = /\*\*(?:Task|Link da Tarefa):\*\*[\s\S]{0,300}?\b([A-Z][A-Z0-9]+-\d+)\b/
 const PLACEHOLDER_KEY = 'CHAVE-123'
 const REQUIRED_SECTIONS = ['Contexto de negócio', 'O que mudou', 'Como testar']
 const MIGRATION_PATHS = ['apps/*/migrations/**']

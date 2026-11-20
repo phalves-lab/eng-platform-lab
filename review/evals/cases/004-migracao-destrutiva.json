@@ -1,0 +1,39 @@
+{
+  "id": "004-migracao-destrutiva",
+  "description": "Migração remove coluna que o repositório ainda lê e grava.",
+  "task": {
+    "key": "LAB-5",
+    "title": "Remover campo de BU não usado no cadastro",
+    "description": "O campo de unidade de negócio não aparece mais na tela de cadastro.",
+    "acceptanceCriteria": [
+      "O cadastro deixa de exibir o campo de unidade de negócio",
+      "Solicitações existentes continuam consultáveis"
+    ],
+    "status": "Em andamento",
+    "labels": [],
+    "epic": null,
+    "url": null,
+    "area": null,
+    "demandType": null
+  },
+  "patch": "--- /dev/null\n+++ b/apps/api/migrations/002_drop_business_unit.sql\n@@ -0,0 +1,1 @@\n+ALTER TABLE campaign_requests DROP COLUMN business_unit;\n",
+  "expect": {
+    "findings": [
+      {
+        "files": [
+          "apps/api/migrations/002_drop_business_unit.sql",
+          "apps/api/src/db/postgres-repository.ts"
+        ],
+        "minSeverity": "alta"
+      }
+    ],
+    "acceptance": [
+      {
+        "criterion": "Solicitações existentes continuam consultáveis",
+        "status": ["nao_encontrado", "parcial"]
+      }
+    ],
+    "signal": ["ajustes"]
+  },
+  "confidential": false
+}

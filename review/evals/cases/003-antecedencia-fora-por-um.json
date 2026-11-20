@@ -1,0 +1,34 @@
+{
+  "id": "003-antecedencia-fora-por-um",
+  "description": "Comparação passa a recusar exatamente 2 dias de antecedência.",
+  "task": {
+    "key": "LAB-2",
+    "title": "Antecedência mínima de dois dias para novas campanhas",
+    "description": "O time de operação precisa de dois dias para preparar segmentação e criativos.",
+    "acceptanceCriteria": [
+      "Campanha com início em menos de 2 dias é recusada com mensagem clara",
+      "Campanha com início exatamente em 2 dias é aceita"
+    ],
+    "status": "Pronta",
+    "labels": ["operacao"],
+    "epic": "LAB-0 Governança de campanhas",
+    "url": null
+  },
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@ -91,7 +91,7 @@\n   if (toUtcDay(input.endDate) < toUtcDay(input.startDate)) {\n     return fail('INVALID_PERIOD', 'A data de término não pode ser anterior à data de início.')\n   }\n-  if (toUtcDay(input.startDate) - toUtcDay(context.today) < MIN_LEAD_DAYS * DAY_MS) {\n+  if (toUtcDay(input.startDate) - toUtcDay(context.today) <= MIN_LEAD_DAYS * DAY_MS) {\n     return fail(\n       'LEAD_TIME',\n       `A campanha precisa de pelo menos ${MIN_LEAD_DAYS} dias de antecedência.`,\n",
+  "expect": {
+    "findings": [
+      {
+        "files": ["apps/api/src/domain/campaign-request.ts"],
+        "minSeverity": "alta"
+      }
+    ],
+    "acceptance": [
+      {
+        "criterion": "exatamente em 2 dias é aceita",
+        "status": ["nao_encontrado", "parcial"]
+      }
+    ],
+    "signal": ["ajustes"]
+  },
+  "confidential": false
+}
