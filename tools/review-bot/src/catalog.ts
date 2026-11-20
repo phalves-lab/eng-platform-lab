@@ -35,6 +35,50 @@ export const loadCatalog = async (directory: string): Promise<CatalogModule[]> =
   )
 }
 
+export interface PullCatalog {
+  modules: CatalogModule[]
+  invalid: string[]
+}
+
+/**
+ * Lê o catálogo como está no PR. Diferente da base, cadastro quebrado não derruba o review:
+ * o arquivo vai para `invalid` e vira pendência no comentário.
+ */
+export const loadPullCatalog = async (directory: string): Promise<PullCatalog> => {
+  const entries = await readdir(directory).catch(() => [] as string[])
+  const files = entries.filter((f) => f.endsWith('.yaml') || f.endsWith('.yml')).sort()
+  const modules: CatalogModule[] = []
+  const invalid: string[] = []
+  for (const file of files) {
+    try {
+      modules.push(moduleSchema.parse(parse(await readFile(join(directory, file), 'utf8'))))
+    } catch {
+      invalid.push(file)
+    }
+  }
+  return { modules, invalid }
+}
+
+export interface MergedCatalog {
+  modules: CatalogModule[]
+  added: string[]
+}
+
+/**
+ * Junta o catálogo da base com o do PR. Módulo que já existe mantém os dados da base (dono,
+ * tier, página) e só ganha os caminhos novos; módulo que só existe no PR entra como cadastrado
+ * no próprio PR. A base é a fonte confiável, o PR só pode acrescentar.
+ */
+export const mergeCatalogs = (base: CatalogModule[], pull: CatalogModule[]): MergedCatalog => {
+  const modules = base.map((module) => {
+    const fromPull = pull.find((m) => m.name === module.name)
+    if (!fromPull) return module
+    return { ...module, paths: [...new Set([...module.paths, ...fromPull.paths])] }
+  })
+  const added = pull.filter((m) => !base.some((b) => b.name === m.name))
+  return { modules: [...modules, ...added], added: added.map((m) => m.name) }
+}
+
 export const loadRiskRules = async (path: string): Promise<RiskRule[]> =>
   z.array(riskRuleSchema).parse(parse(await readFile(path, 'utf8')))
 

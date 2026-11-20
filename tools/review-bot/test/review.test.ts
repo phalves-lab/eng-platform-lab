@@ -1,10 +1,15 @@
+import { mkdtemp, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it, vi } from 'vitest'
 import {
   filesOutsideCatalog,
   loadCatalog,
+  loadPullCatalog,
   loadRiskRules,
   matchesPath,
+  mergeCatalogs,
   modulesForFiles,
   riskLabelsForFiles,
 } from '../src/catalog.js'
@@ -133,6 +138,62 @@ describe('catálogo e risco', () => {
     expect(filesOutsideCatalog(catalog, [...files, 'apps/web/page.tsx', 'README.md'])).toEqual([
       'apps/web/page.tsx',
     ])
+  })
+})
+
+describe('catálogo do PR', () => {
+  const module = (name: string, paths: string[], owner = '@base') => ({
+    name,
+    description: name,
+    owner,
+    tier: 'tier-2' as const,
+    businessUnits: ['x'],
+    users: 'time',
+    confluencePageId: null,
+    paths,
+  })
+
+  it('acrescenta módulo novo e caminhos novos, mantendo os dados da base', () => {
+    const merged = mergeCatalogs(
+      [module('api', ['apps/api/'])],
+      [module('api', ['apps/api/', 'apps/worker/'], '@pr'), module('painel', ['tools/painel/'])],
+    )
+    expect(merged.added).toEqual(['painel'])
+    expect(merged.modules[0]).toMatchObject({
+      owner: '@base',
+      paths: ['apps/api/', 'apps/worker/'],
+    })
+    expect(filesOutsideCatalog(merged.modules, ['tools/painel/a.ts', 'apps/worker/b.ts'])).toEqual(
+      [],
+    )
+    expect(mergeCatalogs([module('api', ['apps/api/'])], [])).toEqual({
+      modules: [module('api', ['apps/api/'])],
+      added: [],
+    })
+  })
+
+  it('lê o catálogo do PR sem derrubar o review com cadastro inválido', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'catalog-'))
+    await writeFile(
+      join(dir, 'painel.yaml'),
+      'name: painel\ndescription: d\nowner: o\ntier: tier-3\nbusinessUnits: [x]\nusers: u\nconfluencePageId: null\npaths: [tools/painel/]\n',
+    )
+    await writeFile(join(dir, 'quebrado.yaml'), 'name: quebrado\n')
+    await writeFile(join(dir, 'leia.md'), 'nada')
+    const pull = await loadPullCatalog(dir)
+    expect(pull.modules.map((m) => m.name)).toEqual(['painel'])
+    expect(pull.invalid).toEqual(['quebrado.yaml'])
+    expect(await loadPullCatalog(join(dir, 'nao-existe'))).toEqual({ modules: [], invalid: [] })
+  })
+
+  it('marca cadastro inválido como pendência e cita módulo novo no comentário', () => {
+    const meta = { model: 'm', promptVersion: 'v', refuted: 0, uncertain: [] }
+    const invalid = context({ catalogInvalid: ['quebrado.yaml'] })
+    expect(computeSignal(clean, invalid)).toBe('gate')
+    expect(renderComment(clean, invalid, meta)).toContain('`catalog/modules/quebrado.yaml`')
+    const added = context({ catalogAdded: ['painel'] })
+    expect(computeSignal(clean, added)).toBe('pronto')
+    expect(renderComment(clean, added, meta)).toContain('módulo cadastrado neste PR (`painel`)')
   })
 })
 

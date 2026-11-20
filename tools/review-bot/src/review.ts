@@ -44,6 +44,8 @@ export interface ReviewContext {
   taskKey: string | null
   modules: CatalogModule[]
   uncataloged: string[]
+  catalogAdded?: string[]
+  catalogInvalid?: string[]
   docs: DocPage[]
   riskRules: RiskRule[]
   files: string[]
@@ -223,7 +225,8 @@ export const computeSignal = (review: Review, context: ReviewContext): Signal =>
   const missingCriterion = review.acceptance.some((a) => a.status === 'nao_encontrado')
   const partialCriterion = review.acceptance.some((a) => a.status === 'parcial')
   if (blockingFinding || missingCriterion) return 'ajustes'
-  if (partialCriterion || review.docsNeedUpdate || context.uncataloged.length > 0) return 'gate'
+  const catalogPending = context.uncataloged.length > 0 || (context.catalogInvalid?.length ?? 0) > 0
+  if (partialCriterion || review.docsNeedUpdate || catalogPending) return 'gate'
   return 'pronto'
 }
 
@@ -331,6 +334,16 @@ export const renderComment = (
       ? `- Catálogo: arquivos fora de qualquer módulo cadastrado (${context.uncataloged.map((f) => `\`${f}\``).join(', ')}). Módulo novo exige cadastro em \`catalog/modules/\`.`
       : '- Catálogo: todos os arquivos alterados pertencem a módulos cadastrados.',
   )
+  if (context.catalogAdded?.length) {
+    lines.push(
+      `- Catálogo: módulo cadastrado neste PR (${context.catalogAdded.map((m) => `\`${m}\``).join(', ')}); o revisor confere dono, tier e caminhos.`,
+    )
+  }
+  if (context.catalogInvalid?.length) {
+    lines.push(
+      `- Catálogo: cadastro inválido no PR (${context.catalogInvalid.map((f) => `\`catalog/modules/${f}\``).join(', ')}); corrigir o arquivo para o módulo valer.`,
+    )
+  }
   const extraLabels = review.suggestedRiskLabels.filter(
     (l) => !context.riskRules.some((r) => r.label === l),
   )
