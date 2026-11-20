@@ -8,7 +8,7 @@ import {
   modulesForFiles,
   riskLabelsForFiles,
 } from '../src/catalog.js'
-import { listPullFiles, upsertStickyComment } from '../src/github.js'
+import { listCheckRuns, listPullFiles, upsertStickyComment } from '../src/github.js'
 import { GeminiProvider } from '../src/llm/gemini.js'
 import {
   checkHygiene,
@@ -173,7 +173,7 @@ describe('prompts', () => {
 
 describe('verificação adversarial e sinal', () => {
   it('verifica só achados graves e descarta os refutados', async () => {
-    const verify = vi.fn(async () => ({ holds: false, reason: 'já tratado' }))
+    const verify = vi.fn(async () => ({ verdict: 'refutado' as const, reason: 'já tratado' }))
     const result = await applyVerification(review, verify)
     expect(verify).toHaveBeenCalledTimes(1)
     expect(result.refuted.map((f) => f.title)).toEqual(['Bug'])
@@ -181,9 +181,23 @@ describe('verificação adversarial e sinal', () => {
   })
 
   it('mantém achado grave que se sustenta', async () => {
-    const result = await applyVerification(review, async () => ({ holds: true, reason: 'ok' }))
+    const result = await applyVerification(review, async () => ({
+      verdict: 'confirmado' as const,
+      reason: 'ok',
+    }))
     expect(result.refuted).toEqual([])
+    expect(result.uncertain).toEqual([])
     expect(result.review.findings).toHaveLength(3)
+  })
+
+  it('rebaixa achado incerto e tira do sinal', async () => {
+    const result = await applyVerification(review, async () => ({
+      verdict: 'incerto' as const,
+      reason: 'sem evidência',
+    }))
+    expect(result.uncertain).toEqual([expect.objectContaining({ title: 'Bug', severity: 'alta' })])
+    expect(result.review.findings.map((f) => f.title)).toEqual(['Nome', 'Borda'])
+    expect(computeSignal(result.review, context())).not.toBe('ajustes')
   })
 
   it('calcula o sinal pela ordem ajustes, gate, pronto', () => {
@@ -212,6 +226,7 @@ describe('renderComment', () => {
       model: 'gemini-x',
       promptVersion: '1.1.0',
       refuted: 2,
+      uncertain: [],
     })
     expect(comment.startsWith(COMMENT_MARKER)).toBe(true)
     expect(comment).toContain('**Sinal:** Ajustes recomendados')
@@ -237,7 +252,7 @@ describe('renderComment', () => {
         riskRules: [],
         uncataloged: ['apps/web/x.ts'],
       }),
-      { model: 'm', promptVersion: 'v', refuted: 0 },
+      { model: 'm', promptVersion: 'v', refuted: 0, uncertain: [] },
     )
     expect(comment).toContain('não identificada')
     expect(comment).toContain('RN-05')
@@ -348,11 +363,13 @@ describe('integrações externas', () => {
         json({ candidates: [{ content: { parts: [{ text: JSON.stringify(review) }] } }] }),
       )
       .mockResolvedValueOnce(
-        json({ candidates: [{ content: { parts: [{ text: '{"holds":true,"reason":"r"}' }] } }] }),
+        json({
+          candidates: [{ content: { parts: [{ text: '{"verdict":"confirmado","reason":"r"}' }] } }],
+        }),
       )
     const provider = new GeminiProvider({ apiKey: 'k', model: 'gemini-x', fetchImpl })
     expect(await provider.review('p')).toEqual(review)
-    expect(await provider.verify('p')).toEqual({ holds: true, reason: 'r' })
+    expect(await provider.verify('p')).toEqual({ verdict: 'confirmado', reason: 'r' })
     const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit]
     expect(url).toContain('/models/gemini-x:generateContent')
     expect((init.headers as Record<string, string>)['x-goog-api-key']).toBe('k')
@@ -419,9 +436,9 @@ describe('origem da task', () => {
     const fromPr = context({ taskOrigin: 'pr' })
     expect(buildPrompt('{{TASK}}', fromPr)).toContain('arquivo do próprio PR')
     expect(buildPrompt('{{TASK}}', context())).not.toContain('arquivo do próprio PR')
-    expect(renderComment(clean, fromPr, { model: 'm', promptVersion: 'v', refuted: 0 })).toContain(
-      '(lida do próprio PR)',
-    )
+    expect(
+      renderComment(clean, fromPr, { model: 'm', promptVersion: 'v', refuted: 0, uncertain: [] }),
+    ).toContain('(lida do próprio PR)')
   })
 })
 
@@ -437,5 +454,56 @@ describe('higiene local sem corpo do PR', () => {
     expect(issues.map((i) => i.rule)).toContain('RN-11')
     expect(issues.map((i) => i.rule)).toContain('RN-27')
     expect(withoutBodyRules(issues).map((i) => i.rule)).toEqual(['RN-08', 'RN-22', 'RN-06'])
+  })
+})
+
+describe('evidências da verificação', () => {
+  const finding = review.findings[1]!
+
+  it('coloca o arquivo do achado primeiro, respeita o orçamento e lista os checks', () => {
+    const prompt = buildVerificationPrompt('{{FILES}}|{{CHECKS}}', finding, context(), {
+      files: { 'a.ts': 'conteudo a', 'b.ts': 'conteudo b', 'grande.ts': 'x'.repeat(50_000) },
+      checks: [{ name: 'security / dependency-review', conclusion: 'success' }],
+    })
+    expect(prompt.indexOf('### b.ts')).toBeLessThan(prompt.indexOf('### a.ts'))
+    expect(prompt).toContain('### grande.ts\n[omitido por tamanho]')
+    expect(prompt).toContain('- security / dependency-review: success')
+  })
+
+  it('avisa quando não há arquivos nem checks', () => {
+    const prompt = buildVerificationPrompt('{{FILES}}|{{CHECKS}}', finding, context())
+    expect(prompt).toContain('Conteúdo dos arquivos indisponível.')
+    expect(prompt).toContain('Resultado dos checks indisponível.')
+  })
+
+  it('mostra a seção a confirmar e a contagem no rodapé', () => {
+    const comment = renderComment(clean, context(), {
+      model: 'm',
+      promptVersion: 'v',
+      refuted: 1,
+      uncertain: [{ ...finding, severity: 'alta' }],
+    })
+    expect(comment).toContain('### A confirmar pelo revisor')
+    expect(comment).toContain('1 achado(s) grave(s) descartado(s) e 1 rebaixado(s)')
+    expect(comment).toContain('**Sinal:** Pronto para revisão humana')
+  })
+
+  it('lista checks do commit pela API', async () => {
+    const fetchImpl = vi.fn(async () =>
+      Response.json({
+        check_runs: [
+          { name: 'verify / gates', status: 'completed', conclusion: 'success' },
+          { name: 'quality', status: 'in_progress', conclusion: null },
+        ],
+      }),
+    )
+    expect(await listCheckRuns({ token: 't', repository: 'o/r', fetchImpl }, 'abc1234')).toEqual([
+      { name: 'verify / gates', conclusion: 'success' },
+      { name: 'quality', conclusion: 'in_progress' },
+    ])
+    const failing = vi.fn(async () => new Response('', { status: 403 }))
+    await expect(
+      listCheckRuns({ token: 't', repository: 'o/r', fetchImpl: failing }, 'abc1234'),
+    ).rejects.toThrow('403')
   })
 })

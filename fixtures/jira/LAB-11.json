@@ -1,0 +1,18 @@
+{
+  "key": "LAB-11",
+  "title": "Reduzir falsos positivos do review de IA",
+  "area": "Plataforma",
+  "demandType": "Melhorias",
+  "description": "No PR #7, 3 de 5 apontamentos graves do bot eram falsos. A verificação adversarial só via o diff e a task, sem o arquivo completo nem o resultado do CI.",
+  "acceptanceCriteria": [
+    "A verificação recebe o conteúdo final dos arquivos alterados e o resultado dos checks do commit",
+    "A verificação devolve confirmado, refutado ou incerto",
+    "Achado incerto desce um nível de severidade, aparece em seção própria e não entra no sinal",
+    "O golden set inclui os falsos positivos do PR #7 e o defeito real do jscpd",
+    "O review de IA espera os checks de segurança terminarem"
+  ],
+  "status": "Em andamento",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null
+}

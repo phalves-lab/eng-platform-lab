@@ -68,7 +68,7 @@ jobs:
 
   ai-review:
     name: ai-review
-    needs: [verify]
+    needs: [verify, security]
     if: >-
       github.event_name == 'pull_request' &&
       !github.event.pull_request.draft &&
@@ -78,6 +78,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      checks: read
     env:
       HAS_GEMINI_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
     steps:

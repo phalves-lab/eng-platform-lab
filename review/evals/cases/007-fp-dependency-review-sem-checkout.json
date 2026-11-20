@@ -1,0 +1,36 @@
+{
+  "id": "007-fp-dependency-review-sem-checkout",
+  "description": "Job de revisão de dependências sem checkout: correto, a action usa a API. O check passou. Mede falso positivo.",
+  "confidential": false,
+  "task": {
+    "key": "LAB-10",
+    "title": "Scans de qualidade e verificação local antes do PR",
+    "area": "Plataforma",
+    "demandType": "Nova demanda",
+    "description": "Os devs descobrem no CI problemas que poderiam ver antes, e a esteira não mede qualidade além de lint e testes.",
+    "acceptanceCriteria": [
+      "Regras de bug do sonarjs bloqueiam o lint; as demais aparecem como aviso",
+      "Dependência nova com vulnerabilidade alta ou licença proibida barra o PR",
+      "PR recebe relatório informativo com tamanho, código sem uso e duplicação nos arquivos alterados",
+      "O comando pre-pr roda localmente os mesmos gates do CI e diz o que vai barrar o PR",
+      "Dependências usadas pelo bot ficam declaradas no pacote do bot"
+    ],
+    "status": "Em andamento",
+    "labels": ["plataforma"],
+    "epic": "LAB-0 Governança de campanhas",
+    "url": null
+  },
+  "patch": "diff --git a/.github/workflows/security.yml b/.github/workflows/security.yml\nindex 87ec4fa..9c93a7b 100644\n--- a/.github/workflows/security.yml\n+++ b/.github/workflows/security.yml\n@@ -43,3 +43,19 @@ jobs:\n           persist-credentials: false\n       - run: python3 -m pip install --quiet semgrep==1.186.0\n       - run: semgrep scan --config policy/semgrep --error --metrics=off\n+\n+  dependency-review:\n+    name: dependency-review\n+    runs-on: ubuntu-latest\n+    timeout-minutes: 10\n+    steps:\n+      - name: Revisão de dependências novas\n+        if: github.event_name == 'pull_request'\n+        uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1\n+        with:\n+          fail-on-severity: high\n+          deny-licenses: AGPL-1.0-only, AGPL-1.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, SSPL-1.0\n+          comment-summary-in-pr: on-failure\n+      - name: Fora de pull request\n+        if: github.event_name != 'pull_request'\n+        run: echo \"Revisão de dependências roda só em pull request; a fila de merge reaproveita o resultado do PR.\"\n",
+  "fileContents": {
+    ".github/workflows/security.yml": "name: security\n\non:\n  workflow_call:\n\npermissions:\n  contents: read\n\njobs:\n  secrets:\n    name: secrets\n    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    steps:\n      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n        with:\n          fetch-depth: 0\n          persist-credentials: false\n      - uses: trufflesecurity/trufflehog@d232362a64a09a9e7d58267b8f5acef00ae90e23 # v3.100.0\n        with:\n          extra_args: --results=verified,unknown\n\n  dependencies:\n    name: dependencies\n    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    steps:\n      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n        with:\n          persist-credentials: false\n      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0\n        with:\n          node-version-file: .nvmrc\n      - run: npm audit --audit-level=high --omit=dev\n\n  sast:\n    name: sast\n    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    steps:\n      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n        with:\n          persist-credentials: false\n      - run: python3 -m pip install --quiet semgrep==1.186.0\n      - run: semgrep scan --config policy/semgrep --error --metrics=off\n\n  dependency-review:\n    name: dependency-review\n    runs-on: ubuntu-latest\n    timeout-minutes: 10\n    steps:\n      - name: Revisão de dependências novas\n        if: github.event_name == 'pull_request'\n        uses: actions/dependency-review-action@bbc44d14a204704ccc493733616cd1e93a0321ec # v5.0.1\n        with:\n          fail-on-severity: high\n          deny-licenses: AGPL-1.0-only, AGPL-1.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, SSPL-1.0\n          comment-summary-in-pr: on-failure\n      - name: Fora de pull request\n        if: github.event_name != 'pull_request'\n        run: echo \"Revisão de dependências roda só em pull request; a fila de merge reaproveita o resultado do PR.\"\n"
+  },
+  "checks": [
+    {
+      "name": "security / dependency-review",
+      "conclusion": "success"
+    }
+  ],
+  "expect": {
+    "noSevereFindings": true
+  }
+}

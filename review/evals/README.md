@@ -13,7 +13,12 @@ Cada arquivo em `cases/` é um PR sintético:
 - `expect.signal`: sinal aceito (`ajustes`, `gate`, `pronto`).
 - `expect.noSevereFindings`: caso limpo; qualquer achado crítico ou alto conta como falso positivo.
 
-Casos atuais: autoaprovação removida, aprovador contado duas vezes, antecedência fora por um, migração destrutiva, cancelamento de campanha aprovada e uma refatoração sem efeito (falso positivo).
+Casos atuais:
+
+- Defeitos que o bot precisa achar: autoaprovação removida, aprovador contado duas vezes, antecedência fora por um, migração destrutiva, cancelamento de campanha aprovada, filtro do jscpd que nunca casa (defeito real do PR #7).
+- Falsos positivos que o bot não pode marcar como grave: refatoração sem efeito e três apontamentos errados do PR #7 (revisão de dependências sem checkout, RN-22 na higiene local, chave `issues` do knip).
+
+Casos podem trazer `fileContents` (conteúdo final dos arquivos) e `checks` (resultado do CI), que a verificação adversarial usa como evidência. Achado incerto conta como encontrado, mas não como falso positivo grave.
 
 ## Rodar
 

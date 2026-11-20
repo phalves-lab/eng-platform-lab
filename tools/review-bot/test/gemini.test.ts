@@ -6,7 +6,7 @@ const ok = (text: string) =>
     status: 200,
   })
 
-const verdict = '{"holds":true,"reason":"r"}'
+const verdict = '{"verdict":"confirmado","reason":"r"}'
 
 describe('retry do provedor', () => {
   it('classifica falhas transitórias', () => {
@@ -23,7 +23,7 @@ describe('retry do provedor', () => {
       .mockRejectedValueOnce(Object.assign(new Error('aborted'), { name: 'TimeoutError' }))
       .mockResolvedValueOnce(ok(verdict))
     const provider = new GeminiProvider({ apiKey: 'k', model: 'm', fetchImpl, backoffMs: 0 })
-    expect(await provider.verify('p')).toEqual({ holds: true, reason: 'r' })
+    expect(await provider.verify('p')).toEqual({ verdict: 'confirmado', reason: 'r' })
     expect(fetchImpl).toHaveBeenCalledTimes(2)
   })
 

@@ -21,7 +21,7 @@ import {
   riskLabelsForFiles,
 } from './catalog.js'
 import { collectDiff } from './diff.js'
-import { listPullFiles, upsertStickyComment } from './github.js'
+import { listCheckRuns, listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
 import { checkHygiene, withoutBodyRules } from './pr-hygiene.js'
 import {
@@ -31,6 +31,7 @@ import {
   computeSignal,
   renderComment,
   type ReviewContext,
+  type VerificationEvidence,
 } from './review.js'
 import { ConfluenceDocSource, JiraTaskSource } from './sources/atlassian.js'
 import { FixtureDocSource, FixtureTaskSource } from './sources/fixtures.js'
@@ -97,6 +98,32 @@ const readOptional = async (path: string): Promise<string> => {
     return await readFile(path, 'utf8')
   } catch {
     return ''
+  }
+}
+
+const SKIPPED_FILES = /(^|\/)package-lock\.json$|\.(png|jpe?g|gif|ico|pdf|zip)$/
+
+/** Conteúdo final dos arquivos alterados no PR, para a verificação ler além do diff. */
+const readChangedFiles = async (repoDir: string, files: string[]) => {
+  const contents: Record<string, string> = {}
+  for (const file of files) {
+    if (SKIPPED_FILES.test(file)) continue
+    const content = await readOptional(join(repoDir, file))
+    if (content && content.length <= 100_000) contents[file] = content
+  }
+  return contents
+}
+
+/** Resultado dos checks do commit, quando roda no CI com token; o próprio review fica de fora. */
+const readChecks = async (sha: string) => {
+  const token = process.env.GITHUB_TOKEN
+  const repository = process.env.GITHUB_REPOSITORY
+  if (!token || !repository || !/^[0-9a-f]{7,40}$/.test(sha)) return []
+  try {
+    const runs = await listCheckRuns({ token, repository }, sha)
+    return runs.filter((run) => run.name !== 'ai-review')
+  } catch {
+    return []
   }
 }
 
@@ -171,13 +198,20 @@ const runReview = async (argv: string[]) => {
 
   const provider = geminiFromEnv()
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
-  const { review, refuted } = await applyVerification(await provider.review(prompt), (finding) =>
-    provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+  const evidence: VerificationEvidence = {
+    files: await readChangedFiles(repoDir, diff.files),
+    checks: await readChecks(values.head),
+  }
+  const { review, refuted, uncertain } = await applyVerification(
+    await provider.review(prompt),
+    (finding) =>
+      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
   )
   const comment = renderComment(review, context, {
     model: provider.model,
     promptVersion: promptVersion(template),
     refuted: refuted.length,
+    uncertain,
   })
 
   if (values.out) await writeFile(values.out, comment)
@@ -395,10 +429,16 @@ const runEval = async (argv: string[]) => {
       skipped.push(evalCase.id)
       continue
     }
-    const { review } = await applyVerification(await provider.review(prompt), (finding) =>
-      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+    const evidence: VerificationEvidence = {
+      files: evalCase.fileContents,
+      checks: evalCase.checks,
+    }
+    const { review, uncertain } = await applyVerification(
+      await provider.review(prompt),
+      (finding) =>
+        provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
     )
-    results.push(scoreCase(evalCase, review, computeSignal(review, context)))
+    results.push(scoreCase(evalCase, review, computeSignal(review, context), uncertain))
   }
 
   if (!provider) {

@@ -32,7 +32,7 @@ export const reviewSchema = z.object({
 export type Review = z.infer<typeof reviewSchema>
 
 export const verificationSchema = z.object({
-  holds: z.boolean(),
+  verdict: z.enum(['confirmado', 'refutado', 'incerto']),
   reason: z.string(),
 })
 
@@ -119,43 +119,98 @@ export const buildPrompt = (template: string, context: ReviewContext): string =>
     DIFF: block('untrusted_data', context.patch),
   })
 
+export interface VerificationEvidence {
+  files: Record<string, string>
+  checks: { name: string; conclusion: string }[]
+}
+
+const FILE_BUDGET = 40_000
+
+const describeFiles = (finding: Finding, evidence: VerificationEvidence): string => {
+  const ordered = [
+    ...Object.keys(evidence.files).filter((path) => path === finding.file),
+    ...Object.keys(evidence.files).filter((path) => path !== finding.file),
+  ]
+  let used = 0
+  const parts: string[] = []
+  for (const path of ordered) {
+    const content = evidence.files[path] ?? ''
+    if (used + content.length > FILE_BUDGET) {
+      parts.push(`### ${path}\n[omitido por tamanho]`)
+      continue
+    }
+    used += content.length
+    parts.push(`### ${path}\n${content}`)
+  }
+  return parts.length ? parts.join('\n\n') : 'Conteúdo dos arquivos indisponível.'
+}
+
+const describeChecks = (evidence: VerificationEvidence): string =>
+  evidence.checks.length
+    ? evidence.checks.map((c) => `- ${c.name}: ${c.conclusion}`).join('\n')
+    : 'Resultado dos checks indisponível.'
+
+const formatFinding = (finding: Finding) =>
+  `[${finding.severity}] ${finding.title}\nArquivo: ${finding.file}${finding.line ? `:${finding.line}` : ''}\n${finding.detail}`
+
 export const buildVerificationPrompt = (
   template: string,
   finding: Finding,
   context: ReviewContext,
+  evidence: VerificationEvidence = { files: {}, checks: [] },
 ): string =>
   fill(template, {
-    FINDING: block(
-      'untrusted_data',
-      `[${finding.severity}] ${finding.title}\nArquivo: ${finding.file}${finding.line ? `:${finding.line}` : ''}\n${finding.detail}`,
-    ),
+    FINDING: block('untrusted_data', formatFinding(finding)),
     TASK: block('untrusted_data', describeTask(context)),
+    FILES: block('untrusted_data', describeFiles(finding, evidence)),
+    CHECKS: block('untrusted_data', describeChecks(evidence)),
     DIFF: block('untrusted_data', context.patch),
   })
 
 /** Severidades que passam por verificação adversarial antes de aparecer no comentário. */
 export const NEEDS_VERIFICATION = new Set<Finding['severity']>(['critica', 'alta'])
 
+const DOWNGRADE: Record<Finding['severity'], Finding['severity']> = {
+  critica: 'alta',
+  alta: 'media',
+  media: 'media',
+  baixa: 'baixa',
+}
+
+export interface VerifiedReview {
+  review: Review
+  refuted: Finding[]
+  uncertain: Finding[]
+}
+
 /**
- * Mantém só os achados graves que sobreviveram à tentativa de refutação. Achados médios e
- * baixos passam direto, porque o custo de um falso positivo neles é baixo.
+ * Separa os achados graves pelo veredito da verificação. Confirmado fica; refutado sai;
+ * incerto (sem evidência no código, nos testes ou nos checks) desce um nível e vai para a
+ * lista "a confirmar", fora do cálculo do sinal. Achados médios e baixos passam direto.
  */
-export const applyVerification = (
+export const applyVerification = async (
   review: Review,
   verify: (finding: Finding) => Promise<Verification>,
-): Promise<{ review: Review; refuted: Finding[] }> =>
-  Promise.all(
+): Promise<VerifiedReview> => {
+  const results = await Promise.all(
     review.findings.map(async (finding) => ({
       finding,
-      verdict: NEEDS_VERIFICATION.has(finding.severity) ? await verify(finding) : null,
+      verdict: NEEDS_VERIFICATION.has(finding.severity) ? (await verify(finding)).verdict : null,
     })),
-  ).then((results) => ({
+  )
+  return {
     review: {
       ...review,
-      findings: results.filter((r) => !r.verdict || r.verdict.holds).map((r) => r.finding),
+      findings: results
+        .filter((r) => r.verdict === null || r.verdict === 'confirmado')
+        .map((r) => r.finding),
     },
-    refuted: results.filter((r) => r.verdict && !r.verdict.holds).map((r) => r.finding),
-  }))
+    refuted: results.filter((r) => r.verdict === 'refutado').map((r) => r.finding),
+    uncertain: results
+      .filter((r) => r.verdict === 'incerto')
+      .map((r) => ({ ...r.finding, severity: DOWNGRADE[r.finding.severity] })),
+  }
+}
 
 export type Signal = 'ajustes' | 'gate' | 'pronto'
 
@@ -205,7 +260,7 @@ const findingsTable = (findings: Finding[]): string[] => {
 export const renderComment = (
   review: Review,
   context: ReviewContext,
-  meta: { model: string; promptVersion: string; refuted: number },
+  meta: { model: string; promptVersion: string; refuted: number; uncertain: Finding[] },
 ): string => {
   const signal = computeSignal(review, context)
   const lines: string[] = [
@@ -257,6 +312,14 @@ export const renderComment = (
   lines.push(...findingsTable(review.findings.filter((f) => f.layer === 'padrao')))
   lines.push('')
 
+  if (meta.uncertain.length) {
+    lines.push('### A confirmar pelo revisor')
+    lines.push(
+      'A verificação não achou evidência que comprove nem que refute estes pontos; a severidade foi reduzida em um nível e eles não entram no sinal.',
+    )
+    lines.push(...findingsTable(meta.uncertain), '')
+  }
+
   lines.push('### Camada 3: gates')
   lines.push(
     review.docsNeedUpdate
@@ -280,7 +343,7 @@ export const renderComment = (
 
   lines.push(
     '---',
-    `Gerado por IA (${meta.model}, prompt ${meta.promptVersion}). ${meta.refuted} achado(s) grave(s) descartado(s) na verificação adversarial. Este comentário não aprova nem bloqueia o PR; quem responde pelo código é o autor e quem aprova é o revisor.`,
+    `Gerado por IA (${meta.model}, prompt ${meta.promptVersion}). Verificação adversarial: ${meta.refuted} achado(s) grave(s) descartado(s) e ${meta.uncertain.length} rebaixado(s) para confirmação. Este comentário não aprova nem bloqueia o PR; quem responde pelo código é o autor e quem aprova é o revisor.`,
   )
   return lines.join('\n')
 }

@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { z } from 'zod'
-import type { Review, Signal } from './review.js'
+import type { Finding, Review, Signal } from './review.js'
 
 const SEVERITIES = ['critica', 'alta', 'media', 'baixa'] as const
 const SEVERITY_RANK: Record<(typeof SEVERITIES)[number], number> = {
@@ -30,6 +30,8 @@ export const evalCaseSchema = z.object({
   confidential: z.boolean().default(false),
   task: taskSchema.nullable(),
   patch: z.string().min(1),
+  fileContents: z.record(z.string(), z.string()).default({}),
+  checks: z.array(z.object({ name: z.string(), conclusion: z.string() })).default([]),
   expect: z.object({
     findings: z
       .array(
@@ -94,11 +96,17 @@ const normalize = (value: string) => value.toLowerCase().normalize('NFD').replac
 const samePath = (a: string, b: string) => a === b || a.endsWith(`/${b}`) || b.endsWith(`/${a}`)
 
 /** Compara o review produzido com o que o caso espera encontrar. */
-export const scoreCase = (evalCase: EvalCase, review: Review, signal: Signal): CaseResult => {
+export const scoreCase = (
+  evalCase: EvalCase,
+  review: Review,
+  signal: Signal,
+  uncertain: Finding[] = [],
+): CaseResult => {
+  const allFindings = [...review.findings, ...uncertain]
   const checks: CheckResult[] = []
 
   for (const expected of evalCase.expect.findings) {
-    const hit = review.findings.find(
+    const hit = allFindings.find(
       (f) =>
         expected.files.some((file) => samePath(f.file, file)) &&
         SEVERITY_RANK[f.severity] <= SEVERITY_RANK[expected.minSeverity] &&

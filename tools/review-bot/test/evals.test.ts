@@ -21,6 +21,8 @@ const baseCase: EvalCase = {
   confidential: false,
   task: null,
   patch: '--- a/src/a.ts\n+++ b/src/a.ts\n@@ -1 +1 @@\n-a\n+b\n',
+  fileContents: {},
+  checks: [],
   expect: {
     findings: [{ files: ['src/a.ts'], minSeverity: 'alta', layer: 'correcao' }],
     acceptance: [{ criterion: 'Não aprova a própria', status: ['nao_encontrado', 'parcial'] }],
@@ -118,5 +120,21 @@ describe('relatório', () => {
       'a.ts',
       'b.sql',
     ])
+  })
+})
+
+describe('achados incertos no placar', () => {
+  it('conta achado incerto como encontrado e não como falso positivo', () => {
+    const uncertain = [{ ...review.findings[0]!, severity: 'media' as const }]
+    const found: EvalCase = {
+      ...baseCase,
+      expect: {
+        findings: [{ files: ['src/a.ts'], minSeverity: 'media' }],
+        acceptance: [],
+        noSevereFindings: true,
+      },
+    }
+    const result = scoreCase(found, { ...review, findings: [] }, 'pronto', uncertain)
+    expect(result.passed).toBe(true)
   })
 })
