@@ -1,12 +1,13 @@
 import { spawnSync } from 'node:child_process'
 import { appendFileSync, existsSync, mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
 
 const base = process.argv[2] ?? process.env.DIFF_BASE ?? 'origin/develop'
 const SIZE_WARN = 400
 const SIZE_JUSTIFY = 1000
 const MAX_ANNOTATIONS = 20
+const MIN_TOKENS = process.env.QUALITY_MIN_TOKENS ?? '60'
 
 const run = (command, args) =>
   spawnSync(command, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
@@ -92,7 +93,8 @@ if (changedTs.length) {
     'jscpd',
     '--silent',
     '--min-tokens',
-    '60',
+    MIN_TOKENS,
+    '--absolute',
     '--reporters',
     'json',
     '--output',
@@ -105,8 +107,8 @@ if (changedTs.length) {
   const report = join(output, 'jscpd-report.json')
   if (existsSync(report)) {
     for (const dup of JSON.parse(readFileSync(report, 'utf8')).duplicates ?? []) {
-      const a = dup.firstFile.name
-      const b = dup.secondFile.name
+      const a = relative(process.cwd(), dup.firstFile.name)
+      const b = relative(process.cwd(), dup.secondFile.name)
       if (!changedTs.includes(a) && !changedTs.includes(b)) continue
       duplicates.push(
         `${a}:${dup.firstFile.start} e ${b}:${dup.secondFile.start} (${dup.lines} linhas)`,
