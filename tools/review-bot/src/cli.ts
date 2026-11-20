@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
@@ -22,7 +23,7 @@ import {
 import { collectDiff } from './diff.js'
 import { listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
-import { checkHygiene } from './pr-hygiene.js'
+import { checkHygiene, withoutBodyRules } from './pr-hygiene.js'
 import {
   applyVerification,
   buildPrompt,
@@ -242,6 +243,52 @@ const runHygiene = async () => {
   process.exitCode = 1
 }
 
+const runHygieneLocal = async (argv: string[]) => {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      base: { type: 'string', default: 'origin/develop' },
+      'base-ref': { type: 'string', default: 'develop' },
+      title: { type: 'string' },
+      'body-file': { type: 'string' },
+      'repo-dir': { type: 'string', default: '.' },
+    },
+  })
+  const repoDir = resolve(values['repo-dir'])
+  const git = (args: string[]) =>
+    execFileSync('git', args, { cwd: repoDir, encoding: 'utf8' }).trim()
+  const headRef = git(['branch', '--show-current'])
+  const title =
+    values.title ??
+    git(['log', '--reverse', '--format=%s', `${values.base}..HEAD`]).split('\n')[0] ??
+    ''
+  const body = values['body-file'] ? await readFile(resolve(values['body-file']), 'utf8') : null
+  const files = git(['diff', '--name-only', `${values.base}...HEAD`])
+    .split('\n')
+    .filter(Boolean)
+
+  const found = checkHygiene({
+    title,
+    body: body ?? '',
+    headRef,
+    baseRef: values['base-ref'],
+    files,
+  })
+  const issues = body === null ? withoutBodyRules(found) : found
+
+  console.log(`Branch: ${headRef}`)
+  console.log(`Título considerado: ${title || '(sem commits na branch)'}`)
+  if (body === null) {
+    console.log('Sem --body-file: corpo do PR (task, seções, SQL e ENV) será checado no CI.')
+  }
+  if (issues.length === 0) {
+    console.log('Higiene local ok.')
+    return
+  }
+  for (const issue of issues) console.error(`[${issue.rule}] ${issue.message}`)
+  process.exitCode = 1
+}
+
 const runPropose = async (argv: string[]) => {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -366,6 +413,7 @@ const commands: Record<string, (argv: string[]) => Promise<void>> = {
   review: runReview,
   task: runTask,
   hygiene: () => runHygiene(),
+  'hygiene-local': runHygieneLocal,
   propose: runPropose,
   eval: runEval,
 }

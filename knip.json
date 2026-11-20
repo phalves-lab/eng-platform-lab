@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.mjs"],
+      "project": ["scripts/*.mjs"]
+    },
+    "apps/api": {
+      "entry": ["src/main.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "tools/review-bot": {
+      "entry": ["src/cli.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    }
+  },
+  "ignoreDependencies": ["jscpd"]
+}

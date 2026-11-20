@@ -1,0 +1,18 @@
+{
+  "key": "LAB-10",
+  "title": "Scans de qualidade e verificação local antes do PR",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Os devs descobrem no CI problemas que poderiam ver antes, e a esteira não mede qualidade além de lint e testes.",
+  "acceptanceCriteria": [
+    "Regras de bug do sonarjs bloqueiam o lint; as demais aparecem como aviso",
+    "Dependência nova com vulnerabilidade alta ou licença proibida barra o PR",
+    "PR recebe relatório informativo com tamanho, código sem uso e duplicação nos arquivos alterados",
+    "O comando pre-pr roda localmente os mesmos gates do CI e diz o que vai barrar o PR",
+    "Dependências usadas pelo bot ficam declaradas no pacote do bot"
+  ],
+  "status": "Em andamento",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null
+}

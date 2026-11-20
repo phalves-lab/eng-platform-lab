@@ -10,7 +10,12 @@ import {
 } from '../src/catalog.js'
 import { listPullFiles, upsertStickyComment } from '../src/github.js'
 import { GeminiProvider } from '../src/llm/gemini.js'
-import { checkHygiene, sectionContent, type PullRequestFacts } from '../src/pr-hygiene.js'
+import {
+  checkHygiene,
+  sectionContent,
+  withoutBodyRules,
+  type PullRequestFacts,
+} from '../src/pr-hygiene.js'
 import {
   COMMENT_MARKER,
   applyVerification,
@@ -417,5 +422,20 @@ describe('origem da task', () => {
     expect(renderComment(clean, fromPr, { model: 'm', promptVersion: 'v', refuted: 0 })).toContain(
       '(lida do próprio PR)',
     )
+  })
+})
+
+describe('higiene local sem corpo do PR', () => {
+  it('descarta só regras do corpo e mantém título, branch e fluxo', () => {
+    const issues = checkHygiene({
+      title: 'Ajustes',
+      body: '',
+      headRef: 'minha-branch',
+      baseRef: 'main',
+      files: ['apps/api/migrations/003_x.sql'],
+    })
+    expect(issues.map((i) => i.rule)).toContain('RN-11')
+    expect(issues.map((i) => i.rule)).toContain('RN-27')
+    expect(withoutBodyRules(issues).map((i) => i.rule)).toEqual(['RN-08', 'RN-22', 'RN-06'])
   })
 })

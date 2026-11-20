@@ -47,6 +47,9 @@
           },
           {
             "context": "hygiene"
+          },
+          {
+            "context": "security / dependency-review"
           }
         ]
       }
