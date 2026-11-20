@@ -11,11 +11,31 @@ export interface GeminiOptions {
   model: string
   fetchImpl?: typeof fetch
   timeoutMs?: number
+  maxAttempts?: number
+  backoffMs?: number
 }
 
 interface GeminiResponse {
   candidates?: { content?: { parts?: { text?: string }[] } }[]
 }
+
+export class GeminiHttpError extends Error {
+  constructor(
+    readonly status: number,
+    body: string,
+  ) {
+    super(`Gemini respondeu ${status}: ${body.slice(0, 300)}`)
+    this.name = 'GeminiHttpError'
+  }
+}
+
+/** Falhas transitórias que valem nova tentativa: tempo esgotado, limite de taxa e erro do servidor. */
+export const isRetryable = (error: unknown): boolean => {
+  if (error instanceof GeminiHttpError) return error.status === 429 || error.status >= 500
+  return error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export class GeminiProvider implements LlmProvider {
   readonly model: string
@@ -35,6 +55,18 @@ export class GeminiProvider implements LlmProvider {
   }
 
   private async generateJson(prompt: string): Promise<unknown> {
+    const attempts = this.options.maxAttempts ?? 2
+    for (let attempt = 1; ; attempt += 1) {
+      try {
+        return await this.callOnce(prompt)
+      } catch (error) {
+        if (attempt >= attempts || !isRetryable(error)) throw error
+        await sleep((this.options.backoffMs ?? 5_000) * attempt)
+      }
+    }
+  }
+
+  private async callOnce(prompt: string): Promise<unknown> {
     const response = await this.fetchImpl(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.model)}:generateContent`,
       {
@@ -44,14 +76,10 @@ export class GeminiProvider implements LlmProvider {
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { temperature: 0.2, responseMimeType: 'application/json' },
         }),
-        signal: AbortSignal.timeout(this.options.timeoutMs ?? 120_000),
+        signal: AbortSignal.timeout(this.options.timeoutMs ?? 300_000),
       },
     )
-    if (!response.ok) {
-      throw new Error(
-        `Gemini respondeu ${response.status}: ${(await response.text()).slice(0, 300)}`,
-      )
-    }
+    if (!response.ok) throw new GeminiHttpError(response.status, await response.text())
     const data = (await response.json()) as GeminiResponse
     const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? ''
     return JSON.parse(text)

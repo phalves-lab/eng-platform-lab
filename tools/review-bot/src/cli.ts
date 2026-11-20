@@ -2,6 +2,15 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { parseArgs } from 'node:util'
+import { DataBoundaryError, assertDataBoundary } from './boundary.js'
+import {
+  filesFromPatch,
+  loadEvalCases,
+  renderResults,
+  scoreCase,
+  summarize,
+  type CaseResult,
+} from './evals.js'
 import { decideWrite, describePlan, executeWritePlan, type WritePlan } from './atlassian-write.js'
 import {
   filesOutsideCatalog,
@@ -18,6 +27,7 @@ import {
   applyVerification,
   buildPrompt,
   buildVerificationPrompt,
+  computeSignal,
   renderComment,
   type ReviewContext,
 } from './review.js'
@@ -33,6 +43,13 @@ const requireEnv = (name: string): string => {
   if (!value) throw new Error(`Variável de ambiente ${name} não definida.`)
   return value
 }
+
+const geminiFromEnv = () =>
+  new GeminiProvider({
+    apiKey: requireEnv('GEMINI_API_KEY'),
+    model: requireEnv('GEMINI_MODEL'),
+    ...(process.env.GEMINI_TIMEOUT_MS ? { timeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) } : {}),
+  })
 
 const atlassianOptions = () => ({
   site: requireEnv('ATLASSIAN_SITE'),
@@ -90,6 +107,11 @@ const runReview = async (argv: string[]) => {
       out: { type: 'string' },
     },
   })
+  assertDataBoundary({
+    confidential: values.source === 'atlassian',
+    dryRun: values['dry-run'],
+    provider: 'lab',
+  })
   const repoDir = resolve(values['repo-dir'])
   const configDir = resolve(values['config-dir'])
   const { tasks, docs } = buildSources(values.source, configDir)
@@ -132,10 +154,7 @@ const runReview = async (argv: string[]) => {
     return
   }
 
-  const provider = new GeminiProvider({
-    apiKey: requireEnv('GEMINI_API_KEY'),
-    model: requireEnv('GEMINI_MODEL'),
-  })
+  const provider = geminiFromEnv()
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
   const { review, refuted } = await applyVerification(await provider.review(prompt), (finding) =>
     provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
@@ -261,11 +280,78 @@ const runPropose = async (argv: string[]) => {
   }
 }
 
+const runEval = async (argv: string[]) => {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      'cases-dir': { type: 'string', default: 'review/evals/cases' },
+      'config-dir': { type: 'string', default: '.' },
+      'dry-run': { type: 'boolean', default: false },
+      min: { type: 'string', default: '0.8' },
+    },
+  })
+  const configDir = resolve(values['config-dir'])
+  const cases = await loadEvalCases(resolve(configDir, values['cases-dir']))
+  const catalog = await loadCatalog(join(configDir, 'catalog/modules'))
+  const allRiskRules = await loadRiskRules(join(configDir, 'policy/risk-rules.yaml'))
+  const rubric = await readFile(join(configDir, 'review/rubric.md'), 'utf8')
+  const agentsGuide = await readOptional(join(configDir, 'AGENTS.md'))
+  const template = await readFile(join(configDir, 'review/prompts/review.md'), 'utf8')
+  const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
+  const provider = values['dry-run'] ? null : geminiFromEnv()
+
+  const results: CaseResult[] = []
+  const skipped: string[] = []
+  for (const evalCase of cases) {
+    const files = filesFromPatch(evalCase.patch)
+    const context: ReviewContext = {
+      task: evalCase.task,
+      taskKey: evalCase.task?.key ?? null,
+      modules: modulesForFiles(catalog, files),
+      uncataloged: filesOutsideCatalog(catalog, files),
+      docs: [],
+      riskRules: riskLabelsForFiles(allRiskRules, files),
+      files,
+      patch: evalCase.patch,
+      agentsGuide,
+      rubric,
+    }
+    const prompt = buildPrompt(template, context)
+
+    if (!provider) {
+      const expectations = evalCase.expect.findings.length + evalCase.expect.acceptance.length
+      console.log(
+        `${evalCase.id}: ${files.length} arquivo(s), prompt com ${prompt.length} caracteres, ${expectations} expectativa(s)${evalCase.confidential ? ', confidencial' : ''}.`,
+      )
+      continue
+    }
+    try {
+      assertDataBoundary({ confidential: evalCase.confidential, dryRun: false, provider: 'lab' })
+    } catch (error) {
+      if (!(error instanceof DataBoundaryError)) throw error
+      skipped.push(evalCase.id)
+      continue
+    }
+    const { review } = await applyVerification(await provider.review(prompt), (finding) =>
+      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+    )
+    results.push(scoreCase(evalCase, review, computeSignal(review, context)))
+  }
+
+  if (!provider) {
+    console.log(`${cases.length} caso(s) válido(s).`)
+    return
+  }
+  console.log(renderResults(results, skipped))
+  if (summarize(results).rate < Number(values.min)) process.exitCode = 1
+}
+
 const commands: Record<string, (argv: string[]) => Promise<void>> = {
   review: runReview,
   task: runTask,
   hygiene: () => runHygiene(),
   propose: runPropose,
+  eval: runEval,
 }
 
 const [command, ...rest] = process.argv.slice(2)

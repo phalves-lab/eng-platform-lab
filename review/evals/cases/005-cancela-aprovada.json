@@ -1,0 +1,36 @@
+{
+  "id": "005-cancela-aprovada",
+  "description": "Permite cancelar campanha já aprovada, contra a regra da task.",
+  "task": {
+    "key": "LAB-6",
+    "title": "Ajustar mensagens de cancelamento",
+    "description": "Melhorar as mensagens exibidas ao cancelar uma solicitação. O fluxo de status não muda.",
+    "acceptanceCriteria": [
+      "Cancelamento continua permitido só antes da aprovação",
+      "Mensagem de erro clara ao tentar cancelar fora do fluxo"
+    ],
+    "status": "Em andamento",
+    "labels": [],
+    "epic": null,
+    "url": null,
+    "area": null,
+    "demandType": null
+  },
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@ -143,7 +143,7 @@\n   transition(request, ['approved'], 'scheduled')\n \n export const cancel = (request: CampaignRequest): Result<CampaignRequest> =>\n-  transition(request, ['draft', 'submitted'], 'cancelled')\n+  transition(request, ['draft', 'submitted', 'approved'], 'cancelled')\n \n /**\n  * Registra uma aprovação. A solicitação só muda para \"approved\" quando atinge o número\n",
+  "expect": {
+    "findings": [
+      {
+        "files": ["apps/api/src/domain/campaign-request.ts"],
+        "minSeverity": "alta"
+      }
+    ],
+    "acceptance": [
+      {
+        "criterion": "Cancelamento continua permitido só antes da aprovação",
+        "status": ["nao_encontrado", "parcial"]
+      }
+    ],
+    "signal": ["ajustes"]
+  },
+  "confidential": false
+}

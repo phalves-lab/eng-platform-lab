@@ -1,0 +1,25 @@
+{
+  "id": "006-refatoracao-sem-efeito",
+  "description": "Renomeia função interna sem mudar comportamento. Mede falso positivo.",
+  "task": {
+    "key": "LAB-7",
+    "title": "Melhorar nomes internos do domínio",
+    "description": "Refatoração de nomes, sem mudança de regra.",
+    "acceptanceCriteria": [
+      "Nenhuma regra de negócio muda",
+      "Todos os testes existentes continuam passando"
+    ],
+    "status": "Em andamento",
+    "labels": [],
+    "epic": null,
+    "url": null,
+    "area": null,
+    "demandType": null
+  },
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@ -66,13 +66,13 @@\n \n const ok = <T>(value: T): Result<T> => ({ ok: true, value })\n \n-const toUtcDay = (isoDate: string): number => {\n+const toUtcDayNumber = (isoDate: string): number => {\n   const [year, month, day] = isoDate.split('-').map(Number)\n   return Date.UTC(year ?? 0, (month ?? 1) - 1, day ?? 1)\n }\n \n const isIsoDate = (value: string): boolean =>\n-  /^\\d{4}-\\d{2}-\\d{2}$/.test(value) && !Number.isNaN(toUtcDay(value))\n+  /^\\d{4}-\\d{2}-\\d{2}$/.test(value) && !Number.isNaN(toUtcDayNumber(value))\n \n export const requiredApprovals = (request: Pick<CampaignRequest, 'budgetCents'>): number =>\n   request.budgetCents > HIGH_BUDGET_CENTS ? 2 : 1\n@@ -88,10 +88,10 @@\n   if (!isIsoDate(input.startDate) || !isIsoDate(input.endDate)) {\n     return fail('INVALID_PERIOD', 'Datas devem estar no formato AAAA-MM-DD.')\n   }\n-  if (toUtcDay(input.endDate) < toUtcDay(input.startDate)) {\n+  if (toUtcDayNumber(input.endDate) < toUtcDayNumber(input.startDate)) {\n     return fail('INVALID_PERIOD', 'A data de término não pode ser anterior à data de início.')\n   }\n-  if (toUtcDay(input.startDate) - toUtcDay(context.today) < MIN_LEAD_DAYS * DAY_MS) {\n+  if (toUtcDayNumber(input.startDate) - toUtcDayNumber(context.today) < MIN_LEAD_DAYS * DAY_MS) {\n     return fail(\n       'LEAD_TIME',\n       `A campanha precisa de pelo menos ${MIN_LEAD_DAYS} dias de antecedência.`,\n",
+  "expect": {
+    "noSevereFindings": true,
+    "signal": ["pronto", "gate"]
+  },
+  "confidential": false
+}

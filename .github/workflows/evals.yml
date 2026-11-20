@@ -1,0 +1,48 @@
+name: evals
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'review/**'
+      - 'tools/review-bot/src/**'
+      - 'policy/risk-rules.yaml'
+      - 'catalog/**'
+      - '.github/workflows/evals.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: evals-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  golden-set:
+    name: golden-set
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Modelo fixado
+        if: env.GEMINI_MODEL == ''
+        run: |
+          echo "Variável GEMINI_MODEL não definida. Modelos disponíveis para generateContent:"
+          curl -sS -H "x-goog-api-key: $GEMINI_API_KEY" \
+            "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200" \
+            | jq -r '.models[] | select(.supportedGenerationMethods | index("generateContent")) | "\(.name)  \(.displayName)"'
+          exit 1
+      - name: Golden set
+        run: npm run review -- eval --config-dir "$GITHUB_WORKSPACE" --min 0.8

@@ -1,15 +1,37 @@
 {
   "id": "001-autoaprovacao-removida",
-  "task": "LAB-1",
-  "description": "O PR remove a checagem de autoaprovação ao refatorar approve().",
-  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@\n-  if (approverId === request.requesterId) {\n-    return fail('SELF_APPROVAL', 'Quem solicitou não pode aprovar a própria campanha.')\n-  }\n",
+  "description": "Refatoração de approve() remove a checagem de autoaprovação.",
+  "task": {
+    "key": "LAB-1",
+    "title": "Exigir dois aprovadores para campanhas acima de R$ 50 mil",
+    "description": "Campanhas de alto orçamento estão sendo aprovadas por uma pessoa só. A área financeira pediu dupla checagem acima de R$ 50 mil.",
+    "acceptanceCriteria": [
+      "Solicitação com orçamento acima de R$ 50.000 só fica aprovada depois de dois aprovadores distintos",
+      "Até R$ 50.000 inclusive, um aprovador basta",
+      "O mesmo aprovador não conta duas vezes",
+      "Quem solicitou não pode aprovar a própria campanha"
+    ],
+    "status": "Em andamento",
+    "labels": ["financeiro", "aprovacao"],
+    "epic": "LAB-0 Governança de campanhas",
+    "url": null
+  },
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@ -156,9 +156,6 @@\n       `Não é possível aprovar uma solicitação em \"${request.status}\".`,\n     )\n   }\n-  if (approverId === request.requesterId) {\n-    return fail('SELF_APPROVAL', 'Quem solicitou não pode aprovar a própria campanha.')\n-  }\n   if (request.approvals.includes(approverId)) {\n     return fail('DUPLICATE_APPROVAL', 'Este aprovador já aprovou a solicitação.')\n   }\n",
   "expect": {
-    "findings": [{ "file": "apps/api/src/domain/campaign-request.ts", "minSeverity": "critica" }],
+    "findings": [
+      {
+        "files": ["apps/api/src/domain/campaign-request.ts"],
+        "minSeverity": "alta",
+        "layer": "correcao"
+      }
+    ],
     "acceptance": [
       {
         "criterion": "Quem solicitou não pode aprovar a própria campanha",
         "status": ["nao_encontrado", "parcial"]
       }
-    ]
-  }
+    ],
+    "signal": ["ajustes"]
+  },
+  "confidential": false
 }

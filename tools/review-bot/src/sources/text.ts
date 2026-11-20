@@ -31,10 +31,14 @@ export const storageToText = (html: string): string =>
     .trim()
 
 const HEADING =
-  /^\s*#*\s*(crit[eé]rios? de aceita[cç][aã]o|crit[eé]rios? de aceite|acceptance criteria)\s*:?\s*$/i
-const ITEM = /^\s*(?:[-*•]|\d+[.)]|\[[ xX]\])\s+(.+)$/
+  /^\s*(?:#{1,6}\s*)?(?:\*\*|__)?\s*(?:crit[eé]rios? de aceita[cç][aã]o|crit[eé]rios? de aceite|acceptance criteria)\s*:?\s*(?:\*\*|__)?\s*:?\s*$/i
+const BULLET = /^\s*(?:[-*•+]|\d+[.)])\s+(?:\[[ xX]\]\s+)?(.+)$/
+const CHECKBOX = /^\s*\[[ xX]\]\s+(.+)$/
 
-/** Extrai os itens listados logo abaixo do título "Critérios de aceite" (ou variações). */
+/**
+ * Extrai os itens listados logo abaixo do título de critérios de aceite. Aceita o formato
+ * usado nas tasks reais: título em negrito com dois-pontos e itens com checkbox.
+ */
 export const extractAcceptanceCriteria = (text: string): string[] => {
   const lines = text.split('\n')
   const start = lines.findIndex((line) => HEADING.test(line))
@@ -46,11 +50,28 @@ export const extractAcceptanceCriteria = (text: string): string[] => {
       if (items.length > 0) break
       continue
     }
-    const match = ITEM.exec(line)
+    const match = BULLET.exec(line) ?? CHECKBOX.exec(line)
     if (!match?.[1]) break
     items.push(match[1].trim())
   }
   return items
+}
+
+export interface TaskTitleParts {
+  area: string | null
+  title: string
+  demandType: string | null
+}
+
+/**
+ * Separa o título no padrão "[Área][Título][Tipo de demanda]". O título do meio pode ter
+ * colchetes próprios, por isso a área é o primeiro bloco e o tipo é o último.
+ */
+export const parseTaskTitle = (summary: string): TaskTitleParts => {
+  const match = /^\s*\[([^\]]+)\]\s*\[(.*)\]\s*\[([^\]]+)\]\s*$/.exec(summary)
+  if (!match?.[1] || !match[2] || !match[3])
+    return { area: null, title: summary.trim(), demandType: null }
+  return { area: match[1].trim(), title: match[2].trim(), demandType: match[3].trim() }
 }
 
 export const extractTaskKey = (...candidates: (string | null | undefined)[]): string | null => {
