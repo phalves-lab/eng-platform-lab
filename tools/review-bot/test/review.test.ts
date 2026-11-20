@@ -350,9 +350,9 @@ describe('integrações externas', () => {
     const http = new GeminiProvider({
       apiKey: 'k',
       model: 'm',
-      fetchImpl: vi.fn(async () => new Response('quota', { status: 429 })),
+      fetchImpl: vi.fn(async () => new Response('requisição inválida', { status: 400 })),
     })
-    await expect(http.review('p')).rejects.toThrow('429')
+    await expect(http.review('p')).rejects.toThrow('400')
     const bad = new GeminiProvider({
       apiKey: 'k',
       model: 'm',

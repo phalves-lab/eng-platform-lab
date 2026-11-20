@@ -44,6 +44,13 @@ const requireEnv = (name: string): string => {
   return value
 }
 
+const geminiFromEnv = () =>
+  new GeminiProvider({
+    apiKey: requireEnv('GEMINI_API_KEY'),
+    model: requireEnv('GEMINI_MODEL'),
+    ...(process.env.GEMINI_TIMEOUT_MS ? { timeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) } : {}),
+  })
+
 const atlassianOptions = () => ({
   site: requireEnv('ATLASSIAN_SITE'),
   email: requireEnv('ATLASSIAN_EMAIL'),
@@ -147,10 +154,7 @@ const runReview = async (argv: string[]) => {
     return
   }
 
-  const provider = new GeminiProvider({
-    apiKey: requireEnv('GEMINI_API_KEY'),
-    model: requireEnv('GEMINI_MODEL'),
-  })
+  const provider = geminiFromEnv()
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
   const { review, refuted } = await applyVerification(await provider.review(prompt), (finding) =>
     provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
@@ -294,12 +298,7 @@ const runEval = async (argv: string[]) => {
   const agentsGuide = await readOptional(join(configDir, 'AGENTS.md'))
   const template = await readFile(join(configDir, 'review/prompts/review.md'), 'utf8')
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
-  const provider = values['dry-run']
-    ? null
-    : new GeminiProvider({
-        apiKey: requireEnv('GEMINI_API_KEY'),
-        model: requireEnv('GEMINI_MODEL'),
-      })
+  const provider = values['dry-run'] ? null : geminiFromEnv()
 
   const results: CaseResult[] = []
   const skipped: string[] = []
