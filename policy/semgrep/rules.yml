@@ -1,0 +1,38 @@
+rules:
+  - id: atlassian-sources-use-read-only-http
+    languages: [typescript]
+    severity: ERROR
+    message: Fontes do Atlassian só podem usar ReadOnlyHttp. Chamada direta a fetch abre caminho para escrita.
+    paths:
+      include:
+        - tools/review-bot/src/sources/
+      exclude:
+        - tools/review-bot/src/sources/read-only-http.ts
+    pattern: fetch(...)
+
+  - id: domain-without-http-framework
+    languages: [typescript]
+    severity: ERROR
+    message: O domínio não depende de framework HTTP; regra de negócio fica em apps/api/src/domain.
+    paths:
+      include:
+        - apps/api/src/domain/
+    pattern-either:
+      - pattern: import $X from 'fastify'
+      - pattern: import { $X } from 'fastify'
+      - pattern: import type { $X } from 'fastify'
+
+  - id: no-console-log-in-api
+    languages: [typescript]
+    severity: ERROR
+    message: Use o logger da aplicação; console.log não vai para observabilidade.
+    paths:
+      include:
+        - apps/api/src/
+    pattern: console.log(...)
+
+  - id: gemini-key-hardcoded
+    languages: [generic]
+    severity: ERROR
+    message: Chave de API do Google no código. Use secret.
+    pattern-regex: AIza[0-9A-Za-z_-]{35}

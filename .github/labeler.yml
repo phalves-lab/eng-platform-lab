@@ -1,0 +1,21 @@
+'risk:db-migration':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/*/migrations/**'
+          - 'apps/*/src/db/**'
+'risk:auth':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/*/src/auth/**'
+          - 'apps/*/src/http/app.ts'
+'risk:infra':
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
+          - 'policy/**'
+          - 'Dockerfile'
+'risk:ai-behavior':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'review/**'
+          - 'tools/review-bot/src/**'

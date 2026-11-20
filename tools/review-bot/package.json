@@ -1,0 +1,12 @@
+{
+  "name": "@lab/review-bot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "review": "tsx src/cli.ts"
+  }
+}

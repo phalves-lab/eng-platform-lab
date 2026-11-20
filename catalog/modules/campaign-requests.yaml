@@ -1,0 +1,12 @@
+name: campaign-requests
+description: Cadastro e aprovação de solicitações de campanha de marketing
+owner: '@PhAlves23'
+tier: tier-1
+businessUnits:
+  - graduacao
+  - pos-graduacao
+  - ead
+users: Times de marketing das BUs que pedem campanhas e gestores que aprovam orçamento
+confluencePageId: lab-campaign-requests
+paths:
+  - apps/api/
