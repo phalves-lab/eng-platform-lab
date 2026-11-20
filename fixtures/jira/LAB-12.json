@@ -1,0 +1,28 @@
+{
+  "key": "LAB-12",
+  "title": "Painel de review da esteira",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "O time não vê de uma vez o que espera review, em que ordem entrou no board, o que está parado e como está a carga de review de cada pessoa.",
+  "acceptanceCriteria": [
+    "A fila de review segue a ordem de entrada em code review no board do Jira e, sem histórico, a hora em que o PR ficou pronto",
+    "Cada item mostra task, autor, revisores, tempo na fila em dias úteis, checks, sinal do bot, risco e tamanho",
+    "Alertas cobrem review parado, check vermelho, PR sem task, PR grande, task sem critério, task sem PR e PR mergeado com task parada",
+    "Métricas de 30 dias e carga de review por pessoa, apresentada como reconhecimento e não como meta",
+    "O painel é publicado sozinho a partir do GitHub, só com leitura, sem chamar API externa no navegador"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T16:30:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T17:31:48Z"
+    }
+  ]
+}

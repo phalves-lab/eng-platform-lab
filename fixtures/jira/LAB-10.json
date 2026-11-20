@@ -11,8 +11,22 @@
     "O comando pre-pr roda localmente os mesmos gates do CI e diz o que vai barrar o PR",
     "Dependências usadas pelo bot ficam declaradas no pacote do bot"
   ],
-  "status": "Em andamento",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
-  "url": null
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T15:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T15:40:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T15:57:28Z"
+    }
+  ]
 }

@@ -12,6 +12,10 @@
     "tools/review-bot": {
       "entry": ["src/cli.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "tools/eng-metrics": {
+      "entry": ["src/cli.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   },
   "ignoreDependencies": ["jscpd"]

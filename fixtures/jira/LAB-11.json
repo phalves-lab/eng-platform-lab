@@ -11,8 +11,22 @@
     "O golden set inclui os falsos positivos do PR #7 e o defeito real do jscpd",
     "O review de IA espera os checks de segurança terminarem"
   ],
-  "status": "Em andamento",
+  "status": "Concluída",
   "labels": ["plataforma", "ia"],
   "epic": "LAB-0 Governança de campanhas",
-  "url": null
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T16:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T16:08:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T16:24:34Z"
+    }
+  ]
 }

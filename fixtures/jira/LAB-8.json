@@ -10,8 +10,22 @@
     "O motivo fica salvo na solicitação e aparece na consulta",
     "Solicitações rejeitadas antes desta mudança continuam consultáveis, sem motivo"
   ],
-  "status": "Em andamento",
+  "status": "Concluída",
   "labels": ["aprovacao"],
   "epic": "LAB-0 Governança de campanhas",
-  "url": null
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T14:58:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T15:08:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T15:16:10Z"
+    }
+  ]
 }

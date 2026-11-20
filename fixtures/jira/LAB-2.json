@@ -9,5 +9,11 @@
   "status": "Pronta",
   "labels": ["operacao"],
   "epic": "LAB-0 Governança de campanhas",
-  "url": null
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Pronta",
+      "at": "2026-11-17T13:00:00Z"
+    }
+  ]
 }

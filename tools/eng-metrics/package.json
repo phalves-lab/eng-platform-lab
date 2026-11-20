@@ -1,0 +1,12 @@
+{
+  "name": "@lab/eng-metrics",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "panel": "tsx src/cli.ts"
+  }
+}
