@@ -23,7 +23,7 @@ import {
 import { collectDiff } from './diff.js'
 import { listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
-import { checkHygiene } from './pr-hygiene.js'
+import { checkHygiene, withoutBodyRules } from './pr-hygiene.js'
 import {
   applyVerification,
   buildPrompt,
@@ -267,13 +267,14 @@ const runHygieneLocal = async (argv: string[]) => {
     .split('\n')
     .filter(Boolean)
 
-  const issues = checkHygiene({
+  const found = checkHygiene({
     title,
     body: body ?? '',
     headRef,
     baseRef: values['base-ref'],
     files,
-  }).filter((issue) => body !== null || !['RN-11', 'RN-27'].includes(issue.rule))
+  })
+  const issues = body === null ? withoutBodyRules(found) : found
 
   console.log(`Branch: ${headRef}`)
   console.log(`Título considerado: ${title || '(sem commits na branch)'}`)

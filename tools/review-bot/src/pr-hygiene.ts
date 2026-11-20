@@ -105,3 +105,12 @@ export const checkHygiene = (pr: PullRequestFacts): HygieneIssue[] => {
   }
   return issues
 }
+
+const BODY_RULES = new Set(['RN-11', 'RN-27'])
+
+/**
+ * Sem o corpo do PR em mãos (verificação local), descarta só as regras que dependem dele.
+ * Título, branch e fluxo de branches (RN-06, RN-08, RN-22) continuam valendo.
+ */
+export const withoutBodyRules = (issues: HygieneIssue[]): HygieneIssue[] =>
+  issues.filter((issue) => !BODY_RULES.has(issue.rule))
