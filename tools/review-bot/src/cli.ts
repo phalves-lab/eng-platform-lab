@@ -15,13 +15,14 @@ import {
 import { decideWrite, describePlan, executeWritePlan, type WritePlan } from './atlassian-write.js'
 import {
   filesOutsideCatalog,
+  type CatalogModule,
   loadCatalog,
   loadRiskRules,
   modulesForFiles,
   riskLabelsForFiles,
 } from './catalog.js'
 import { collectDiff } from './diff.js'
-import { listPullFiles, upsertStickyComment } from './github.js'
+import { listCheckRuns, listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
 import { checkHygiene, withoutBodyRules } from './pr-hygiene.js'
 import {
@@ -31,6 +32,7 @@ import {
   computeSignal,
   renderComment,
   type ReviewContext,
+  type VerificationEvidence,
 } from './review.js'
 import { ConfluenceDocSource, JiraTaskSource } from './sources/atlassian.js'
 import { FixtureDocSource, FixtureTaskSource } from './sources/fixtures.js'
@@ -97,6 +99,60 @@ const readOptional = async (path: string): Promise<string> => {
     return await readFile(path, 'utf8')
   } catch {
     return ''
+  }
+}
+
+const SKIPPED_FILES = /(^|\/)package-lock\.json$|\.(png|jpe?g|gif|ico|pdf|zip)$/
+
+/** Conteúdo final dos arquivos alterados no PR, para a verificação ler além do diff. */
+const readChangedFiles = async (repoDir: string, files: string[]) => {
+  const contents: Record<string, string> = {}
+  for (const file of files) {
+    if (SKIPPED_FILES.test(file)) continue
+    const content = await readOptional(join(repoDir, file))
+    if (content && content.length <= 100_000) contents[file] = content
+  }
+  return contents
+}
+
+const MODULE_SOURCE = /\.(ts|mjs|sql|ya?ml)$/
+const TEST_FILE = /(^|\/)test\/|\.(test|spec)\.ts$/
+
+/**
+ * Arquivos de código dos módulos afetados que o PR não altera. Dão à verificação o contexto
+ * em volta da mudança (ex.: o repositório que ainda lê a coluna removida). Arquivos alterados
+ * ficam de fora para a versão antiga não ser confundida com a nova.
+ */
+const readModuleFiles = async (
+  repoDir: string,
+  modules: CatalogModule[],
+  exclude: string[],
+): Promise<Record<string, string>> => {
+  const tracked = execFileSync('git', ['ls-files', ...modules.flatMap((m) => m.paths)], {
+    cwd: repoDir,
+    encoding: 'utf8',
+  })
+    .split('\n')
+    .filter((file) => file && MODULE_SOURCE.test(file) && !TEST_FILE.test(file))
+    .filter((file) => !exclude.includes(file))
+  const contents: Record<string, string> = {}
+  for (const file of tracked) {
+    const content = await readOptional(join(repoDir, file))
+    if (content) contents[file] = content
+  }
+  return contents
+}
+
+/** Resultado dos checks do commit, quando roda no CI com token; o próprio review fica de fora. */
+const readChecks = async (sha: string) => {
+  const token = process.env.GITHUB_TOKEN
+  const repository = process.env.GITHUB_REPOSITORY
+  if (!token || !repository || !/^[0-9a-f]{7,40}$/.test(sha)) return []
+  try {
+    const runs = await listCheckRuns({ token, repository }, sha)
+    return runs.filter((run) => run.name !== 'ai-review')
+  } catch {
+    return []
   }
 }
 
@@ -171,13 +227,21 @@ const runReview = async (argv: string[]) => {
 
   const provider = geminiFromEnv()
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
-  const { review, refuted } = await applyVerification(await provider.review(prompt), (finding) =>
-    provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+  const changedContents = await readChangedFiles(repoDir, diff.files)
+  const evidence: VerificationEvidence = {
+    files: { ...changedContents, ...(await readModuleFiles(repoDir, modules, diff.files)) },
+    checks: await readChecks(values.head),
+  }
+  const { review, refuted, uncertain } = await applyVerification(
+    await provider.review(prompt),
+    (finding) =>
+      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
   )
   const comment = renderComment(review, context, {
     model: provider.model,
     promptVersion: promptVersion(template),
     refuted: refuted.length,
+    uncertain,
   })
 
   if (values.out) await writeFile(values.out, comment)
@@ -395,10 +459,22 @@ const runEval = async (argv: string[]) => {
       skipped.push(evalCase.id)
       continue
     }
-    const { review } = await applyVerification(await provider.review(prompt), (finding) =>
-      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context)),
+    const evidence: VerificationEvidence = {
+      files: {
+        ...evalCase.fileContents,
+        ...(await readModuleFiles(configDir, context.modules, [
+          ...files,
+          ...Object.keys(evalCase.fileContents),
+        ])),
+      },
+      checks: evalCase.checks,
+    }
+    const { review, uncertain } = await applyVerification(
+      await provider.review(prompt),
+      (finding) =>
+        provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
     )
-    results.push(scoreCase(evalCase, review, computeSignal(review, context)))
+    results.push(scoreCase(evalCase, review, computeSignal(review, context), uncertain))
   }
 
   if (!provider) {
