@@ -1,0 +1,11 @@
+name: review-bot
+description: Bot que monta contexto de negócio e revisa PRs sem aprovar
+owner: '@PhAlves23'
+tier: tier-2
+businessUnits:
+  - plataforma
+users: Devs e revisores de todos os times
+confluencePageId: null
+paths:
+  - tools/review-bot/
+  - review/

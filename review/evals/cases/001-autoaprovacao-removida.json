@@ -1,0 +1,15 @@
+{
+  "id": "001-autoaprovacao-removida",
+  "task": "LAB-1",
+  "description": "O PR remove a checagem de autoaprovação ao refatorar approve().",
+  "patch": "--- a/apps/api/src/domain/campaign-request.ts\n+++ b/apps/api/src/domain/campaign-request.ts\n@@\n-  if (approverId === request.requesterId) {\n-    return fail('SELF_APPROVAL', 'Quem solicitou não pode aprovar a própria campanha.')\n-  }\n",
+  "expect": {
+    "findings": [{ "file": "apps/api/src/domain/campaign-request.ts", "minSeverity": "critica" }],
+    "acceptance": [
+      {
+        "criterion": "Quem solicitou não pode aprovar a própria campanha",
+        "status": ["nao_encontrado", "parcial"]
+      }
+    ]
+  }
+}

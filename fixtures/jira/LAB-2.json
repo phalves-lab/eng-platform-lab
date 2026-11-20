@@ -1,0 +1,13 @@
+{
+  "key": "LAB-2",
+  "title": "Antecedência mínima de dois dias para novas campanhas",
+  "description": "O time de operação precisa de dois dias para preparar segmentação e criativos.",
+  "acceptanceCriteria": [
+    "Campanha com início em menos de 2 dias é recusada com mensagem clara",
+    "Campanha com início exatamente em 2 dias é aceita"
+  ],
+  "status": "Pronta",
+  "labels": ["operacao"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null
+}

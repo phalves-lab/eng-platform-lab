@@ -1,0 +1,15 @@
+{
+  "key": "LAB-1",
+  "title": "Exigir dois aprovadores para campanhas acima de R$ 50 mil",
+  "description": "Campanhas de alto orçamento estão sendo aprovadas por uma pessoa só. A área financeira pediu dupla checagem acima de R$ 50 mil.",
+  "acceptanceCriteria": [
+    "Solicitação com orçamento acima de R$ 50.000 só fica aprovada depois de dois aprovadores distintos",
+    "Até R$ 50.000 inclusive, um aprovador basta",
+    "O mesmo aprovador não conta duas vezes",
+    "Quem solicitou não pode aprovar a própria campanha"
+  ],
+  "status": "Em andamento",
+  "labels": ["financeiro", "aprovacao"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null
+}

@@ -1,0 +1,100 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  merge_group:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+    with:
+      diff-base: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || '' }}
+
+  security:
+    uses: ./.github/workflows/security.yml
+
+  hygiene:
+    name: hygiene
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run review -- hygiene
+
+  ai-review:
+    name: ai-review
+    needs: [verify]
+    if: >-
+      github.event_name == 'pull_request' &&
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      HAS_GEMINI_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
+    steps:
+      - name: Código confiável (bot, prompts e políticas da base)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+      - name: Código do PR (só leitura do diff)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: trusted/.nvmrc
+          cache: npm
+          cache-dependency-path: trusted/package-lock.json
+      - run: npm ci
+        working-directory: trusted
+      - name: Review com contexto
+        if: env.HAS_GEMINI_KEY == 'true'
+        working-directory: trusted
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GITHUB_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: >-
+          npm run review -- review
+          --repo-dir "$GITHUB_WORKSPACE/pr"
+          --config-dir "$GITHUB_WORKSPACE/trusted"
+          --base "$BASE_SHA" --head "$HEAD_SHA"
+          --branch "$HEAD_REF" --title "$PR_TITLE"
+          --source fixtures --post --pr "$PR_NUMBER"
+      - name: Sem chave do Gemini
+        if: env.HAS_GEMINI_KEY != 'true'
+        run: echo "Secret GEMINI_API_KEY ausente; review de IA pulado."

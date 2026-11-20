@@ -1,0 +1,21 @@
+- label: 'risk:db-migration'
+  description: Altera schema ou dados do banco; exige migração compatível com a versão anterior
+  paths:
+    - apps/*/migrations/**
+    - apps/*/src/db/**
+- label: 'risk:auth'
+  description: Mexe em autenticação ou autorização
+  paths:
+    - apps/*/src/auth/**
+    - apps/*/src/http/app.ts
+- label: 'risk:infra'
+  description: Altera pipeline, deploy ou política do repositório
+  paths:
+    - .github/workflows/**
+    - policy/**
+    - Dockerfile
+- label: 'risk:ai-behavior'
+  description: Muda prompt, rubrica ou lógica do bot; exige eval no golden set
+  paths:
+    - review/**
+    - tools/review-bot/src/**
