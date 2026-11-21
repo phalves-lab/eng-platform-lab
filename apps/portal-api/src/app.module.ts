@@ -8,6 +8,7 @@ import { TOKEN_VERIFIER, type TokenVerifier, createEntraVerifier } from './auth/
 import { CONFIG, type PortalConfig } from './config/config.js'
 import { HandbookModule } from './handbook/handbook.module.js'
 import { HealthController } from './health/health.controller.js'
+import { MetricsModule } from './metrics/metrics.module.js'
 import { ReviewModule } from './review/review.module.js'
 
 const devOnlyVerifier: TokenVerifier = {
@@ -26,6 +27,7 @@ export class AppModule {
         HandbookModule,
         ReviewModule,
         AskModule,
+        MetricsModule,
       ],
       controllers: [HealthController, MeController],
       providers: [

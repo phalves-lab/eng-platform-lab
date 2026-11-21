@@ -14,7 +14,12 @@ export default defineConfig({
     include: ['test/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/lib/labels.ts', 'src/lib/utils.ts', 'src/components/navigation.ts'],
+      include: [
+        'src/lib/labels.ts',
+        'src/lib/utils.ts',
+        'src/lib/delivery.ts',
+        'src/components/navigation.ts',
+      ],
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: 'coverage',
     },

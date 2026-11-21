@@ -1,9 +1,10 @@
 import 'reflect-metadata'
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdtemp, utimes, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { INestApplication } from '@nestjs/common'
+import { ReviewMetricsResponseSchema } from '@lab/contracts'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -253,5 +254,115 @@ describe('configuration', () => {
     ).toEqual({ kind: 'database', url: 'postgres://lab:lab@localhost:5433/lab' })
     expect(() => loadConfig(handbook)).toThrow('set DATABASE_URL or PORTAL_PANEL_DATA')
     expect(() => loadConfig({ ...handbook, DATABASE_URL: 'mysql://x' })).toThrow('postgres:// URL')
+  })
+})
+
+describe('review metrics endpoint', () => {
+  const metrics = (merged: number) => ({
+    windowDays: 30,
+    merged,
+    medianHoursToFirstReview: 12.5,
+    medianBusinessDaysToMerge: 1.8,
+    medianSize: 240,
+    mergedWithFailingChecks: 1,
+    signals: { ajustes: 1, gate: 2, pronto: 3, sem_comentario: 1 },
+    reviewers: [{ reviewer: 'bruno', reviews: 4, pullRequests: 3, comments: 9 }],
+    pairs: [{ author: 'ana', reviewer: 'bruno', count: 2 }],
+  })
+  const deliveryData = (merged: number) => ({
+    schemaVersion: 1,
+    generatedAt: '2026-11-20T12:00:00.000Z',
+    datasets: [
+      {
+        id: 'demo',
+        title: 'Exemplo com time de 8',
+        label: 'Demo',
+        generatedAt: '2026-11-20T12:00:00.000Z',
+        queue: [],
+        alerts: [
+          {
+            kind: 'Review parado',
+            severity: 'alta',
+            subject: '#9',
+            message: 'PR #9 aguarda a primeira review.',
+            url: 'https://example.invalid/pr/9',
+          },
+        ],
+        metrics: metrics(merged),
+        trend: [
+          {
+            weekStart: '2026-11-09T00:00:00.000Z',
+            merged: 0,
+            medianHoursToFirstReview: null,
+            medianSize: null,
+          },
+          {
+            weekStart: '2026-11-16T00:00:00.000Z',
+            merged,
+            medianHoursToFirstReview: 12.5,
+            medianSize: 240,
+          },
+        ],
+      },
+    ],
+  })
+
+  let app: INestApplication
+  let path: string
+
+  beforeAll(async () => {
+    path = join(await mkdtemp(join(tmpdir(), 'portal-metrics-')), 'data.json')
+    await writeFile(path, JSON.stringify(deliveryData(5)))
+    app = await start(
+      loadConfig({ NODE_ENV: 'test', PORTAL_HANDBOOK_DIR: HANDBOOK, PORTAL_PANEL_DATA: path }),
+    )
+  })
+  afterAll(() => app.close())
+
+  it('serves metrics, trend and alerts of a dataset in the shared contract', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/metrics/review?dataset=demo')
+      .expect(200)
+    const body = ReviewMetricsResponseSchema.parse(response.body)
+    expect(body).toMatchObject({ dataset: 'demo', title: 'Exemplo com time de 8' })
+    expect(body.metrics.merged).toBe(5)
+    expect(body.trend[0]?.medianHoursToFirstReview).toBeNull()
+    expect(body.alerts[0]?.url).toBe('https://example.invalid/pr/9')
+    expect(response.body).not.toHaveProperty('queue')
+  })
+
+  it('validates the dataset and answers 404 for one missing from the file', async () => {
+    const server = app.getHttpServer()
+    await request(server).get('/api/metrics/review?dataset=prod').expect(400)
+    await request(server).get('/api/metrics/review').expect(404)
+    await request(server).get('/api/metrics/review?dataset=lab').expect(404)
+  })
+
+  it('reloads the file only when its modification time changes', async () => {
+    const server = app.getHttpServer()
+    const merged = async () =>
+      (await request(server).get('/api/metrics/review?dataset=demo').expect(200)).body.metrics
+        .merged
+    const fixed = new Date('2026-11-20T12:00:00.000Z')
+    await utimes(path, fixed, fixed)
+    expect(await merged()).toBe(5)
+    await writeFile(path, JSON.stringify(deliveryData(9)))
+    await utimes(path, fixed, fixed)
+    expect(await merged()).toBe(5)
+    const later = new Date(fixed.getTime() + 60_000)
+    await utimes(path, later, later)
+    expect(await merged()).toBe(9)
+  })
+
+  it('returns 503 when the delivery data was not generated', async () => {
+    const empty = await start(
+      loadConfig({
+        NODE_ENV: 'test',
+        PORTAL_HANDBOOK_DIR: HANDBOOK,
+        PORTAL_PANEL_DATA: '/nope/data.json',
+      }),
+    )
+    await request(empty.getHttpServer()).get('/api/metrics/review?dataset=demo').expect(503)
+    await empty.close()
   })
 })
