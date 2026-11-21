@@ -1,0 +1,11 @@
+name: mcp-context
+description: Servidor MCP só de leitura que entrega o handbook (padrões, sistemas, glossário e decisões) à IA
+owner: '@phalves-lab/platform'
+tier: tier-3
+businessUnits:
+  - plataforma
+users: Agentes de IA e devs de todos os times
+confluencePageId: null
+paths:
+  - tools/mcp-context/
+  - handbook/
