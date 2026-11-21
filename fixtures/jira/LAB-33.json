@@ -1,0 +1,24 @@
+{
+  "key": "LAB-33",
+  "title": "Catálogo de skills, plugins e MCPs do time no portal",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "O time tem um marketplace de plugins do Claude Code, mas quem chega não sabe o que existe, o que já foi aprovado nem como instalar. O portal passa a mostrar os plugins com as skills, a maturidade e o dono, e os MCPs homologados com o que cada um acessa e a instalação por cliente.",
+  "acceptanceCriteria": [
+    "O leitor segue o formato padrão de marketplace do Claude Code e valida cada arquivo com Zod, citando o arquivo e o campo quando algo está errado",
+    "A pasta do marketplace é configurável por PORTAL_MARKETPLACE_DIR e, no laboratório, aponta para um marketplace sintético",
+    "Plugin sem entrada no overlay aparece como rascunho e sem dono",
+    "A API expõe a lista de plugins com filtro de maturidade, o detalhe com as skills e a lista de MCPs",
+    "Catálogo ilegível responde 503 sem derrubar o resto do portal",
+    "O front mostra plugins em cartões com filtro de maturidade, a página do plugin com o comando de instalação copiável e os MCPs com escopo e abas de instalação por cliente",
+    "A busca Ctrl K encontra plugins pelo nome, pela descrição ou pelas skills"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T06:30:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T07:25:00Z" }
+  ]
+}

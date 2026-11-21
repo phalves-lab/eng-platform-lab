@@ -1,0 +1,8 @@
+{
+  "name": "lab-pr-review",
+  "displayName": "Revisão de PR",
+  "description": "Revisa um PR em três camadas: bugs e regressões com verificação adversarial, aderência ao AGENTS.md e documentação do módulo.",
+  "version": "2.1.0",
+  "author": { "name": "Plataforma do laboratório" },
+  "keywords": ["review", "pull-request", "qualidade"]
+}

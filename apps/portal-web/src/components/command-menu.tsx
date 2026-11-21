@@ -1,6 +1,7 @@
 'use client'
 
-import { BookCheck, Boxes, Languages, Search } from 'lucide-react'
+import type { PluginMaturity } from '@lab/contracts'
+import { BookCheck, Boxes, Languages, Puzzle, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { NAV_GROUPS } from '@/components/navigation'
@@ -13,14 +14,16 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { MATURITY_LABEL } from '@/lib/labels'
 
 interface SearchResult {
   standards: { id: string; title: string }[]
   systems: { slug: string; name: string; layer: string }[]
   terms: { term: string; definition: string }[]
+  plugins: { name: string; displayName: string; maturity: PluginMaturity }[]
 }
 
-const EMPTY: SearchResult = { standards: [], systems: [], terms: [] }
+const EMPTY: SearchResult = { standards: [], systems: [], terms: [], plugins: [] }
 
 export function CommandMenu() {
   const router = useRouter()
@@ -144,6 +147,23 @@ export function CommandMenu() {
                 >
                   <Languages aria-hidden />
                   <span className="truncate">{entry.term}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          {visible.plugins.length ? (
+            <CommandGroup heading="Plugins">
+              {visible.plugins.map((plugin) => (
+                <CommandItem
+                  key={plugin.name}
+                  value={`plugin:${plugin.name}`}
+                  onSelect={() => go(`/catalogo/plugins/${plugin.name}`)}
+                >
+                  <Puzzle aria-hidden />
+                  <span className="truncate">{plugin.displayName}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    {MATURITY_LABEL[plugin.maturity]}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

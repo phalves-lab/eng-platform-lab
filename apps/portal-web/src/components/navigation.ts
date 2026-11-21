@@ -8,6 +8,8 @@ import {
   ListTodo,
   type LucideIcon,
   MessagesSquare,
+  Plug,
+  Puzzle,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -37,6 +39,13 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Entregas',
     items: [{ href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined }],
+  },
+  {
+    label: 'Catálogo',
+    items: [
+      { href: '/catalogo/plugins', title: 'Plugins e skills', icon: Puzzle },
+      { href: '/catalogo/mcps', title: 'MCPs', icon: Plug },
+    ],
   },
 ]
 

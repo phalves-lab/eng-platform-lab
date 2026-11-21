@@ -1,0 +1,151 @@
+mcps:
+  - name: martech-context
+    description: Handbook do time para a IA. Padrões, sistemas, glossário e decisões pendentes, sempre com a fonte citada.
+    scope: read
+    accesses:
+      - Pasta handbook/ deste repositório, ou a pasta em MARTECH_HANDBOOK_DIR
+    cautions:
+      - Roda local via stdio e não sai da máquina
+      - Use caminho absoluto para o repositório nos clientes que não herdam o diretório
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-11-20'
+    install:
+      claude-code:
+        language: bash
+        snippet: claude mcp add martech-context -- npx tsx <repo>/tools/mcp-context/src/cli.ts
+      kiro:
+        language: json
+        file: .kiro/settings/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "martech-context": {
+                "command": "npx",
+                "args": ["tsx", "<repo>/tools/mcp-context/src/cli.ts"],
+                "autoApprove": [
+                  "regras_para_ia", "padrao", "buscar_padroes", "sistema",
+                  "buscar_sistemas", "glossario", "decisoes_pendentes", "buscar"
+                ]
+              }
+            }
+          }
+      cursor:
+        language: json
+        file: .cursor/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "martech-context": {
+                "command": "npx",
+                "args": ["tsx", "<repo>/tools/mcp-context/src/cli.ts"]
+              }
+            }
+          }
+  - name: github
+    description: Issues, PRs, checks e código dos repositórios, pelo servidor oficial do GitHub em modo só leitura.
+    scope: read
+    accesses:
+      - Repositórios, issues, PRs e checks que o token alcança
+    cautions:
+      - Token fine-grained só de leitura, guardado fora do repositório
+      - Mantenha GITHUB_READ_ONLY=1; comentar ou mergear continua sendo ação humana
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-11-12'
+    install:
+      claude-code:
+        language: bash
+        snippet: >-
+          claude mcp add github -e GITHUB_PERSONAL_ACCESS_TOKEN -e GITHUB_READ_ONLY=1
+          -- docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN -e GITHUB_READ_ONLY
+          ghcr.io/github/github-mcp-server
+      kiro:
+        language: json
+        file: ~/.kiro/settings/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "github": {
+                "command": "docker",
+                "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "-e", "GITHUB_READ_ONLY", "ghcr.io/github/github-mcp-server"],
+                "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}", "GITHUB_READ_ONLY": "1" }
+              }
+            }
+          }
+      cursor:
+        language: json
+        file: ~/.cursor/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "github": {
+                "command": "docker",
+                "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "-e", "GITHUB_READ_ONLY", "ghcr.io/github/github-mcp-server"],
+                "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PAT}", "GITHUB_READ_ONLY": "1" }
+              }
+            }
+          }
+  - name: atlassian
+    description: Tasks do Jira e páginas do Confluence pelo servidor remoto da Atlassian, com login OAuth de cada pessoa.
+    scope: write
+    accesses:
+      - Projetos do Jira e espaços do Confluence que a sua conta enxerga
+    cautions:
+      - O servidor cria e edita tasks e páginas; peça confirmação antes de qualquer escrita
+      - Não use no CI nem com conta de serviço
+      - Confira a URL atual do endpoint na documentação da Atlassian
+    owner: '@PhAlves23'
+    reviewedAt: '2026-11-05'
+    install:
+      claude-code:
+        language: bash
+        snippet: claude mcp add --transport http atlassian https://mcp.atlassian.com/v2/mcp
+      kiro:
+        language: json
+        file: ~/.kiro/settings/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "atlassian": { "url": "https://mcp.atlassian.com/v2/mcp" }
+            }
+          }
+      cursor:
+        language: json
+        file: ~/.cursor/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "atlassian": { "url": "https://mcp.atlassian.com/v2/mcp" }
+            }
+          }
+  - name: playwright
+    description: Navegador controlado pelo agente para reproduzir bug, conferir tela e gerar evidência de teste.
+    scope: write
+    accesses:
+      - Um navegador local, com as páginas que o agente abrir
+    cautions:
+      - Clica, digita e envia formulários; use perfil isolado e nunca uma sessão logada em produção
+      - Prefira ambientes locais ou de homologação
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-10-30'
+    install:
+      claude-code:
+        language: bash
+        snippet: claude mcp add playwright -- npx @playwright/mcp@latest --isolated
+      kiro:
+        language: json
+        file: ~/.kiro/settings/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "playwright": { "command": "npx", "args": ["@playwright/mcp@latest", "--isolated"] }
+            }
+          }
+      cursor:
+        language: json
+        file: ~/.cursor/mcp.json
+        snippet: |
+          {
+            "mcpServers": {
+              "playwright": { "command": "npx", "args": ["@playwright/mcp@latest", "--isolated"] }
+            }
+          }

@@ -3,6 +3,13 @@ import { activeItem, NAV_GROUPS } from '../src/components/navigation'
 import {
   areaOf,
   capitalize,
+  CLIENT_LABEL,
+  formatDate,
+  isMaturity,
+  MATURITIES,
+  MATURITY_LABEL,
+  MATURITY_TONE,
+  SCOPE_TONE,
   cleanSnippet,
   formatBusinessDays,
   formatDateTime,
@@ -53,7 +60,30 @@ describe('utils and navigation', () => {
     expect(activeItem('/padroes/ENG-QA-01')?.title).toBe('Padrões')
     expect(activeItem('/entregas/review')?.title).toBe('Review')
     expect(activeItem('/nada')).toBeUndefined()
-    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(8)
+    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(10)
+  })
+})
+
+describe('catalog labels and navigation', () => {
+  it('maps maturity and MCP scope to the badge tones of the portal', () => {
+    expect(MATURITIES.map((value) => [MATURITY_LABEL[value], MATURITY_TONE[value]])).toEqual([
+      ['Aprovado', 'success'],
+      ['Piloto', 'info'],
+      ['Rascunho', 'secondary'],
+    ])
+    expect(SCOPE_TONE).toEqual({ read: 'success', write: 'warning' })
+    expect(CLIENT_LABEL['claude-code']).toBe('Claude Code')
+    expect(isMaturity('pilot')).toBe(true)
+    expect(isMaturity('beta')).toBe(false)
+    expect(isMaturity(undefined)).toBe(false)
+    expect(formatDate('2026-11-05')).toBe('05/11/2026')
+  })
+
+  it('lists the catalog pages under their own group', () => {
+    expect(
+      NAV_GROUPS.find((group) => group.label === 'Catálogo')?.items.map((i) => i.href),
+    ).toEqual(['/catalogo/plugins', '/catalogo/mcps'])
+    expect(activeItem('/catalogo/plugins/lab-grill')?.title).toBe('Plugins e skills')
   })
 })
 

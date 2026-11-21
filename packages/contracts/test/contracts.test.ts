@@ -5,6 +5,8 @@ import {
   ReviewMetricsQuerySchema,
   ReviewMetricsResponseSchema,
   ReviewMetricsSchema,
+  McpServerSchema,
+  PluginFilterSchema,
   StandardFilterSchema,
   StandardSchema,
   UserSchema,
@@ -79,5 +81,13 @@ describe('review metrics contracts', () => {
     expect(ReviewMetricsQuerySchema.parse({})).toEqual({ dataset: 'lab' })
     expect(ReviewMetricsQuerySchema.parse({ dataset: 'demo' })).toEqual({ dataset: 'demo' })
     expect(ReviewMetricsQuerySchema.safeParse({ dataset: 'prod' }).success).toBe(false)
+  })
+})
+
+describe('catalog contracts', () => {
+  it('limits maturity and MCP scope to the known values', () => {
+    expect(PluginFilterSchema.parse({ maturity: 'pilot' })).toEqual({ maturity: 'pilot' })
+    expect(PluginFilterSchema.safeParse({ maturity: 'beta' }).success).toBe(false)
+    expect(McpServerSchema.safeParse({ name: 'x', scope: 'admin' }).success).toBe(false)
   })
 })

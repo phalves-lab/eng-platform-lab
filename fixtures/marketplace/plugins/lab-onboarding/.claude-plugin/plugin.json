@@ -1,0 +1,8 @@
+{
+  "name": "lab-onboarding",
+  "displayName": "Onboarding",
+  "description": "Apresenta o marketplace, os plugins e os MCPs por perfil e roda um diagnóstico do ambiente com o comando exato de correção.",
+  "version": "1.0.2",
+  "author": { "name": "Plataforma do laboratório" },
+  "keywords": ["onboarding", "setup", "ambiente"]
+}

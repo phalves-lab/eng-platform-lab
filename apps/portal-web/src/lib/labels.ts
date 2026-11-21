@@ -1,4 +1,4 @@
-import type { StandardStatus } from '@lab/contracts'
+import type { McpClient, McpScope, PluginMaturity, StandardStatus } from '@lab/contracts'
 
 export type BadgeTone = 'success' | 'warning' | 'info' | 'danger' | 'secondary'
 
@@ -131,3 +131,31 @@ export const splitSource = (text: string): { body: string; source: string | null
   if (at < 0 || !trimmed.endsWith(')')) return { body: text, source: null }
   return { body: trimmed.slice(0, at).trim(), source: trimmed.slice(at + 7, -1).trim() }
 }
+export const MATURITIES: PluginMaturity[] = ['approved', 'pilot', 'draft']
+
+export const MATURITY_LABEL: Record<PluginMaturity, string> = {
+  approved: 'Aprovado',
+  pilot: 'Piloto',
+  draft: 'Rascunho',
+}
+
+export const MATURITY_TONE: Record<PluginMaturity, BadgeTone> = {
+  approved: 'success',
+  pilot: 'info',
+  draft: 'secondary',
+}
+
+export const SCOPE_LABEL: Record<McpScope, string> = { read: 'Leitura', write: 'Escrita' }
+export const SCOPE_TONE: Record<McpScope, BadgeTone> = { read: 'success', write: 'warning' }
+
+export const CLIENT_LABEL: Record<McpClient, string> = {
+  'claude-code': 'Claude Code',
+  kiro: 'Kiro',
+  cursor: 'Cursor',
+}
+
+export const isMaturity = (value: string | undefined): value is PluginMaturity =>
+  MATURITIES.some((maturity) => maturity === value)
+
+/** Formats an ISO date (YYYY-MM-DD) as dd/mm/yyyy without shifting it across time zones. */
+export const formatDate = (iso: string) => iso.split('-').reverse().join('/')

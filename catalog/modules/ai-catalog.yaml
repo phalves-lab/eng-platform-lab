@@ -1,0 +1,15 @@
+name: ai-catalog
+description: Catálogo de plugins, skills e MCPs do time, lido do marketplace do Claude Code e completado pelo overlay versionado (maturidade, dono, revisão e instalação)
+owner: '@phalves-lab/platform'
+tier: tier-3
+businessUnits:
+  - plataforma
+users: Devs e líderes técnicos que escolhem e instalam ferramentas de IA
+confluencePageId: null
+paths:
+  - packages/catalog/
+  - catalog/ai/
+  - fixtures/marketplace/
+  - apps/portal-api/src/catalog/
+  - apps/portal-web/src/app/(portal)/catalogo/
+  - apps/portal-web/src/components/catalog/
