@@ -25,7 +25,8 @@
     "review": "npm run review --workspace @lab/review-bot --",
     "panel": "npm run panel --workspace @lab/eng-metrics --",
     "digest": "npm run digest --workspace @lab/eng-metrics --",
-    "chat-evals": "npm run chat-evals --workspace @lab/portal-api --"
+    "chat-evals": "npm run chat-evals --workspace @lab/portal-api --",
+    "deploy-event": "npm run deploy-event --workspace @lab/eng-metrics --"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs}": [

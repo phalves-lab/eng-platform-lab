@@ -1,0 +1,56 @@
+name: deploy-event
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        description: Resultado do deploy (success, failure ou rolled_back)
+        type: string
+        required: true
+      environment:
+        description: Ambiente do deploy
+        type: string
+        default: production
+      sha:
+        description: Commit publicado; vazio usa o commit do workflow que chamou
+        type: string
+        default: ''
+      tooling-ref:
+        description: Versão do eng-platform-lab que publica o evento
+        type: string
+        default: main
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: publish-deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: phalves-lab/eng-platform-lab
+          ref: ${{ inputs.tooling-ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Registrar o deploy para as métricas DORA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DEPLOY_REPO: ${{ github.repository }}
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_SHA: ${{ inputs.sha || github.sha }}
+          DEPLOY_STATUS: ${{ inputs.status }}
+          DEPLOY_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: >-
+          npm run deploy-event --
+          --repo "$DEPLOY_REPO" --environment "$DEPLOY_ENVIRONMENT"
+          --sha "$DEPLOY_SHA" --status "$DEPLOY_STATUS" --url "$DEPLOY_URL"
