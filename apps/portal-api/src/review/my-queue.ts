@@ -1,8 +1,10 @@
+import type { PrStatusKind } from '@lab/contracts'
 import type { QueueRow } from '@lab/eng-metrics/contract'
 
 export type Tone = 'success' | 'warning' | 'destructive' | 'secondary'
 
 export interface PrStatus {
+  kind: PrStatusKind
   label: string
   tone: Tone
   hint: string
@@ -24,6 +26,7 @@ export interface MyQueue {
 export const myPrStatus = (row: QueueRow): PrStatus => {
   if (row.checks === 'FAILURE' || row.checks === 'ERROR')
     return {
+      kind: 'failing_checks',
       label: 'Check vermelho',
       tone: 'destructive',
       hint: 'Corrija o check antes de pedir review.',
@@ -31,6 +34,7 @@ export const myPrStatus = (row: QueueRow): PrStatus => {
     }
   if (row.botSignal === 'ajustes')
     return {
+      kind: 'bot_changes',
       label: 'Bot pediu ajustes',
       tone: 'destructive',
       hint: 'Leia o comentário do bot e ajuste ou responda.',
@@ -38,6 +42,7 @@ export const myPrStatus = (row: QueueRow): PrStatus => {
     }
   if (row.requestedReviewers.length)
     return {
+      kind: 'awaiting_review',
       label: 'Aguardando review',
       tone: row.level === 'ok' ? 'secondary' : 'warning',
       hint: `Esperando ${row.requestedReviewers.join(', ')}.`,
@@ -45,12 +50,14 @@ export const myPrStatus = (row: QueueRow): PrStatus => {
     }
   if (row.hasHumanReview)
     return {
+      kind: 'reviewed',
       label: 'Com review',
       tone: 'success',
       hint: 'Responda os comentários e peça nova review se mudou algo.',
       needsAction: true,
     }
   return {
+    kind: 'no_reviewer',
     label: 'Sem revisor',
     tone: 'warning',
     hint: 'Ninguém foi pedido como revisor. Peça a review para alguém.',

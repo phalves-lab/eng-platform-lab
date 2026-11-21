@@ -1,0 +1,23 @@
+team: campanhas
+name: Campanhas
+people:
+  - login: ana.figueira
+    name: Ana Figueira
+    jira: ana
+    github: ana
+    role: lead
+  - login: bruno.tavares
+    name: Bruno Tavares
+    jira: bruno
+    github: bruno
+    role: dev
+  - login: carla.mendes
+    name: Carla Mendes
+    jira: carla
+    github: carla
+    role: dev
+  - login: davi.prado
+    name: Davi Prado
+    jira: davi
+    github: null
+    role: dev

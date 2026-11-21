@@ -15,6 +15,7 @@ import { MetricsModule } from './metrics/metrics.module.js'
 import { QualityModule } from './quality/quality.module.js'
 import { ReleasesModule } from './releases/releases.module.js'
 import { ReviewModule } from './review/review.module.js'
+import { WorkModule } from './work/work.module.js'
 
 const devOnlyVerifier: TokenVerifier = {
   verify: () => Promise.reject(new Error('token verification is disabled in dev mode')),
@@ -38,6 +39,7 @@ export class AppModule {
         DoraModule,
         FlowModule,
         QualityModule,
+        WorkModule,
       ],
       controllers: [HealthController, MeController],
       providers: [

@@ -33,6 +33,12 @@ describe('Jira fixture adapter', () => {
     }
     expect(batch.issues.some((issue) => issue.issueType === 'Epic')).toBe(true)
     expect(batch.issues.filter((i) => ['Bloqueado', 'Impedido'].includes(i.status))).toHaveLength(4)
+    expect(batch.links).toEqual([
+      { blockedKey: 'LAB-225', blockerKey: 'LAB-230' },
+      { blockedKey: 'LAB-229', blockerKey: 'LAB-231' },
+      { blockedKey: 'OPS-24', blockerKey: 'OPS-26' },
+      { blockedKey: 'OPS-28', blockerKey: 'OPS-18' },
+    ])
     expect(batch.issues.every((issue) => issue.url?.startsWith('https://jira.example.test/'))).toBe(
       true,
     )
@@ -98,7 +104,13 @@ describe('Jira fixture adapter', () => {
   })
 })
 
-const emptyBatch = (): JiraBatch => ({ sprints: [], issues: [], changes: [], sprintIssues: [] })
+const emptyBatch = (): JiraBatch => ({
+  sprints: [],
+  issues: [],
+  changes: [],
+  sprintIssues: [],
+  links: [],
+})
 
 describe('Jira collector', () => {
   it('drops links that point outside the batch', () => {
@@ -149,10 +161,41 @@ describe('Jira collector', () => {
         { sprintId: 9, issueKey: 'LAB-1', addedAt: null },
         { sprintId: 1, issueKey: 'LAB-2', addedAt: null },
       ],
+      links: [
+        { blockedKey: 'LAB-1', blockerKey: 'LAB-2' },
+        { blockedKey: 'LAB-2', blockerKey: 'LAB-1' },
+      ],
     })
     expect(batch.issues[0]?.sprintId).toBeNull()
     expect(batch.changes.map((change) => change.issueKey)).toEqual(['LAB-1'])
     expect(batch.sprintIssues).toEqual([{ sprintId: 1, issueKey: 'LAB-1', addedAt: null }])
+    expect(batch.links).toEqual([])
+  })
+
+  it('keeps each blocking link once when both sides report it', () => {
+    const batch = emptyBatch()
+    for (const key of ['LAB-1', 'LAB-2']) {
+      batch.issues.push({
+        key,
+        project: 'LAB',
+        component: null,
+        issueType: 'Story',
+        status: 'A fazer',
+        summary: null,
+        url: null,
+        epicKey: null,
+        sprintId: null,
+        assignee: null,
+        createdAt: '2026-11-01T00:00:00.000Z',
+        resolvedAt: null,
+      })
+    }
+    batch.links.push(
+      { blockedKey: 'LAB-2', blockerKey: 'LAB-1' },
+      { blockedKey: 'LAB-2', blockerKey: 'LAB-1' },
+      { blockedKey: 'LAB-1', blockerKey: 'LAB-1' },
+    )
+    expect(consistentBatch(batch).links).toEqual([{ blockedKey: 'LAB-2', blockerKey: 'LAB-1' }])
   })
 
   it('upserts sprints before issues and warns about statuses missing from the workflow', async () => {
@@ -172,6 +215,10 @@ describe('Jira collector', () => {
       }),
       upsertSprintIssues: vi.fn(() => {
         order.push('sprintIssues')
+        return Promise.resolve()
+      }),
+      replaceIssueLinks: vi.fn(() => {
+        order.push('links')
         return Promise.resolve()
       }),
     }
@@ -206,7 +253,8 @@ describe('Jira collector', () => {
     expect(collector.name).toBe('jira')
     await collector.run({ now: ANCHOR, logger: createLogger((line) => lines.push(line)) })
 
-    expect(order).toEqual(['sprints', 'issues', 'changes', 'sprintIssues'])
+    expect(order).toEqual(['sprints', 'issues', 'changes', 'sprintIssues', 'links'])
+    expect(repository.replaceIssueLinks).toHaveBeenCalledWith(['LAB-5'], [])
     const logs = lines.map((line) => JSON.parse(line) as Record<string, unknown>)
     expect(logs[0]).toMatchObject({
       level: 'warn',

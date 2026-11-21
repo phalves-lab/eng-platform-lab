@@ -1,7 +1,7 @@
 import { ArrowUpRight } from 'lucide-react'
 import type { QueueRow } from '@/lib/api'
 
-export function PrLink({ row }: { readonly row: QueueRow }) {
+export function PrLink({ row }: { readonly row: Pick<QueueRow, 'number' | 'title' | 'url'> }) {
   return (
     <a
       href={row.url}

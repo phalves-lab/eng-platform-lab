@@ -3,6 +3,7 @@ import {
   ChangeSchema,
   DeploySchema,
   IncidentSchema,
+  JiraIssueLinkSchema,
   JiraIssueSchema,
   SnapshotPayloadSchema,
 } from '../src/index.js'
@@ -75,6 +76,18 @@ describe('schemas', () => {
         firstCommitAt: '2026-11-20T10:00:00.000Z',
         mergedAt: '2026-11-20T11:00:00.000Z',
       }).success,
+    ).toBe(false)
+  })
+
+  it('refuses an issue that blocks itself or a malformed key', () => {
+    expect(
+      JiraIssueLinkSchema.safeParse({ blockedKey: 'LAB-1', blockerKey: 'LAB-2' }).success,
+    ).toBe(true)
+    expect(
+      JiraIssueLinkSchema.safeParse({ blockedKey: 'LAB-1', blockerKey: 'LAB-1' }).success,
+    ).toBe(false)
+    expect(
+      JiraIssueLinkSchema.safeParse({ blockedKey: 'lab-1', blockerKey: 'LAB-2' }).success,
     ).toBe(false)
   })
 })
