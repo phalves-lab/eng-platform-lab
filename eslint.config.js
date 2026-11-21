@@ -61,7 +61,7 @@ export default tseslint.config(
     rules: { 'sonarjs/function-return-type': 'off', 'sonarjs/table-header': 'off' },
   },
   {
-    files: ['scripts/**', 'tools/*/src/cli.ts'],
+    files: ['scripts/**', 'tools/*/src/*cli.ts'],
     rules: { 'no-console': 'off' },
   },
 )

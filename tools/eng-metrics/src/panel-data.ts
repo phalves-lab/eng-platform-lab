@@ -1,3 +1,4 @@
+import { isBot } from './github.js'
 import type { PanelData, PanelDataset, QueueRow, WeeklyPoint } from './contract.js'
 import {
   buildAlerts,
@@ -20,6 +21,9 @@ const toQueueRow = (item: QueueItem, index: number): QueueRow => ({
   taskKey: item.pr.taskKey,
   taskStatus: item.task?.status ?? null,
   requestedReviewers: item.pr.requestedReviewers,
+  reviewedBy: [
+    ...new Set(item.pr.reviews.map((review) => review.author).filter((author) => !isBot(author))),
+  ],
   enteredAt: item.enteredAt,
   enteredFrom: item.enteredFrom,
   ageBusinessDays: item.ageBusinessDays,

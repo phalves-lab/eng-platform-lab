@@ -24,18 +24,21 @@ import {
 } from '@/components/ui/sidebar'
 import type { Theme } from '@/hooks/use-theme'
 import { formatRelative } from '@/lib/format'
+import { buildMyQueue } from '@/lib/my-queue'
 import { type RouteId, toHash } from '@/lib/routes'
 
 interface AppSidebarProps {
   readonly datasets: PanelDataset[]
   readonly current: PanelDataset
   readonly route: RouteId
+  readonly person: string | null
   readonly now: number
   readonly theme: Theme
   readonly onToggleTheme: () => void
 }
 
-const badgeFor = (dataset: PanelDataset, route: RouteId): number | null => {
+const badgeFor = (dataset: PanelDataset, route: RouteId, person: string | null): number | null => {
+  if (route === 'minha-fila') return person ? buildMyQueue(dataset.queue, person).actions : null
   if (route === 'fila') return dataset.queue.length
   if (route === 'alertas') return dataset.alerts.length
   return null
@@ -87,6 +90,7 @@ export const AppSidebar = ({
   datasets,
   current,
   route,
+  person,
   now,
   theme,
   onToggleTheme,
@@ -105,11 +109,17 @@ export const AppSidebar = ({
         <SidebarGroupContent>
           <SidebarMenu>
             {NAV_ITEMS.map((item) => {
-              const badge = badgeFor(current, item.id)
+              const badge = badgeFor(current, item.id, person)
               return (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton asChild isActive={item.id === route} tooltip={item.title}>
-                    <a href={toHash({ route: item.id, dataset: current.id })}>
+                    <a
+                      href={toHash({
+                        route: item.id,
+                        dataset: current.id,
+                        person: item.id === 'minha-fila' ? person : null,
+                      })}
+                    >
                       <item.icon aria-hidden />
                       <span>{item.title}</span>
                     </a>

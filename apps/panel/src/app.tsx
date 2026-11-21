@@ -11,6 +11,7 @@ import { useHashState } from '@/hooks/use-hash-state'
 import { useNow } from '@/hooks/use-now'
 import { usePanelData } from '@/hooks/use-panel-data'
 import { useTheme } from '@/hooks/use-theme'
+import { readStoredPerson } from '@/lib/person-storage'
 import type { RouteId } from '@/lib/routes'
 
 type PageComponent = ComponentType<{ readonly dataset: PanelDataset }>
@@ -18,6 +19,9 @@ type PageComponent = ComponentType<{ readonly dataset: PanelDataset }>
 const PAGES: Record<RouteId, PageComponent> = {
   'visao-geral': lazy(() =>
     import('@/pages/overview-page').then((m) => ({ default: m.OverviewPage })),
+  ),
+  'minha-fila': lazy(() =>
+    import('@/pages/my-queue-page').then((m) => ({ default: m.MyQueuePage })),
   ),
   fila: lazy(() => import('@/pages/queue-page').then((m) => ({ default: m.QueuePage }))),
   alertas: lazy(() => import('@/pages/alerts-page').then((m) => ({ default: m.AlertsPage }))),
@@ -55,7 +59,7 @@ const FullPageMessage = ({ children }: { readonly children: ReactElement }) => (
 
 export const App = () => {
   const state = usePanelData()
-  const { route, dataset: datasetId } = useHashState()
+  const { route, dataset: datasetId, person } = useHashState()
   const { theme, toggleTheme } = useTheme()
   const now = useNow()
 
@@ -88,6 +92,7 @@ export const App = () => {
         datasets={datasets}
         current={dataset}
         route={route}
+        person={person ?? readStoredPerson()}
         now={now}
         theme={theme}
         onToggleTheme={toggleTheme}

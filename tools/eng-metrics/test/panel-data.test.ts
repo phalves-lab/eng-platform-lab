@@ -88,8 +88,14 @@ describe('dados do painel', () => {
   })
 
   it('mantém só rótulos de risco e o status da task na linha da fila', () => {
+    const base = merged(7, '2026-11-19T00:00:00.000Z', 2)
     const open: PullRequest = {
-      ...merged(7, '2026-11-19T00:00:00.000Z', null),
+      ...base,
+      reviews: [
+        ...base.reviews,
+        { author: 'bruno', state: 'COMMENTED', submittedAt: NOW, comments: 0 },
+        { author: 'github-actions', state: 'COMMENTED', submittedAt: NOW, comments: 0 },
+      ],
       state: 'OPEN',
       mergedAt: null,
     }
@@ -117,7 +123,11 @@ describe('dados do painel', () => {
       NOW,
     )
     const queue = data.datasets[0]?.queue ?? []
-    expect(queue[0]).toMatchObject({ risks: ['risk:db-migration'], taskStatus: 'Code Review' })
+    expect(queue[0]).toMatchObject({
+      risks: ['risk:db-migration'],
+      taskStatus: 'Code Review',
+      reviewedBy: ['bruno'],
+    })
     expect(queue[1]).toMatchObject({ taskStatus: null, taskKey: null })
   })
 

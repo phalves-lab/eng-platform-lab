@@ -143,9 +143,21 @@ describe('alertas', () => {
 
 describe('rotas', () => {
   it('lê e escreve rota e conjunto no hash', () => {
-    expect(parseHash('')).toEqual({ route: 'visao-geral', dataset: null })
-    expect(parseHash('#/fila?conjunto=demo')).toEqual({ route: 'fila', dataset: 'demo' })
-    expect(parseHash('#/nao-existe')).toEqual({ route: 'visao-geral', dataset: null })
+    expect(parseHash('')).toEqual({ route: 'visao-geral', dataset: null, person: null })
+    expect(parseHash('#/fila?conjunto=demo')).toEqual({
+      route: 'fila',
+      dataset: 'demo',
+      person: null,
+    })
+    expect(parseHash('#/minha-fila?conjunto=lab&pessoa=ana')).toEqual({
+      route: 'minha-fila',
+      dataset: 'lab',
+      person: 'ana',
+    })
+    expect(parseHash('#/nao-existe')).toEqual({ route: 'visao-geral', dataset: null, person: null })
+    expect(toHash({ route: 'minha-fila', dataset: 'lab', person: 'ana' })).toBe(
+      '#/minha-fila?conjunto=lab&pessoa=ana',
+    )
     expect(toHash({ route: 'alertas', dataset: 'lab' })).toBe('#/alertas?conjunto=lab')
     expect(toHash({ route: 'metricas', dataset: null })).toBe('#/metricas')
   })

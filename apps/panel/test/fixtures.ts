@@ -9,6 +9,7 @@ export const row = (overrides: Partial<QueueRow> = {}): QueueRow => ({
   taskKey: 'LAB-10',
   taskStatus: 'Code Review',
   requestedReviewers: ['bruno'],
+  reviewedBy: [],
   enteredAt: '2026-11-18T12:00:00.000Z',
   enteredFrom: 'jira',
   ageBusinessDays: 0.5,
