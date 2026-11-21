@@ -1,0 +1,9 @@
+id: INC-2026-019
+title: Formulário de orçamento sem o botão de enviar no celular
+system: campanhas
+severity: sev2
+startedAt: '2026-11-02T17:45:00Z'
+endedAt: '2026-11-02T22:05:00Z'
+cause:
+  repo: lab-demo/campanhas-web
+  sha: 27c70b28412a

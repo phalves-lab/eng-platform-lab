@@ -10,6 +10,7 @@ const workspaces = [
   'apps/panel',
   'apps/portal-worker',
   'packages/database',
+  'packages/dora',
   'tools/eng-metrics',
   'tools/mcp-context',
   'tools/review-bot',

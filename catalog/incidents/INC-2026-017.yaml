@@ -1,0 +1,7 @@
+id: INC-2026-017
+title: Lentidão na tela de solicitações por pico de acesso
+system: campanhas
+severity: sev3
+startedAt: '2026-10-21T13:10:00Z'
+endedAt: '2026-10-21T14:00:00Z'
+cause: null

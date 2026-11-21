@@ -1,0 +1,23 @@
+repos:
+  - repo: lab-demo/campanhas-api
+    team: Campanhas
+    system: campanhas
+    source:
+      type: fixture
+  - repo: lab-demo/campanhas-web
+    team: Campanhas
+    system: campanhas
+    source:
+      type: fixture
+  - repo: lab-demo/notificacoes-worker
+    team: Mensageria
+    system: notificacoes
+    source:
+      type: fixture
+  - repo: phalves-lab/eng-platform-lab
+    team: Plataforma
+    system: esteira
+    productionEnvironment: production
+    defaultBranch: main
+    source:
+      type: github-deployments

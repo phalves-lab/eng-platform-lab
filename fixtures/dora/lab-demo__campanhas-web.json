@@ -1,0 +1,989 @@
+{
+  "repo": "lab-demo/campanhas-web",
+  "deploys": [
+    {
+      "environment": "production",
+      "sha": "775cbdb2a121",
+      "deployedAt": "2026-08-20T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111000",
+      "commitShas": ["bfaf0ee80127", "775cbdb2a121"]
+    },
+    {
+      "environment": "production",
+      "sha": "f36a7997ec50",
+      "deployedAt": "2026-08-24T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111001",
+      "commitShas": ["15f2f486731d", "f36a7997ec50"]
+    },
+    {
+      "environment": "production",
+      "sha": "c2d9ccdbdb45",
+      "deployedAt": "2026-08-25T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111002",
+      "commitShas": ["fa1d7b3e1ff3", "c2d9ccdbdb45"]
+    },
+    {
+      "environment": "production",
+      "sha": "5bcf033d1dfb",
+      "deployedAt": "2026-08-28T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111003",
+      "commitShas": ["e7fbc15f7b16", "b1eb0e7e9a27", "5bcf033d1dfb"]
+    },
+    {
+      "environment": "production",
+      "sha": "6a055f507832",
+      "deployedAt": "2026-08-31T15:00:00Z",
+      "status": "rolled_back",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111004",
+      "commitShas": ["4ad227491c1e", "6a055f507832"]
+    },
+    {
+      "environment": "production",
+      "sha": "62a455ae4dff",
+      "deployedAt": "2026-09-03T15:00:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111005",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "62a455ae4dff",
+      "deployedAt": "2026-09-03T15:57:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111005-retry",
+      "commitShas": ["356a10f7303d", "62a455ae4dff"]
+    },
+    {
+      "environment": "production",
+      "sha": "143c980c72e6",
+      "deployedAt": "2026-09-07T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111007",
+      "commitShas": ["77a43a16e35d", "f39ef3f3a243", "143c980c72e6"]
+    },
+    {
+      "environment": "production",
+      "sha": "b2688cd56460",
+      "deployedAt": "2026-09-10T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111008",
+      "commitShas": ["b2688cd56460"]
+    },
+    {
+      "environment": "production",
+      "sha": "0f2a8f7a4a09",
+      "deployedAt": "2026-09-14T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111009",
+      "commitShas": ["3acab062c4b9", "0f2a8f7a4a09"]
+    },
+    {
+      "environment": "production",
+      "sha": "3ae4f384e75f",
+      "deployedAt": "2026-09-15T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111010",
+      "commitShas": ["6e16bc06bf3b", "3ae4f384e75f"]
+    },
+    {
+      "environment": "production",
+      "sha": "0debfd56b305",
+      "deployedAt": "2026-09-17T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111011",
+      "commitShas": ["428310ad6c64", "0debfd56b305"]
+    },
+    {
+      "environment": "production",
+      "sha": "37c1b8cb3fc7",
+      "deployedAt": "2026-09-21T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111012",
+      "commitShas": ["9508b769edbe", "37c1b8cb3fc7"]
+    },
+    {
+      "environment": "production",
+      "sha": "14a412005e55",
+      "deployedAt": "2026-09-23T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111013",
+      "commitShas": ["d5488eec408b", "8ed3d6c3765d", "14a412005e55"]
+    },
+    {
+      "environment": "production",
+      "sha": "2ba679f24636",
+      "deployedAt": "2026-09-24T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111014",
+      "commitShas": ["b49de66a1c32", "94d64977202a", "2ba679f24636"]
+    },
+    {
+      "environment": "production",
+      "sha": "4b0e0b9b7076",
+      "deployedAt": "2026-09-28T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111015",
+      "commitShas": ["62177cb30c42", "4b0e0b9b7076"]
+    },
+    {
+      "environment": "production",
+      "sha": "f8fb18d3624f",
+      "deployedAt": "2026-09-29T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111016",
+      "commitShas": ["f8fb18d3624f"]
+    },
+    {
+      "environment": "production",
+      "sha": "b4f30048ba79",
+      "deployedAt": "2026-10-02T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111017",
+      "commitShas": ["3c1fd910fa19", "1d67e539804f", "b4f30048ba79"]
+    },
+    {
+      "environment": "production",
+      "sha": "45a7082f7dfa",
+      "deployedAt": "2026-10-05T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111018",
+      "commitShas": ["f1c05e0f2d73", "7903795dce85", "45a7082f7dfa"]
+    },
+    {
+      "environment": "production",
+      "sha": "9a2c34bf9542",
+      "deployedAt": "2026-10-07T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111019",
+      "commitShas": ["49b92b94964f", "9a2c34bf9542"]
+    },
+    {
+      "environment": "production",
+      "sha": "0cb63b317750",
+      "deployedAt": "2026-10-09T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111020",
+      "commitShas": ["f11b2ca76455", "3fe61c5605c7", "0cb63b317750"]
+    },
+    {
+      "environment": "production",
+      "sha": "585dbfdca4f5",
+      "deployedAt": "2026-10-12T15:00:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111021",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "585dbfdca4f5",
+      "deployedAt": "2026-10-12T16:04:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111021-retry",
+      "commitShas": ["7ca4723bff2b", "adead8f14e10", "585dbfdca4f5"]
+    },
+    {
+      "environment": "production",
+      "sha": "38f9dfbad142",
+      "deployedAt": "2026-10-15T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111023",
+      "commitShas": ["e4e2c9179392", "f2464f7255cd", "38f9dfbad142"]
+    },
+    {
+      "environment": "production",
+      "sha": "bfcd0bb4fde3",
+      "deployedAt": "2026-10-19T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111024",
+      "commitShas": ["b42585d2ca51", "f964f3edf288", "bfcd0bb4fde3"]
+    },
+    {
+      "environment": "production",
+      "sha": "e02170227b5c",
+      "deployedAt": "2026-10-20T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111025",
+      "commitShas": ["e1a908028039", "47dff05fc5df", "e02170227b5c"]
+    },
+    {
+      "environment": "production",
+      "sha": "c9dc722f7c6a",
+      "deployedAt": "2026-10-22T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111026",
+      "commitShas": ["ea48e405aaff", "c9dc722f7c6a"]
+    },
+    {
+      "environment": "production",
+      "sha": "9a36968ec474",
+      "deployedAt": "2026-10-23T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111027",
+      "commitShas": ["0ecad77b5021", "9a36968ec474"]
+    },
+    {
+      "environment": "production",
+      "sha": "7cf134a84df7",
+      "deployedAt": "2026-10-26T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111028",
+      "commitShas": ["7cf134a84df7"]
+    },
+    {
+      "environment": "production",
+      "sha": "06b1083c43e9",
+      "deployedAt": "2026-10-29T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111029",
+      "commitShas": ["bb8f9bbc898c", "06b1083c43e9"]
+    },
+    {
+      "environment": "production",
+      "sha": "27c70b28412a",
+      "deployedAt": "2026-11-02T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111030",
+      "commitShas": ["27c70b28412a"]
+    },
+    {
+      "environment": "production",
+      "sha": "7a3163aba156",
+      "deployedAt": "2026-11-04T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111031",
+      "commitShas": ["679e240df443", "18b28362b242", "7a3163aba156"]
+    },
+    {
+      "environment": "production",
+      "sha": "84c68b40d200",
+      "deployedAt": "2026-11-05T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111032",
+      "commitShas": ["21642a9a9fb9", "84c68b40d200"]
+    },
+    {
+      "environment": "production",
+      "sha": "69321cee53a6",
+      "deployedAt": "2026-11-06T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111033",
+      "commitShas": ["b9436c85dc90", "1e5a215d9fc5", "69321cee53a6"]
+    },
+    {
+      "environment": "production",
+      "sha": "80bf2e34152d",
+      "deployedAt": "2026-11-09T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111034",
+      "commitShas": ["b47072a1e62e", "80bf2e34152d"]
+    },
+    {
+      "environment": "production",
+      "sha": "cb54eecb2b6f",
+      "deployedAt": "2026-11-10T15:00:00Z",
+      "status": "rolled_back",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111035",
+      "commitShas": ["39e77c2886ce", "93f0185144f6", "cb54eecb2b6f"]
+    },
+    {
+      "environment": "production",
+      "sha": "8e350805bd92",
+      "deployedAt": "2026-11-11T15:00:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111036",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "8e350805bd92",
+      "deployedAt": "2026-11-11T15:52:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111036-retry",
+      "commitShas": ["2b2ba061ca28", "8e350805bd92"]
+    },
+    {
+      "environment": "production",
+      "sha": "9f300bde3bac",
+      "deployedAt": "2026-11-13T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111038",
+      "commitShas": ["18fac2c76075", "31a731e603b0", "9f300bde3bac"]
+    },
+    {
+      "environment": "production",
+      "sha": "6ecc31477f36",
+      "deployedAt": "2026-11-16T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111039",
+      "commitShas": ["6ecc31477f36"]
+    },
+    {
+      "environment": "production",
+      "sha": "1b46ba954da6",
+      "deployedAt": "2026-11-17T15:00:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111040",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "1b46ba954da6",
+      "deployedAt": "2026-11-17T15:32:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111040-retry",
+      "commitShas": ["1b46ba954da6"]
+    },
+    {
+      "environment": "production",
+      "sha": "f30c7d7aa9ad",
+      "deployedAt": "2026-11-19T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111042",
+      "commitShas": ["fbad1b11d676", "f30c7d7aa9ad"]
+    },
+    {
+      "environment": "production",
+      "sha": "4d3777a8aa10",
+      "deployedAt": "2026-11-20T15:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-web/deploys/111043",
+      "commitShas": ["53cda8d28dbc", "4d3777a8aa10"]
+    }
+  ],
+  "changes": [
+    {
+      "pullNumber": 211,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "bfaf0ee80127",
+      "firstCommitAt": "2026-08-15T14:49:00Z",
+      "mergedAt": "2026-08-19T01:56:00Z"
+    },
+    {
+      "pullNumber": 212,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "775cbdb2a121",
+      "firstCommitAt": "2026-08-18T11:04:00Z",
+      "mergedAt": "2026-08-20T00:16:00Z"
+    },
+    {
+      "pullNumber": 213,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "15f2f486731d",
+      "firstCommitAt": "2026-08-19T22:28:00Z",
+      "mergedAt": "2026-08-22T18:16:00Z"
+    },
+    {
+      "pullNumber": 214,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "f36a7997ec50",
+      "firstCommitAt": "2026-08-21T12:24:00Z",
+      "mergedAt": "2026-08-23T08:52:00Z"
+    },
+    {
+      "pullNumber": 215,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "fa1d7b3e1ff3",
+      "firstCommitAt": "2026-08-23T08:22:00Z",
+      "mergedAt": "2026-08-25T01:50:00Z"
+    },
+    {
+      "pullNumber": 216,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "c2d9ccdbdb45",
+      "firstCommitAt": "2026-08-22T10:24:00Z",
+      "mergedAt": "2026-08-25T06:04:00Z"
+    },
+    {
+      "pullNumber": 217,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "e7fbc15f7b16",
+      "firstCommitAt": "2026-08-24T15:27:00Z",
+      "mergedAt": "2026-08-26T20:06:00Z"
+    },
+    {
+      "pullNumber": 218,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "b1eb0e7e9a27",
+      "firstCommitAt": "2026-08-21T07:03:00Z",
+      "mergedAt": "2026-08-26T05:02:00Z"
+    },
+    {
+      "pullNumber": 219,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "5bcf033d1dfb",
+      "firstCommitAt": "2026-08-22T17:59:00Z",
+      "mergedAt": "2026-08-26T18:54:00Z"
+    },
+    {
+      "pullNumber": 220,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "4ad227491c1e",
+      "firstCommitAt": "2026-08-26T16:02:00Z",
+      "mergedAt": "2026-08-31T02:30:00Z"
+    },
+    {
+      "pullNumber": 221,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "6a055f507832",
+      "firstCommitAt": "2026-08-29T16:46:00Z",
+      "mergedAt": "2026-08-31T01:03:00Z"
+    },
+    {
+      "pullNumber": 222,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "356a10f7303d",
+      "firstCommitAt": "2026-08-30T04:55:00Z",
+      "mergedAt": "2026-09-02T08:06:00Z"
+    },
+    {
+      "pullNumber": 223,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "62a455ae4dff",
+      "firstCommitAt": "2026-08-30T04:07:00Z",
+      "mergedAt": "2026-09-02T20:05:00Z"
+    },
+    {
+      "pullNumber": 224,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "77a43a16e35d",
+      "firstCommitAt": "2026-09-03T01:00:00Z",
+      "mergedAt": "2026-09-05T14:46:00Z"
+    },
+    {
+      "pullNumber": 225,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "f39ef3f3a243",
+      "firstCommitAt": "2026-09-01T14:08:00Z",
+      "mergedAt": "2026-09-04T09:52:00Z"
+    },
+    {
+      "pullNumber": 226,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "143c980c72e6",
+      "firstCommitAt": "2026-09-03T08:01:00Z",
+      "mergedAt": "2026-09-06T15:57:00Z"
+    },
+    {
+      "pullNumber": 227,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "b2688cd56460",
+      "firstCommitAt": "2026-09-04T18:30:00Z",
+      "mergedAt": "2026-09-08T08:38:00Z"
+    },
+    {
+      "pullNumber": 228,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "3acab062c4b9",
+      "firstCommitAt": "2026-09-10T14:42:00Z",
+      "mergedAt": "2026-09-14T05:23:00Z"
+    },
+    {
+      "pullNumber": 229,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "0f2a8f7a4a09",
+      "firstCommitAt": "2026-09-09T02:07:00Z",
+      "mergedAt": "2026-09-12T12:57:00Z"
+    },
+    {
+      "pullNumber": 230,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "6e16bc06bf3b",
+      "firstCommitAt": "2026-09-12T09:37:00Z",
+      "mergedAt": "2026-09-14T18:46:00Z"
+    },
+    {
+      "pullNumber": 231,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "3ae4f384e75f",
+      "firstCommitAt": "2026-09-13T13:15:00Z",
+      "mergedAt": "2026-09-15T02:26:00Z"
+    },
+    {
+      "pullNumber": 232,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "428310ad6c64",
+      "firstCommitAt": "2026-09-12T12:11:00Z",
+      "mergedAt": "2026-09-16T02:10:00Z"
+    },
+    {
+      "pullNumber": 233,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "0debfd56b305",
+      "firstCommitAt": "2026-09-13T20:19:00Z",
+      "mergedAt": "2026-09-17T08:10:00Z"
+    },
+    {
+      "pullNumber": 234,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "9508b769edbe",
+      "firstCommitAt": "2026-09-14T20:05:00Z",
+      "mergedAt": "2026-09-18T12:39:00Z"
+    },
+    {
+      "pullNumber": 235,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "37c1b8cb3fc7",
+      "firstCommitAt": "2026-09-19T15:41:00Z",
+      "mergedAt": "2026-09-21T09:51:00Z"
+    },
+    {
+      "pullNumber": 236,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "d5488eec408b",
+      "firstCommitAt": "2026-09-19T19:30:00Z",
+      "mergedAt": "2026-09-22T11:23:00Z"
+    },
+    {
+      "pullNumber": 237,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "8ed3d6c3765d",
+      "firstCommitAt": "2026-09-21T14:59:00Z",
+      "mergedAt": "2026-09-23T03:25:00Z"
+    },
+    {
+      "pullNumber": 238,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "14a412005e55",
+      "firstCommitAt": "2026-09-19T06:54:00Z",
+      "mergedAt": "2026-09-22T09:12:00Z"
+    },
+    {
+      "pullNumber": 239,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "b49de66a1c32",
+      "firstCommitAt": "2026-09-20T16:48:00Z",
+      "mergedAt": "2026-09-24T00:39:00Z"
+    },
+    {
+      "pullNumber": 240,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "94d64977202a",
+      "firstCommitAt": "2026-09-19T18:25:00Z",
+      "mergedAt": "2026-09-24T01:55:00Z"
+    },
+    {
+      "pullNumber": 241,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "2ba679f24636",
+      "firstCommitAt": "2026-09-23T06:06:00Z",
+      "mergedAt": "2026-09-24T12:33:00Z"
+    },
+    {
+      "pullNumber": 242,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "62177cb30c42",
+      "firstCommitAt": "2026-09-26T05:06:00Z",
+      "mergedAt": "2026-09-27T11:11:00Z"
+    },
+    {
+      "pullNumber": 243,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "4b0e0b9b7076",
+      "firstCommitAt": "2026-09-24T22:49:00Z",
+      "mergedAt": "2026-09-26T19:30:00Z"
+    },
+    {
+      "pullNumber": 244,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "f8fb18d3624f",
+      "firstCommitAt": "2026-09-25T16:24:00Z",
+      "mergedAt": "2026-09-29T13:45:00Z"
+    },
+    {
+      "pullNumber": 245,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "3c1fd910fa19",
+      "firstCommitAt": "2026-09-26T17:04:00Z",
+      "mergedAt": "2026-09-30T04:43:00Z"
+    },
+    {
+      "pullNumber": 246,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "1d67e539804f",
+      "firstCommitAt": "2026-09-27T18:35:00Z",
+      "mergedAt": "2026-10-01T00:33:00Z"
+    },
+    {
+      "pullNumber": 247,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "b4f30048ba79",
+      "firstCommitAt": "2026-09-27T05:05:00Z",
+      "mergedAt": "2026-09-30T04:43:00Z"
+    },
+    {
+      "pullNumber": 248,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "f1c05e0f2d73",
+      "firstCommitAt": "2026-09-30T14:39:00Z",
+      "mergedAt": "2026-10-04T01:38:00Z"
+    },
+    {
+      "pullNumber": 249,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "7903795dce85",
+      "firstCommitAt": "2026-10-01T14:32:00Z",
+      "mergedAt": "2026-10-03T23:16:00Z"
+    },
+    {
+      "pullNumber": 250,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "45a7082f7dfa",
+      "firstCommitAt": "2026-09-30T07:54:00Z",
+      "mergedAt": "2026-10-04T03:28:00Z"
+    },
+    {
+      "pullNumber": 251,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "49b92b94964f",
+      "firstCommitAt": "2026-10-04T01:29:00Z",
+      "mergedAt": "2026-10-05T22:18:00Z"
+    },
+    {
+      "pullNumber": 252,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "9a2c34bf9542",
+      "firstCommitAt": "2026-10-02T22:15:00Z",
+      "mergedAt": "2026-10-07T05:46:00Z"
+    },
+    {
+      "pullNumber": 253,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "f11b2ca76455",
+      "firstCommitAt": "2026-10-07T11:35:00Z",
+      "mergedAt": "2026-10-09T02:35:00Z"
+    },
+    {
+      "pullNumber": 254,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "3fe61c5605c7",
+      "firstCommitAt": "2026-10-06T00:11:00Z",
+      "mergedAt": "2026-10-08T01:36:00Z"
+    },
+    {
+      "pullNumber": 255,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "0cb63b317750",
+      "firstCommitAt": "2026-10-06T11:48:00Z",
+      "mergedAt": "2026-10-08T02:32:00Z"
+    },
+    {
+      "pullNumber": 256,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "7ca4723bff2b",
+      "firstCommitAt": "2026-10-07T13:29:00Z",
+      "mergedAt": "2026-10-11T11:05:00Z"
+    },
+    {
+      "pullNumber": 257,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "adead8f14e10",
+      "firstCommitAt": "2026-10-08T21:30:00Z",
+      "mergedAt": "2026-10-10T23:54:00Z"
+    },
+    {
+      "pullNumber": 258,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "585dbfdca4f5",
+      "firstCommitAt": "2026-10-06T23:17:00Z",
+      "mergedAt": "2026-10-10T13:34:00Z"
+    },
+    {
+      "pullNumber": 259,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "e4e2c9179392",
+      "firstCommitAt": "2026-10-12T21:09:00Z",
+      "mergedAt": "2026-10-14T08:12:00Z"
+    },
+    {
+      "pullNumber": 260,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "f2464f7255cd",
+      "firstCommitAt": "2026-10-12T03:55:00Z",
+      "mergedAt": "2026-10-14T08:40:00Z"
+    },
+    {
+      "pullNumber": 261,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "38f9dfbad142",
+      "firstCommitAt": "2026-10-10T21:43:00Z",
+      "mergedAt": "2026-10-15T10:29:00Z"
+    },
+    {
+      "pullNumber": 262,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "b42585d2ca51",
+      "firstCommitAt": "2026-10-14T14:03:00Z",
+      "mergedAt": "2026-10-17T11:16:00Z"
+    },
+    {
+      "pullNumber": 263,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "f964f3edf288",
+      "firstCommitAt": "2026-10-14T22:28:00Z",
+      "mergedAt": "2026-10-16T12:59:00Z"
+    },
+    {
+      "pullNumber": 264,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "bfcd0bb4fde3",
+      "firstCommitAt": "2026-10-13T04:40:00Z",
+      "mergedAt": "2026-10-16T12:11:00Z"
+    },
+    {
+      "pullNumber": 265,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "e1a908028039",
+      "firstCommitAt": "2026-10-17T13:39:00Z",
+      "mergedAt": "2026-10-19T20:05:00Z"
+    },
+    {
+      "pullNumber": 266,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "47dff05fc5df",
+      "firstCommitAt": "2026-10-17T03:28:00Z",
+      "mergedAt": "2026-10-19T19:49:00Z"
+    },
+    {
+      "pullNumber": 267,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "e02170227b5c",
+      "firstCommitAt": "2026-10-18T03:27:00Z",
+      "mergedAt": "2026-10-19T21:17:00Z"
+    },
+    {
+      "pullNumber": 268,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "ea48e405aaff",
+      "firstCommitAt": "2026-10-19T03:07:00Z",
+      "mergedAt": "2026-10-22T12:20:00Z"
+    },
+    {
+      "pullNumber": 269,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "c9dc722f7c6a",
+      "firstCommitAt": "2026-10-18T15:44:00Z",
+      "mergedAt": "2026-10-21T19:04:00Z"
+    },
+    {
+      "pullNumber": 270,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "0ecad77b5021",
+      "firstCommitAt": "2026-10-20T23:05:00Z",
+      "mergedAt": "2026-10-23T02:25:00Z"
+    },
+    {
+      "pullNumber": 271,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "9a36968ec474",
+      "firstCommitAt": "2026-10-21T16:27:00Z",
+      "mergedAt": "2026-10-23T06:45:00Z"
+    },
+    {
+      "pullNumber": 272,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "7cf134a84df7",
+      "firstCommitAt": "2026-10-21T14:35:00Z",
+      "mergedAt": "2026-10-25T02:41:00Z"
+    },
+    {
+      "pullNumber": 273,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "bb8f9bbc898c",
+      "firstCommitAt": "2026-10-26T09:50:00Z",
+      "mergedAt": "2026-10-28T21:27:00Z"
+    },
+    {
+      "pullNumber": 274,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "06b1083c43e9",
+      "firstCommitAt": "2026-10-27T00:56:00Z",
+      "mergedAt": "2026-10-28T18:43:00Z"
+    },
+    {
+      "pullNumber": 275,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "27c70b28412a",
+      "firstCommitAt": "2026-10-31T10:03:00Z",
+      "mergedAt": "2026-11-02T04:04:00Z"
+    },
+    {
+      "pullNumber": 276,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "679e240df443",
+      "firstCommitAt": "2026-10-29T23:10:00Z",
+      "mergedAt": "2026-11-03T20:06:00Z"
+    },
+    {
+      "pullNumber": 277,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "18b28362b242",
+      "firstCommitAt": "2026-11-01T04:24:00Z",
+      "mergedAt": "2026-11-03T15:14:00Z"
+    },
+    {
+      "pullNumber": 278,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "7a3163aba156",
+      "firstCommitAt": "2026-11-02T15:13:00Z",
+      "mergedAt": "2026-11-04T01:39:00Z"
+    },
+    {
+      "pullNumber": 279,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "21642a9a9fb9",
+      "firstCommitAt": "2026-10-31T13:42:00Z",
+      "mergedAt": "2026-11-05T09:07:00Z"
+    },
+    {
+      "pullNumber": 280,
+      "title": "feat: Tela de nova solicitação",
+      "mergeSha": "84c68b40d200",
+      "firstCommitAt": "2026-11-03T18:15:00Z",
+      "mergedAt": "2026-11-05T08:50:00Z"
+    },
+    {
+      "pullNumber": 281,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "b9436c85dc90",
+      "firstCommitAt": "2026-11-03T15:09:00Z",
+      "mergedAt": "2026-11-05T23:26:00Z"
+    },
+    {
+      "pullNumber": 282,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "1e5a215d9fc5",
+      "firstCommitAt": "2026-11-01T22:51:00Z",
+      "mergedAt": "2026-11-06T00:48:00Z"
+    },
+    {
+      "pullNumber": 283,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "69321cee53a6",
+      "firstCommitAt": "2026-11-02T22:37:00Z",
+      "mergedAt": "2026-11-06T06:19:00Z"
+    },
+    {
+      "pullNumber": 284,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "b47072a1e62e",
+      "firstCommitAt": "2026-11-06T03:23:00Z",
+      "mergedAt": "2026-11-07T18:21:00Z"
+    },
+    {
+      "pullNumber": 285,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "80bf2e34152d",
+      "firstCommitAt": "2026-11-04T14:48:00Z",
+      "mergedAt": "2026-11-08T09:15:00Z"
+    },
+    {
+      "pullNumber": 286,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "39e77c2886ce",
+      "firstCommitAt": "2026-11-08T09:08:00Z",
+      "mergedAt": "2026-11-09T23:58:00Z"
+    },
+    {
+      "pullNumber": 287,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "93f0185144f6",
+      "firstCommitAt": "2026-11-08T20:46:00Z",
+      "mergedAt": "2026-11-10T11:38:00Z"
+    },
+    {
+      "pullNumber": 288,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "cb54eecb2b6f",
+      "firstCommitAt": "2026-11-08T05:32:00Z",
+      "mergedAt": "2026-11-10T05:33:00Z"
+    },
+    {
+      "pullNumber": 289,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "2b2ba061ca28",
+      "firstCommitAt": "2026-11-06T20:39:00Z",
+      "mergedAt": "2026-11-11T12:08:00Z"
+    },
+    {
+      "pullNumber": 290,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "8e350805bd92",
+      "firstCommitAt": "2026-11-07T12:23:00Z",
+      "mergedAt": "2026-11-11T01:12:00Z"
+    },
+    {
+      "pullNumber": 291,
+      "title": "feat: Tema escuro no detalhe",
+      "mergeSha": "18fac2c76075",
+      "firstCommitAt": "2026-11-08T05:39:00Z",
+      "mergedAt": "2026-11-13T01:38:00Z"
+    },
+    {
+      "pullNumber": 292,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "31a731e603b0",
+      "firstCommitAt": "2026-11-11T08:31:00Z",
+      "mergedAt": "2026-11-12T22:32:00Z"
+    },
+    {
+      "pullNumber": 293,
+      "title": "feat: Filtros salvos na listagem",
+      "mergeSha": "9f300bde3bac",
+      "firstCommitAt": "2026-11-07T17:19:00Z",
+      "mergedAt": "2026-11-12T03:50:00Z"
+    },
+    {
+      "pullNumber": 294,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "6ecc31477f36",
+      "firstCommitAt": "2026-11-14T18:04:00Z",
+      "mergedAt": "2026-11-16T01:59:00Z"
+    },
+    {
+      "pullNumber": 295,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "1b46ba954da6",
+      "firstCommitAt": "2026-11-16T03:34:00Z",
+      "mergedAt": "2026-11-17T10:01:00Z"
+    },
+    {
+      "pullNumber": 296,
+      "title": "feat: Mensagens de erro do formulário",
+      "mergeSha": "fbad1b11d676",
+      "firstCommitAt": "2026-11-13T07:12:00Z",
+      "mergedAt": "2026-11-17T23:16:00Z"
+    },
+    {
+      "pullNumber": 297,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "f30c7d7aa9ad",
+      "firstCommitAt": "2026-11-16T15:48:00Z",
+      "mergedAt": "2026-11-18T07:57:00Z"
+    },
+    {
+      "pullNumber": 298,
+      "title": "feat: Atalhos de teclado",
+      "mergeSha": "53cda8d28dbc",
+      "firstCommitAt": "2026-11-17T15:34:00Z",
+      "mergedAt": "2026-11-20T09:09:00Z"
+    },
+    {
+      "pullNumber": 299,
+      "title": "feat: Formulário de orçamento",
+      "mergeSha": "4d3777a8aa10",
+      "firstCommitAt": "2026-11-18T01:05:00Z",
+      "mergedAt": "2026-11-20T11:04:00Z"
+    },
+    {
+      "pullNumber": 300,
+      "title": "feat: Estado vazio da fila",
+      "mergeSha": "a1708e1cef32",
+      "firstCommitAt": "2026-11-16T21:54:00Z",
+      "mergedAt": "2026-11-20T19:11:00Z"
+    }
+  ]
+}
