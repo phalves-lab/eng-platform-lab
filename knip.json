@@ -26,11 +26,17 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "apps/portal-api": {
-      "entry": ["src/main.ts"],
+      "entry": ["src/main.ts", "src/instrumentation.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "apps/portal-worker": {
-      "entry": ["src/cli.ts", "src/scorecard-cli.ts"],
+      "entry": [
+        "src/cli.ts",
+        "src/scorecard-cli.ts",
+        "src/collect-jira.ts",
+        "src/instrumentation.ts",
+        "src/healthcheck.ts"
+      ],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "apps/portal-web": {
@@ -40,6 +46,10 @@
     "packages/*": {
       "entry": ["src/index.ts", "src/testing.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "apps/portal-e2e": {
+      "entry": ["playwright.config.ts", "global-setup.ts", "fake-github.ts", "tests/**/*.spec.ts"],
+      "project": ["*.ts", "tests/**/*.ts"]
     }
   },
   "ignoreDependencies": ["jscpd"]

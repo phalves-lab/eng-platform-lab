@@ -1,0 +1,21 @@
+name: portal-platform
+description: Observabilidade (OpenTelemetry, logs JSON e health), imagens Docker, stack integrada em compose e testes de ponta a ponta com Playwright e axe do portal
+owner: '@phalves-lab/platform'
+tier: tier-2
+businessUnits:
+  - plataforma
+users: Quem opera, publica e testa o portal de engenharia
+confluencePageId: null
+paths:
+  - packages/telemetry/
+  - apps/portal-api/src/observability/
+  - apps/portal-api/src/health/
+  - apps/portal-api/Dockerfile
+  - apps/portal-web/Dockerfile
+  - apps/portal-worker/Dockerfile
+  - apps/portal-e2e/
+  - docker-compose.portal.yml
+  - .dockerignore
+  - docs/deploy.md
+  - .github/workflows/images.yml
+  - .github/workflows/e2e.yml

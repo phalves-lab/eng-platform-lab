@@ -75,9 +75,9 @@ export function CommandMenu() {
         size="sm"
         className="h-8 w-8 gap-2 px-0 text-muted-foreground sm:w-72 sm:justify-start sm:px-2.5"
         onClick={() => setOpen(true)}
-        aria-label="Buscar no portal"
       >
         <Search className="size-4 shrink-0" aria-hidden />
+        <span className="sr-only sm:hidden">Buscar no portal</span>
         <span className="hidden min-w-0 truncate font-normal sm:inline">
           Buscar padrão, sistema, projeto ou termo
         </span>
@@ -89,6 +89,7 @@ export function CommandMenu() {
         open={open}
         onOpenChange={setOpen}
         title="Buscar no portal"
+        description="Busque padrões, sistemas, termos, plugins e páginas do portal"
         shouldFilter={false}
       >
         <CommandInput

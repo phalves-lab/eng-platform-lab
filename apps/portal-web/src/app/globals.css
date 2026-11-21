@@ -29,10 +29,10 @@
   --warning-light: 40 96% 93%;
   --warning-dark: 30 90% 32%;
   --warning-foreground: 0 0% 100%;
-  --info: 205 82% 46%;
+  --info: 205 85% 36%;
   --info-light: 204 90% 95%;
   --info-foreground: 0 0% 100%;
-  --destructive: 0 70% 50%;
+  --destructive: 0 72% 42%;
   --destructive-light: 0 85% 96%;
   --destructive-foreground: 0 0% 100%;
   --border: 220 14% 89%;
@@ -62,7 +62,7 @@
   --popover: 224 28% 11%;
   --popover-foreground: 220 20% 94%;
   --primary: 234 86% 70%;
-  --primary-light: 234 40% 20%;
+  --primary-light: 234 40% 15%;
   --primary-dark: 234 90% 80%;
   --primary-foreground: 224 40% 10%;
   --secondary: 224 22% 18%;
@@ -83,7 +83,7 @@
   --info-light: 205 50% 17%;
   --info-foreground: 224 40% 10%;
   --destructive: 0 78% 64%;
-  --destructive-light: 0 50% 18%;
+  --destructive-light: 0 50% 14%;
   --destructive-foreground: 224 40% 10%;
   --border: 224 20% 20%;
   --input: 224 20% 22%;

@@ -11,6 +11,7 @@ import {
 } from '@lab/database'
 import { collectPanelData } from '@lab/eng-metrics/collect'
 import { loadWorkflow } from '@lab/flow'
+import { shutdownTelemetry } from '@lab/telemetry'
 import type { Collector } from './collector.js'
 import { buildAiQualityCollector } from './collectors/ai-quality/index.js'
 import { createChatRetentionCollector } from './collectors/chat-retention.js'
@@ -21,6 +22,7 @@ import { createEngMetricsCollector } from './collectors/eng-metrics.js'
 import { createJiraCollector, createJiraSource } from './collectors/jira/index.js'
 import { buildScorecardCollector, loadScorecardConfig } from './collectors/scorecard/index.js'
 import { loadConfig } from './config.js'
+import { startHeartbeat } from './heartbeat.js'
 import { createLogger } from './logger.js'
 import { Scheduler } from './scheduler.js'
 
@@ -80,15 +82,21 @@ const main = async () => {
   if (values.once) {
     const results = await scheduler.runAll()
     await pool.end()
+    await shutdownTelemetry()
     process.exitCode = results.every((result) => result.status === 'ok') ? 0 : 1
     return
   }
 
+  const heartbeat = config.heartbeatFile
+    ? startHeartbeat(config.heartbeatFile, (error) => logger.warn('heartbeat.failed', { error }))
+    : null
   scheduler.start()
   const shutdown = async (signal: string) => {
     logger.info('worker.stopping', { signal })
+    heartbeat?.stop()
     await scheduler.stop()
     await pool.end()
+    await shutdownTelemetry()
   }
   process.once('SIGINT', (signal) => void shutdown(signal))
   process.once('SIGTERM', (signal) => void shutdown(signal))

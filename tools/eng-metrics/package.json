@@ -12,8 +12,14 @@
     "deploy-event": "tsx src/deploy-event-cli.ts"
   },
   "exports": {
-    "./contract": "./src/contract.ts",
-    "./collect": "./src/collect.ts"
+    "./contract": {
+      "@lab/dist": "./dist/src/contract.js",
+      "default": "./src/contract.ts"
+    },
+    "./collect": {
+      "@lab/dist": "./dist/src/collect.js",
+      "default": "./src/collect.ts"
+    }
   },
   "dependencies": {
     "zod": "^4.6.7"

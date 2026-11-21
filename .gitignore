@@ -15,3 +15,6 @@ apps/panel/public/data.json
 .portal-data/
 .next/
 *.tsbuildinfo
+.e2e-data/
+test-results/
+playwright-report/
