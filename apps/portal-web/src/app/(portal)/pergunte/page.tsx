@@ -1,9 +1,10 @@
-import type { Conversation } from '@lab/contracts'
+import type { ChatMode, Conversation } from '@lab/contracts'
 import type { Metadata } from 'next'
 import { AskWorkspace } from '@/components/ask/ask-workspace'
 import type { HistoryState } from '@/components/ask/conversation-list'
 import { PageHeader } from '@/components/page-header'
-import { ApiError } from '@/lib/api'
+import { ApiError, api } from '@/lib/api'
+import { ASK_MODE, selectableModes } from '@/lib/chat-modes'
 import { CONVERSATION_PARAM, parseConversationId } from '@/lib/conversations'
 import { conversationsApi } from '@/lib/conversations-api'
 
@@ -11,6 +12,14 @@ export const metadata: Metadata = { title: 'Pergunte ao handbook' }
 
 interface AskPageProps {
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+const loadModes = async (): Promise<ChatMode[]> => {
+  try {
+    return selectableModes(await api.chatModes())
+  } catch {
+    return [ASK_MODE]
+  }
 }
 
 const loadHistory = async (): Promise<HistoryState> => {
@@ -39,15 +48,16 @@ const loadConversation = async (
 
 export default async function AskPage({ searchParams }: AskPageProps) {
   const id = parseConversationId((await searchParams)[CONVERSATION_PARAM])
-  const history = await loadHistory()
+  const [history, modes] = await Promise.all([loadHistory(), loadModes()])
   const { conversation, notice } = await loadConversation(id, history)
   return (
     <>
       <PageHeader
         title="Pergunte ao handbook"
-        description="Pergunte sobre padrões, sistemas, siglas ou decisões. Toda resposta mostra de onde veio, e você pode voltar a uma conversa anterior."
+        description="Pergunte sobre padrões, sistemas, siglas ou decisões, ou escolha um modo de rascunho: refinar task, descrição de PR, nota de release, ADR ou resumo da semana. Rascunhos não são gravados em lugar nenhum."
       />
       <AskWorkspace
+        modes={modes}
         key={conversation?.id ?? 'nova'}
         history={history}
         conversation={conversation}

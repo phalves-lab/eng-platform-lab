@@ -1,6 +1,6 @@
 'use client'
 
-import type { ConversationSummary } from '@lab/contracts'
+import type { ChatModeId, ConversationSummary } from '@lab/contracts'
 import { History, LoaderCircle, MessageSquarePlus, Trash2 } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -27,6 +27,7 @@ interface ConversationListProps {
   readonly onOpen: (id: string) => void
   readonly onNew: () => void
   readonly onDelete: (id: string) => Promise<boolean>
+  readonly modeLabels?: Partial<Record<ChatModeId, string>>
 }
 
 function Notice({ children }: { readonly children: string }) {
@@ -100,6 +101,7 @@ export function ConversationList({
   onOpen,
   onNew,
   onDelete,
+  modeLabels = {},
 }: ConversationListProps) {
   const headingId = useId()
   return (
@@ -131,6 +133,8 @@ export function ConversationList({
         <ul className="space-y-1">
           {history.items.map((conversation) => {
             const active = conversation.id === activeId
+            const modeLabel =
+              conversation.chatMode === 'ask' ? null : (modeLabels[conversation.chatMode] ?? null)
             return (
               <li
                 key={conversation.id}
@@ -150,6 +154,7 @@ export function ConversationList({
                     {openingId === conversation.id ? (
                       <LoaderCircle className="size-3 animate-spin" aria-hidden />
                     ) : null}
+                    {modeLabel ? `${modeLabel} · ` : ''}
                     {formatDateTime(conversation.updatedAt)} · {questionCount(conversation)}
                   </span>
                 </button>

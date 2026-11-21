@@ -1,0 +1,105 @@
+category: nota-release
+cases:
+  - id: release-notas-por-tipo
+    mode: release-notes
+    question: |
+      #21 feat(portal): DORA por repositório (LAB-27)
+      #22 fix(worker): retry no coletor do Jira (LAB-23)
+      #23 chore(ci): cache do npm no workflow
+    expect:
+      include:
+        [Nota técnica, Nota de negócio, Funcionalidades, Correções, Manutenção, '#21', LAB-27]
+      exclude: [publiquei, criei a tag]
+    offline:
+      answer: |
+        ## Nota técnica
+
+        **Funcionalidades**
+        - #21 (LAB-27): métricas DORA por repositório.
+
+        **Correções**
+        - #22 (LAB-23): o coletor do Jira tenta de novo quando a API limita as requisições.
+
+        **Manutenção**
+        - #23 (task a confirmar): cache do npm no workflow.
+
+        **Atenção no deploy**: nada especial no deploy.
+
+        ## Nota de negócio
+        - O time vê a frequência de deploy e a taxa de falha de cada repositório.
+        - Os quadros do Jira ficam atualizados mesmo quando o Jira está lento.
+        - O cache do workflow não muda nada para quem usa.
+
+        Rascunho para revisar e copiar.
+
+  - id: release-notas-com-migration
+    mode: release-notes
+    question: |
+      #24 feat(api): tabela release_runs (LAB-53) risk:db-migration
+      #25 feat(portal): golden set do chat (LAB-30) risk:ai-behavior
+    expect:
+      include: [Atenção no deploy, [migration, migração], release_runs, risk:ai-behavior]
+      exclude: [Nada especial no deploy]
+    offline:
+      answer: |
+        ## Nota técnica
+
+        **Funcionalidades**
+        - #24 (LAB-53): tabela release_runs para a auditoria das releases.
+        - #25 (LAB-30): golden set do chat.
+
+        **Atenção no deploy**
+        - Migration da tabela release_runs (risk:db-migration): rodar antes de subir a API.
+        - Mudança de comportamento de IA no chat (risk:ai-behavior): conferir o golden set.
+
+        ## Nota de negócio
+        - Toda release gerada pelo portal fica registrada.
+        - O chat passa a ter a precisão medida.
+
+        Rascunho para revisar e copiar.
+
+  - id: release-notas-le-a-task
+    mode: release-notes
+    question: '#30 feat(portal): histórico de conversas (LAB-31)'
+    expect:
+      tools: [tarefa]
+      include: [LAB-31, Nota de negócio]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-31 }
+      answer: |
+        ## Nota técnica
+
+        **Funcionalidades**
+        - #30 (LAB-31): histórico de conversas do Pergunte.
+
+        **Atenção no deploy**: nada especial no deploy.
+
+        ## Nota de negócio
+        - Cada pessoa volta a uma conversa anterior do Pergunte.
+
+        Rascunho para revisar e copiar.
+
+  - id: release-notas-sem-efeito-para-quem-usa
+    mode: release-notes
+    question: |
+      #40 chore(ci): atualiza a versão do Node no workflow
+      #41 refactor(api): extrai o leitor de configuração
+    expect:
+      include: [Manutenção, [não muda nada para quem usa, nada muda para quem usa]]
+      exclude: [Funcionalidades]
+    offline:
+      answer: |
+        ## Nota técnica
+
+        **Manutenção**
+        - #40 (task a confirmar): versão do Node no workflow.
+        - #41 (task a confirmar): leitor de configuração extraído.
+
+        **Atenção no deploy**: nada especial no deploy.
+
+        ## Nota de negócio
+        Esta release não muda nada para quem usa.
+
+        Rascunho para revisar e copiar.

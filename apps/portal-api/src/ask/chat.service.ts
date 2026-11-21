@@ -1,19 +1,25 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
-import type { AskResponse, AskStreamEvent, Citation, LlmAskResponse } from '@lab/contracts'
-import { findTool, handbookTools, normalize, uniqueCitations } from '@lab/handbook'
-import { z } from 'zod'
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common'
+import type {
+  AskResponse,
+  AskStreamEvent,
+  ChatModeId,
+  Citation,
+  LlmAskResponse,
+} from '@lab/contracts'
+import { normalize, uniqueCitations } from '@lab/handbook'
 import { CONFIG, type PortalConfig } from '../config/config.js'
 import { HandbookService } from '../handbook/handbook.service.js'
 import { AskService } from './ask.service.js'
+import { CHAT_MODES, type ChatModes, type ModeSetup } from './modes/draft-modes.js'
 import {
   type ChatMessage,
   MODEL_PROVIDER,
   type ModelProvider,
   type ToolCall,
-  type ToolSpec,
 } from './model/model-provider.js'
 import { maskPersonalData } from './model/personal-data.js'
 import { SYSTEM_PROMPT } from './system-prompt.js'
+import { type ChatTool, type ToolOutput, handbookChatTools, toSpecs } from './tools/chat-tool.js'
 
 export type Emit = (event: AskStreamEvent) => void
 
@@ -30,18 +36,9 @@ const MAX_CITATIONS = 8
 const EMPTY_ANSWER =
   'Não consegui montar uma resposta com o handbook. Reformule a pergunta ou cite um ID de padrão.'
 const FALLBACK_NOTICE = 'O modelo não respondeu agora, então mostro os trechos do handbook. '
-
-const toParameters = (input: z.ZodObject): Record<string, unknown> => {
-  const schema: Record<string, unknown> = { ...z.toJSONSchema(input) }
-  delete schema['$schema']
-  return schema
-}
-
-const TOOL_SPECS: ToolSpec[] = handbookTools.map((tool) => ({
-  name: tool.name,
-  description: tool.description,
-  parameters: toParameters(tool.input),
-}))
+const DRAFT_NEEDS_MODEL =
+  'Os rascunhos precisam do modelo de IA, que não está ligado neste ambiente. Use o modo Perguntar para consultar o handbook.'
+const DRAFT_FAILED = 'O modelo não respondeu agora e o rascunho não foi gerado. Tente de novo.'
 
 const failureReason = (error: unknown, timedOut: boolean) => {
   if (timedOut) return 'timeout'
@@ -73,13 +70,14 @@ const pickCitations = (answer: string, citations: Citation[]) => {
 }
 
 /**
- * Answers with the chat model when one is configured, letting it call the handbook tools for
- * a bounded number of rounds. Without a model, or when the model fails before writing
- * anything, it falls back to the retrieval answer.
+ * Answers with the chat model when one is configured, letting it call the tools of the chosen
+ * mode for a bounded number of rounds. In the ask mode, without a model or when the model fails
+ * before writing anything, it falls back to the retrieval answer.
  */
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name)
+  private readonly handbookTools: ChatTool[]
 
   constructor(
     private readonly handbook: HandbookService,
@@ -87,19 +85,25 @@ export class ChatService {
     @Inject(MODEL_PROVIDER) private readonly provider: ModelProvider | null,
     @Inject(CONFIG) private readonly config: Pick<PortalConfig, 'llm'>,
     @Inject(SYSTEM_PROMPT) private readonly systemPrompt: string,
-  ) {}
+    @Optional() @Inject(CHAT_MODES) private readonly modes: ChatModes | null = null,
+  ) {
+    this.handbookTools = handbookChatTools(() => this.handbook.snapshot())
+  }
 
   /**
    * Returns null when the model failed after part of the answer was already streamed. The last
-   * past turns go to the model as context; the retrieval fallback ignores them.
+   * past turns go to the model as context; the retrieval fallback ignores them. Draft modes have
+   * no retrieval fallback: without the model they answer with a notice instead of a draft.
    */
   async answer(
     question: string,
     emit: Emit,
     signal: AbortSignal,
     history: readonly PastTurn[] = [],
+    mode: ChatModeId = 'ask',
   ): Promise<AskResponse | null> {
-    if (!this.provider) return this.fromRetrieval(question, emit, '')
+    const setup = this.setupOf(mode)
+    if (!this.provider || !setup) return this.fallback(mode, question, emit, false)
 
     emit({ type: 'start', mode: 'llm' })
     let streamed = false
@@ -107,6 +111,7 @@ export class ChatService {
     try {
       const response = await this.fromModel(
         this.provider,
+        setup,
         question,
         history,
         emit,
@@ -120,10 +125,27 @@ export class ChatService {
     } catch (error) {
       if (signal.aborted) throw error
       this.logger.warn(`model answer failed: ${failureReason(error, timeout.aborted)}`)
-      if (!streamed) return this.fromRetrieval(question, emit, FALLBACK_NOTICE)
+      if (!streamed) return this.fallback(mode, question, emit, true)
       emit({ type: 'error', message: 'O modelo parou no meio da resposta. Tente de novo.' })
       return null
     }
+  }
+
+  private setupOf(mode: ChatModeId): ModeSetup | null {
+    if (mode === 'ask') return { systemPrompt: this.systemPrompt, tools: this.handbookTools }
+    return this.modes?.setup(mode) ?? null
+  }
+
+  private fallback(mode: ChatModeId, question: string, emit: Emit, failed: boolean): AskResponse {
+    if (mode === 'ask') return this.fromRetrieval(question, emit, failed ? FALLBACK_NOTICE : '')
+    const response: AskResponse = {
+      mode: 'retrieval',
+      answer: failed ? DRAFT_FAILED : DRAFT_NEEDS_MODEL,
+      sources: [],
+    }
+    emit({ type: 'start', mode: 'retrieval' })
+    emit({ type: 'done', response })
+    return response
   }
 
   private fromRetrieval(question: string, emit: Emit, notice: string): AskResponse {
@@ -136,6 +158,7 @@ export class ChatService {
 
   private async fromModel(
     provider: ModelProvider,
+    setup: ModeSetup,
     question: string,
     history: readonly PastTurn[],
     emit: Emit,
@@ -143,12 +166,13 @@ export class ChatService {
     signal: AbortSignal,
   ): Promise<LlmAskResponse> {
     const messages: ChatMessage[] = [
-      { role: 'system', content: this.systemPrompt },
+      { role: 'system', content: setup.systemPrompt },
       ...history.slice(-MAX_PAST_TURNS).flatMap(toMessages),
       { role: 'user', content: maskPersonalData(question) },
     ]
     const consulted: Citation[] = []
     const rounds = this.config.llm?.maxToolRounds ?? DEFAULT_TOOL_ROUNDS
+    const specs = toSpecs(setup.tools)
     let answer = ''
     const onDelta = (text: string) => {
       onFirstDelta()
@@ -160,7 +184,7 @@ export class ChatService {
       const allowTools = round < rounds
       const turn = await provider.complete({
         messages,
-        tools: allowTools ? TOOL_SPECS : [],
+        tools: allowTools ? specs : [],
         signal,
         onDelta,
       })
@@ -168,7 +192,7 @@ export class ChatService {
       messages.push({ role: 'assistant', content: turn.content, toolCalls: turn.toolCalls })
       for (const call of turn.toolCalls) {
         emit({ type: 'tool', name: call.name })
-        const output = this.runTool(call)
+        const output = await this.runTool(setup.tools, call, signal)
         consulted.push(...output.citations)
         messages.push({ role: 'tool', toolCallId: call.id, content: output.text })
       }
@@ -182,8 +206,12 @@ export class ChatService {
     }
   }
 
-  private runTool(call: ToolCall): { text: string; citations: Citation[] } {
-    const tool = findTool(call.name)
+  private async runTool(
+    tools: readonly ChatTool[],
+    call: ToolCall,
+    signal: AbortSignal,
+  ): Promise<ToolOutput> {
+    const tool = tools.find((candidate) => candidate.name === call.name)
     if (!tool) return { text: `A ferramenta ${call.name} não existe.`, citations: [] }
     let args: unknown
     try {
@@ -191,13 +219,6 @@ export class ChatService {
     } catch {
       return { text: `Argumentos inválidos para ${call.name}: envie JSON.`, citations: [] }
     }
-    const parsed = tool.input.safeParse(args)
-    if (!parsed.success) {
-      return {
-        text: `Argumentos inválidos para ${call.name}: ${parsed.error.issues.map((i) => i.message).join('; ')}`,
-        citations: [],
-      }
-    }
-    return tool.execute(this.handbook.snapshot(), parsed.data)
+    return tool.call(args, signal)
   }
 }

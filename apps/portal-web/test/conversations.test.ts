@@ -17,6 +17,7 @@ const summary = (id: string, messageCount = 2): ConversationSummary => ({
   createdAt: AT,
   updatedAt: AT,
   messageCount,
+  chatMode: 'ask',
 })
 
 describe('histórico de conversas no front', () => {

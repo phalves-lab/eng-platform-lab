@@ -3,6 +3,7 @@ import {
   AlertCircle,
   BookOpen,
   CircleSlash,
+  FileText,
   LoaderCircle,
   RotateCcw,
   Search,
@@ -14,16 +15,28 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Turn } from '@/lib/ask-stream'
+import { DRAFT_NOTICE, copyableDraft } from '@/lib/chat-modes'
 import { TOOL_LABEL, citationHref } from '@/lib/citations'
 import { cleanSnippet, shortSource } from '@/lib/labels'
+import { CopyDraftButton } from './copy-draft-button'
 
 function ModeBadge({
   mode,
   pending,
+  draft,
 }: {
   readonly mode: AskMode | null
   readonly pending: boolean
+  readonly draft: boolean
 }) {
+  if (mode === 'llm' && draft) {
+    return (
+      <Badge variant="warning" title="Rascunho escrito pela IA para você revisar e copiar">
+        <FileText aria-hidden />
+        Rascunho
+      </Badge>
+    )
+  }
   if (mode === 'llm') {
     return (
       <Badge variant="info" title="Resposta escrita pela IA a partir do handbook">
@@ -147,24 +160,41 @@ function AnswerText({ text, streaming }: { readonly text: string; readonly strea
   )
 }
 
-/** One answer in the conversation: mode, streamed text, sources and error or retry. */
+function DraftFooter({ text }: { readonly text: string }) {
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-warning/30 bg-warning-light p-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm text-warning-dark">{DRAFT_NOTICE}</p>
+      <div className="shrink-0">
+        <CopyDraftButton text={text} />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * One answer in the conversation: mode, streamed text, sources and error or retry. In a draft
+ * mode a finished answer also gets the draft notice and the copy button.
+ */
 export function AnswerCard({
   turn,
   onRetry,
   canRetry,
+  draft = false,
 }: {
   readonly turn: Turn
   readonly onRetry: () => void
   readonly canRetry: boolean
+  readonly draft?: boolean
 }) {
   const streaming = turn.status === 'streaming'
   const response = turn.response
+  const copyable = draft ? copyableDraft(turn) : null
   return (
     <Card className="gap-3 py-4" aria-busy={streaming}>
       <CardContent className="space-y-3 px-4">
         {turn.mode || streaming || turn.status === 'cancelled' ? (
           <div className="flex items-center justify-between gap-3">
-            <ModeBadge mode={turn.mode} pending={streaming} />
+            <ModeBadge mode={turn.mode} pending={streaming} draft={draft} />
             <Progress turn={turn} />
           </div>
         ) : null}
@@ -196,6 +226,8 @@ export function AnswerCard({
             Perguntar de novo
           </Button>
         ) : null}
+
+        {copyable ? <DraftFooter text={copyable} /> : null}
 
         {response?.mode === 'llm' ? <Citations citations={response.citations} /> : null}
         {response?.mode === 'retrieval' ? <Passages sources={response.sources} /> : null}
