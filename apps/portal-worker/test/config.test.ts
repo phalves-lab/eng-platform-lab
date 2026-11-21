@@ -18,6 +18,12 @@ describe('worker configuration', () => {
       collect: { demo: false, lab: { taskSource: 'fixtures', ci: false } },
     })
     expect(config.collect.lab?.fixturesDir).toMatch(/fixtures\/jira$/)
+    expect(config.dora).toMatchObject({
+      github: { token: 'token', apiUrl: 'https://api.github.com' },
+    })
+    expect(config.dora.catalogFile).toMatch(/catalog\/dora\/repos\.yaml$/)
+    expect(config.dora.incidentsDir).toMatch(/catalog\/incidents$/)
+    expect(config.dora.fixturesDir).toMatch(/fixtures\/dora$/)
   })
 
   it('accepts the demo dataset alone without GitHub credentials', () => {
@@ -30,6 +36,7 @@ describe('worker configuration', () => {
     })
     expect(config).toMatchObject({ intervalMs: 900_000, timeZone: 'UTC', chatRetentionDays: 30 })
     expect(config.collect).toEqual({ demo: true, lab: null })
+    expect(config.dora.github).toBeNull()
   })
 
   it('fails fast on missing or invalid settings', () => {

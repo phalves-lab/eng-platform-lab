@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url'
 import type { CollectOptions } from '@lab/eng-metrics/collect'
 import { z } from 'zod'
 
-const DEFAULT_FIXTURES = fileURLToPath(new URL('../../../fixtures/jira', import.meta.url))
+const fromRepo = (path: string) => fileURLToPath(new URL(`../../../${path}`, import.meta.url))
+const DEFAULT_FIXTURES = fromRepo('fixtures/jira')
 const DATASETS = ['lab', 'demo'] as const
 
 const isTimeZone = (value: string) => {
@@ -36,6 +37,10 @@ const EnvSchema = z
       .pipe(z.array(z.enum(DATASETS)).min(1, 'WORKER_DATASETS needs at least one of lab, demo')),
     WORKER_TASK_SOURCE: z.enum(['fixtures', 'jira']).default('fixtures'),
     WORKER_FIXTURES_DIR: z.string().min(1).default(DEFAULT_FIXTURES),
+    WORKER_DORA_CATALOG: z.string().min(1).default(fromRepo('catalog/dora/repos.yaml')),
+    WORKER_INCIDENTS_DIR: z.string().min(1).default(fromRepo('catalog/incidents')),
+    WORKER_DORA_FIXTURES_DIR: z.string().min(1).default(fromRepo('fixtures/dora')),
+    GITHUB_API_URL: z.url().default('https://api.github.com'),
     GITHUB_TOKEN: z.string().default(''),
     GITHUB_REPOSITORY: z.string().default(''),
     ATLASSIAN_SITE: z.string().default(''),
@@ -58,6 +63,12 @@ export interface WorkerConfig {
   timeZone: string
   chatRetentionDays: number
   collect: CollectOptions
+  dora: {
+    catalogFile: string
+    incidentsDir: string
+    fixturesDir: string
+    github: { token: string; apiUrl: string } | null
+  }
 }
 
 /** Parses the worker environment once at boot and fails fast on anything missing. */
@@ -89,6 +100,14 @@ export const loadConfig = (env: NodeJS.ProcessEnv): WorkerConfig => {
             },
             ci: value.CI === 'true',
           }
+        : null,
+    },
+    dora: {
+      catalogFile: resolve(value.WORKER_DORA_CATALOG),
+      incidentsDir: resolve(value.WORKER_INCIDENTS_DIR),
+      fixturesDir: resolve(value.WORKER_DORA_FIXTURES_DIR),
+      github: value.GITHUB_TOKEN
+        ? { token: value.GITHUB_TOKEN, apiUrl: value.GITHUB_API_URL }
         : null,
     },
   }
