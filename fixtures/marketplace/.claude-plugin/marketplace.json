@@ -1,0 +1,35 @@
+{
+  "name": "lab-marketplace",
+  "owner": { "name": "Plataforma do laboratório" },
+  "metadata": {
+    "description": "Marketplace sintético de plugins do Claude Code usado pelo portal do laboratório",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "lab-taskforge",
+      "source": "./plugins/lab-taskforge",
+      "description": "Leva uma task do quadro até o PR aberto, com branch, testes e template preenchido"
+    },
+    {
+      "name": "lab-pr-review",
+      "source": "./plugins/lab-pr-review",
+      "description": "Revisão de PR em camadas: bugs, aderência ao AGENTS.md e documentação"
+    },
+    {
+      "name": "lab-grill",
+      "source": "./plugins/lab-grill",
+      "description": "Entrevista que afia um plano ou refinamento antes de virar código"
+    },
+    {
+      "name": "lab-onboarding",
+      "source": "./plugins/lab-onboarding",
+      "description": "Apresenta o marketplace a quem chega e confere o ambiente local"
+    },
+    {
+      "name": "lab-changelog",
+      "source": "./plugins/lab-changelog",
+      "description": "Monta notas de versão a partir dos PRs mergeados desde a última release"
+    }
+  ]
+}

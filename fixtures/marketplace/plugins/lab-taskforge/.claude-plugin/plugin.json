@@ -1,0 +1,8 @@
+{
+  "name": "lab-taskforge",
+  "displayName": "Taskforge",
+  "description": "Executa uma task do quadro ponta a ponta: lê os critérios de aceite, cria a branch no padrão, implementa com testes e abre o PR no template do repositório.",
+  "version": "1.4.0",
+  "author": { "name": "Plataforma do laboratório" },
+  "keywords": ["task", "branch", "pull-request", "testes"]
+}

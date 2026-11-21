@@ -1,0 +1,8 @@
+{
+  "name": "lab-grill",
+  "displayName": "Grill",
+  "description": "Entrevista implacável sobre um plano ou refinamento: uma pergunta por vez, sempre com uma recomendação, até não sobrar ramo sem decisão.",
+  "version": "0.3.0",
+  "author": { "name": "Plataforma do laboratório" },
+  "keywords": ["refinamento", "planejamento", "decisão"]
+}

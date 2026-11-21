@@ -1,7 +1,11 @@
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 
 export const CONFIG = Symbol('CONFIG')
+
+/** Lab folder of this repository, resolved from the module so the default works from any cwd. */
+const fromRepo = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url))
 
 const EnvSchema = z
   .object({
@@ -19,6 +23,8 @@ const EnvSchema = z
     PORTAL_JWT_ISSUER: z.string().optional(),
     PORTAL_JWT_AUDIENCE: z.string().optional(),
     PORTAL_LEAD_LOGINS: z.string().default(''),
+    PORTAL_MARKETPLACE_DIR: z.string().min(1).default(fromRepo('fixtures/marketplace')),
+    PORTAL_AI_CATALOG_DIR: z.string().min(1).default(fromRepo('catalog/ai')),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -47,6 +53,8 @@ export type PortalConfig = {
     | { mode: 'dev'; devUser: string }
     | { mode: 'entra'; jwksUrl: string; issuer: string; audience: string }
   leadLogins: string[]
+  marketplaceDir: string
+  aiCatalogDir: string
 }
 
 /** Parses the environment once at boot and fails fast on invalid or unsafe settings. */
@@ -77,5 +85,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     leadLogins: value.PORTAL_LEAD_LOGINS.split(',')
       .map((login) => login.trim())
       .filter(Boolean),
+    marketplaceDir: resolve(value.PORTAL_MARKETPLACE_DIR),
+    aiCatalogDir: resolve(value.PORTAL_AI_CATALOG_DIR),
   }
 }

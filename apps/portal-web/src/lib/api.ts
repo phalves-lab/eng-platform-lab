@@ -6,6 +6,9 @@ import {
   GlossaryEntrySchema,
   HandbookOverviewSchema,
   ReviewMetricsResponseSchema,
+  McpServerSchema,
+  PluginSchema,
+  PluginSummarySchema,
   SearchHitSchema,
   StandardSchema,
   StandardSummarySchema,
@@ -136,4 +139,9 @@ export const api = {
     request(`/api/me/review${query({ dataset, login })}`, MyReviewSchema),
   reviewMetrics: (dataset: DatasetId) =>
     request(`/api/metrics/review${query({ dataset })}`, ReviewMetricsResponseSchema),
+  plugins: (filter: { term?: string; maturity?: string }) =>
+    request(`/api/catalog/plugins${query(filter)}`, z.array(PluginSummarySchema)),
+  plugin: (name: string) =>
+    request(`/api/catalog/plugins/${encodeURIComponent(name)}`, PluginSchema),
+  mcps: () => request('/api/catalog/mcps', z.array(McpServerSchema)),
 }

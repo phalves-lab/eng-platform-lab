@@ -1,0 +1,19 @@
+marketplace:
+  source: ./fixtures/marketplace
+plugins:
+  - name: lab-taskforge
+    maturity: approved
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-11-10'
+  - name: lab-pr-review
+    maturity: approved
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-11-14'
+  - name: lab-grill
+    maturity: pilot
+    owner: '@PhAlves23'
+    reviewedAt: '2026-11-03'
+  - name: lab-onboarding
+    maturity: pilot
+    owner: '@phalves-lab/platform'
+    reviewedAt: '2026-10-28'

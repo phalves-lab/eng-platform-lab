@@ -18,6 +18,7 @@
     "unplugin-swc": "^2.0.0"
   },
   "dependencies": {
+    "@lab/catalog": "*",
     "@lab/contracts": "*",
     "@lab/database": "*",
     "@lab/eng-metrics": "*",

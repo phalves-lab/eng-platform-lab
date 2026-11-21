@@ -165,3 +165,71 @@ export const ReviewMetricsResponseSchema = z.object({
   alerts: z.array(DeliveryAlertSchema),
 })
 export type ReviewMetricsResponse = z.infer<typeof ReviewMetricsResponseSchema>
+
+export const PluginMaturitySchema = z.enum(['draft', 'pilot', 'approved'])
+export type PluginMaturity = z.infer<typeof PluginMaturitySchema>
+
+export const SkillSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+})
+export type Skill = z.infer<typeof SkillSchema>
+
+export const PluginSummarySchema = z.object({
+  name: z.string(),
+  displayName: z.string(),
+  description: z.string(),
+  version: z.string().nullable(),
+  author: z.string().nullable(),
+  keywords: z.array(z.string()),
+  maturity: PluginMaturitySchema,
+  owner: z.string().nullable(),
+  reviewedAt: z.string().nullable(),
+  skillCount: z.number().int(),
+})
+export type PluginSummary = z.infer<typeof PluginSummarySchema>
+
+export const PluginInstallSchema = z.object({
+  marketplace: z.string(),
+  commands: z.array(z.string()),
+})
+export type PluginInstall = z.infer<typeof PluginInstallSchema>
+
+export const PluginSchema = PluginSummarySchema.extend({
+  skills: z.array(SkillSchema),
+  install: PluginInstallSchema,
+})
+export type Plugin = z.infer<typeof PluginSchema>
+
+/** Query filters accepted by the plugin listing. */
+export const PluginFilterSchema = z.object({
+  term: z.string().trim().min(1).optional(),
+  maturity: PluginMaturitySchema.optional(),
+})
+export type PluginFilter = z.infer<typeof PluginFilterSchema>
+
+export const McpScopeSchema = z.enum(['read', 'write'])
+export type McpScope = z.infer<typeof McpScopeSchema>
+
+export const McpClientSchema = z.enum(['claude-code', 'kiro', 'cursor'])
+export type McpClient = z.infer<typeof McpClientSchema>
+
+export const McpInstallSchema = z.object({
+  client: McpClientSchema,
+  language: z.enum(['bash', 'json']),
+  file: z.string().nullable(),
+  snippet: z.string(),
+})
+export type McpInstall = z.infer<typeof McpInstallSchema>
+
+export const McpServerSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  scope: McpScopeSchema,
+  accesses: z.array(z.string()),
+  cautions: z.array(z.string()),
+  owner: z.string(),
+  reviewedAt: z.string(),
+  install: z.array(McpInstallSchema),
+})
+export type McpServer = z.infer<typeof McpServerSchema>

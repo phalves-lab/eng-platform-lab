@@ -1,0 +1,8 @@
+{
+  "name": "lab-changelog",
+  "displayName": "Changelog",
+  "description": "Agrupa os PRs mergeados desde a última release e escreve as notas de versão em linguagem de produto.",
+  "version": "0.1.0",
+  "author": { "name": "Plataforma do laboratório" },
+  "keywords": ["release", "changelog"]
+}

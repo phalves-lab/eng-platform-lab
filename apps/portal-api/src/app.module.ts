@@ -5,6 +5,7 @@ import { AskModule } from './ask/ask.module.js'
 import { AuthGuard } from './auth/auth.guard.js'
 import { MeController } from './auth/me.controller.js'
 import { TOKEN_VERIFIER, type TokenVerifier, createEntraVerifier } from './auth/token-verifier.js'
+import { CatalogModule } from './catalog/catalog.module.js'
 import { CONFIG, type PortalConfig } from './config/config.js'
 import { HandbookModule } from './handbook/handbook.module.js'
 import { HealthController } from './health/health.controller.js'
@@ -28,6 +29,7 @@ export class AppModule {
         ReviewModule,
         AskModule,
         MetricsModule,
+        CatalogModule,
       ],
       controllers: [HealthController, MeController],
       providers: [
