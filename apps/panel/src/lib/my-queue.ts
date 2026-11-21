@@ -22,7 +22,11 @@ export interface PrStatus {
   needsAction: boolean
 }
 
-/** O que o autor precisa saber do próprio PR, do mais urgente para o menos. */
+/**
+ * O que o autor precisa saber do próprio PR, do mais urgente para o menos. No GitHub, quem
+ * revisa sai dos revisores pedidos e só volta se for pedido de novo, então revisor pedido
+ * significa review pendente.
+ */
 export const myPrStatus = (row: QueueRow): PrStatus => {
   if (row.checks === 'FAILURE' || row.checks === 'ERROR')
     return {
@@ -38,6 +42,13 @@ export const myPrStatus = (row: QueueRow): PrStatus => {
       hint: 'Leia o comentário do bot e ajuste ou responda.',
       needsAction: true,
     }
+  if (row.requestedReviewers.length)
+    return {
+      label: 'Aguardando review',
+      tone: row.level === 'ok' ? 'secondary' : 'warning',
+      hint: `Esperando ${row.requestedReviewers.join(', ')}.`,
+      needsAction: false,
+    }
   if (row.hasHumanReview)
     return {
       label: 'Com review',
@@ -45,18 +56,11 @@ export const myPrStatus = (row: QueueRow): PrStatus => {
       hint: 'Responda os comentários e peça nova review se mudou algo.',
       needsAction: true,
     }
-  if (!row.requestedReviewers.length)
-    return {
-      label: 'Sem revisor',
-      tone: 'warning',
-      hint: 'Ninguém foi pedido como revisor. Peça a review para alguém.',
-      needsAction: true,
-    }
   return {
-    label: 'Aguardando review',
-    tone: row.level === 'ok' ? 'secondary' : 'warning',
-    hint: `Esperando ${row.requestedReviewers.join(', ')}.`,
-    needsAction: false,
+    label: 'Sem revisor',
+    tone: 'warning',
+    hint: 'Ninguém foi pedido como revisor. Peça a review para alguém.',
+    needsAction: true,
   }
 }
 
@@ -69,10 +73,10 @@ export interface MyQueue {
 
 export const buildMyQueue = (rows: QueueRow[], person: string): MyQueue => {
   const others = rows.filter((row) => row.author !== person)
-  const toReview = others.filter(
-    (row) => row.requestedReviewers.includes(person) && !row.reviewedBy.includes(person),
+  const toReview = others.filter((row) => row.requestedReviewers.includes(person))
+  const reviewed = others.filter(
+    (row) => row.reviewedBy.includes(person) && !row.requestedReviewers.includes(person),
   )
-  const reviewed = others.filter((row) => row.reviewedBy.includes(person))
   const mine = rows
     .filter((row) => row.author === person)
     .map((row) => ({ row, status: myPrStatus(row) }))

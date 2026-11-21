@@ -11,29 +11,40 @@ describe('minha fila', () => {
     row({
       number: 3,
       author: 'diego',
-      requestedReviewers: ['ana'],
+      requestedReviewers: ['bruno'],
       reviewedBy: ['ana'],
       position: 3,
+    }),
+    row({
+      number: 5,
+      author: 'elisa',
+      requestedReviewers: ['ana'],
+      reviewedBy: ['ana'],
+      position: 5,
     }),
     row({ number: 4, author: 'ana', checks: 'FAILURE', position: 4 }),
   ]
 
   it('separa o que revisar, o que já revisei e os meus PRs com a ação de cada um', () => {
     const queue = buildMyQueue(rows, 'ana')
-    expect(queue.toReview.map((r) => r.number)).toEqual([2])
+    expect(queue.toReview.map((r) => r.number)).toEqual([2, 5])
     expect(queue.reviewed.map((r) => r.number)).toEqual([3])
     expect(queue.mine.map(({ row: r, status }) => [r.number, status.label])).toEqual([
       [1, 'Aguardando review'],
       [4, 'Check vermelho'],
     ])
-    expect(queue.actions).toBe(2)
+    expect(queue.actions).toBe(3)
     expect(buildMyQueue(rows, 'ninguem')).toMatchObject({ toReview: [], mine: [], actions: 0 })
   })
 
   it('diz o que o autor precisa fazer em cada situação do PR', () => {
+    expect(myPrStatus(row({ hasHumanReview: true, requestedReviewers: ['bruno'] }))).toMatchObject({
+      label: 'Aguardando review',
+      needsAction: false,
+    })
     expect(myPrStatus(row({ checks: 'ERROR' })).label).toBe('Check vermelho')
     expect(myPrStatus(row({ botSignal: 'ajustes' })).label).toBe('Bot pediu ajustes')
-    expect(myPrStatus(row({ hasHumanReview: true }))).toMatchObject({
+    expect(myPrStatus(row({ hasHumanReview: true, requestedReviewers: [] }))).toMatchObject({
       label: 'Com review',
       tone: 'success',
     })

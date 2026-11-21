@@ -47,7 +47,7 @@ describe('resumo diário', () => {
     expect(text).toContain('1 PR mergeado, sem review humana na janela.')
   })
 
-  it('conta reviews pedidas e ainda não feitas, da maior carga para a menor', () => {
+  it('conta revisores pedidos, inclusive quem foi pedido de novo depois de revisar', () => {
     const base = demo().queue[0] as QueueRow
     const dataset = {
       ...empty(),
@@ -58,6 +58,7 @@ describe('resumo diário', () => {
     }
     expect(pendingReviews(dataset)).toEqual([
       ['bruno', 2],
+      ['ana', 1],
       ['carla', 1],
     ])
   })
