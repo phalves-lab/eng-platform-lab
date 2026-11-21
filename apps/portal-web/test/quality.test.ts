@@ -93,8 +93,9 @@ describe('rótulos de qualidade', () => {
   it('coloca as telas de qualidade no próprio grupo do menu', () => {
     expect(
       NAV_GROUPS.find((group) => group.label === 'Qualidade')?.items.map((item) => item.href),
-    ).toEqual(['/qualidade/scorecard', '/qualidade/documentacao'])
+    ).toEqual(['/qualidade/scorecard', '/qualidade/documentacao', '/qualidade/ia'])
     expect(activeItem('/qualidade/scorecard/pedidos-api')?.title).toBe('Scorecard')
+    expect(activeItem('/qualidade/ia')?.title).toBe('IA')
     expect(activeItem('/qualidade/documentacao')?.title).toBe('Documentação')
   })
 })

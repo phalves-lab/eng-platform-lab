@@ -6,6 +6,11 @@ export interface LlmProvider {
   verify(prompt: string): Promise<Verification>
 }
 
+export interface TokenUsage {
+  inputTokens: number
+  outputTokens: number
+}
+
 export interface GeminiOptions {
   apiKey: string
   model: string
@@ -13,10 +18,26 @@ export interface GeminiOptions {
   timeoutMs?: number
   maxAttempts?: number
   backoffMs?: number
+  /** Receives the tokens of every answered call; thinking tokens are billed as output. */
+  onUsage?: (usage: TokenUsage) => void
 }
 
 interface GeminiResponse {
   candidates?: { content?: { parts?: { text?: string }[] } }[]
+  usageMetadata?: {
+    promptTokenCount?: number
+    candidatesTokenCount?: number
+    thoughtsTokenCount?: number
+  }
+}
+
+const usageOf = (data: GeminiResponse): TokenUsage | null => {
+  const metadata = data.usageMetadata
+  if (!metadata) return null
+  return {
+    inputTokens: metadata.promptTokenCount ?? 0,
+    outputTokens: (metadata.candidatesTokenCount ?? 0) + (metadata.thoughtsTokenCount ?? 0),
+  }
 }
 
 export class GeminiHttpError extends Error {
@@ -81,6 +102,8 @@ export class GeminiProvider implements LlmProvider {
     )
     if (!response.ok) throw new GeminiHttpError(response.status, await response.text())
     const data = (await response.json()) as GeminiResponse
+    const usage = usageOf(data)
+    if (usage) this.options.onUsage?.(usage)
     const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? ''
     return JSON.parse(text)
   }

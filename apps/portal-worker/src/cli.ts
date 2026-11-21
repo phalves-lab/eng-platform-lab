@@ -12,6 +12,7 @@ import {
 import { collectPanelData } from '@lab/eng-metrics/collect'
 import { loadWorkflow } from '@lab/flow'
 import type { Collector } from './collector.js'
+import { buildAiQualityCollector } from './collectors/ai-quality/index.js'
 import { createChatRetentionCollector } from './collectors/chat-retention.js'
 import { createDoraCollector } from './collectors/dora/collector.js'
 import { createFixtureSource } from './collectors/dora/fixture-source.js'
@@ -67,6 +68,9 @@ const main = async () => {
         intervalMs: config.intervalMs,
       }),
     )
+  }
+  if (config.ai) {
+    collectors.push(await buildAiQualityCollector(config.ai, pool, config.intervalMs))
   }
   if (scorecard.out) {
     collectors.push(await buildScorecardCollector(scorecard, scorecard.out, config.intervalMs))

@@ -1,4 +1,5 @@
 import { HttpException, Module } from '@nestjs/common'
+import { AI_PRICING, AI_USAGE_SINK } from '../ai-usage/usage-sink.js'
 import { CatalogModule } from '../catalog/catalog.module.js'
 import { CatalogService } from '../catalog/catalog.service.js'
 import { CONFIG, type PortalConfig } from '../config/config.js'
@@ -22,7 +23,7 @@ import { CHAT_MODES, DraftModes } from './modes/draft-modes.js'
 import { MODE_PROMPTS, type ModePrompts, loadModePrompts } from './modes/mode-prompts.js'
 import { skillLookup } from './modes/skill-lookup.js'
 import { MODEL_PROVIDER } from './model/model-provider.js'
-import { OpenAICompatibleProvider } from './model/openai-compatible.provider.js'
+import { createModelProvider } from './model/recording-provider.js'
 import { SYSTEM_PROMPT, loadSystemPrompt } from './system-prompt.js'
 import { CHAT_TOOLS, handbookChatTools } from './tools/chat-tool.js'
 import { createPortalTools } from './tools/portal-tools.js'
@@ -98,15 +99,8 @@ const skillsInCatalog = (catalog: CatalogService) =>
     },
     {
       provide: MODEL_PROVIDER,
-      inject: [CONFIG],
-      useFactory: (config: PortalConfig) =>
-        config.llm
-          ? new OpenAICompatibleProvider({
-              baseUrl: config.llm.baseUrl,
-              apiKey: config.llm.apiKey,
-              model: config.llm.model,
-            })
-          : null,
+      inject: [CONFIG, AI_PRICING, AI_USAGE_SINK],
+      useFactory: createModelProvider,
     },
   ],
 })

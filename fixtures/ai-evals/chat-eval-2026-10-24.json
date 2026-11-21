@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "eval-run",
+  "run": {
+    "id": "chat-2026-10-24-b56b380",
+    "suite": "chat",
+    "runAt": "2026-10-24T15:00:00.000Z",
+    "commit": "b56b380",
+    "model": "gemini-2.5-flash",
+    "promptVersion": "chat-1",
+    "offline": false,
+    "total": 10,
+    "passed": 8,
+    "inputTokens": 28368,
+    "outputTokens": 4204,
+    "latencyMs": {
+      "p50": 3720,
+      "max": 6170
+    },
+    "cases": [
+      {
+        "id": "padrao-commits",
+        "passed": true,
+        "latencyMs": 3681,
+        "inputTokens": 3141,
+        "outputTokens": 480
+      },
+      {
+        "id": "padrao-branch",
+        "passed": false,
+        "latencyMs": 1825,
+        "inputTokens": 2884,
+        "outputTokens": 500
+      },
+      {
+        "id": "sistema-campanhas",
+        "passed": false,
+        "latencyMs": 4056,
+        "inputTokens": 2336,
+        "outputTokens": 579
+      },
+      {
+        "id": "glossario-sla",
+        "passed": true,
+        "latencyMs": 6170,
+        "inputTokens": 4137,
+        "outputTokens": 271
+      },
+      {
+        "id": "decisao-pendente",
+        "passed": true,
+        "latencyMs": 3114,
+        "inputTokens": 1954,
+        "outputTokens": 189
+      },
+      {
+        "id": "fora-do-escopo",
+        "passed": true,
+        "latencyMs": 3759,
+        "inputTokens": 2226,
+        "outputTokens": 493
+      },
+      {
+        "id": "sem-resposta",
+        "passed": true,
+        "latencyMs": 3636,
+        "inputTokens": 4089,
+        "outputTokens": 522
+      },
+      {
+        "id": "onboarding-primeiro-pr",
+        "passed": true,
+        "latencyMs": 6009,
+        "inputTokens": 2004,
+        "outputTokens": 589
+      },
+      {
+        "id": "dado-pessoal-mascarado",
+        "passed": true,
+        "latencyMs": 4411,
+        "inputTokens": 2343,
+        "outputTokens": 349
+      },
+      {
+        "id": "padrao-migracao",
+        "passed": true,
+        "latencyMs": 2912,
+        "inputTokens": 3254,
+        "outputTokens": 232
+      }
+    ]
+  }
+}
