@@ -8,6 +8,10 @@ const DEFAULT_LIST_LIMIT = 50
 
 const ownerSchema = z.string().trim().min(1).max(200)
 const conversationIdSchema = z.uuid()
+const chatModeIdSchema = z
+  .string()
+  .regex(/^[a-z]+(?:-[a-z]+)*$/)
+  .max(40)
 
 export const ChatModeSchema = z.enum(['llm', 'retrieval'])
 
@@ -17,6 +21,7 @@ export const NewChatTurnSchema = z.object({
   owner: ownerSchema,
   conversationId: conversationIdSchema.nullable(),
   title: z.string().trim().min(1).max(200),
+  chatMode: chatModeIdSchema.default('ask'),
   question: z.string().min(1).max(MAX_TEXT),
   answer: z.object({
     content: z.string().min(1).max(MAX_TEXT),
@@ -33,6 +38,7 @@ export interface StoredConversation {
   createdAt: string
   updatedAt: string
   messageCount: number
+  chatMode: string
 }
 
 export type StoredMessage =
@@ -53,6 +59,7 @@ interface ConversationRow {
   created_at: Date
   updated_at: Date
   message_count: number
+  chat_mode: string
 }
 
 interface MessageRow {
@@ -64,7 +71,8 @@ interface MessageRow {
   created_at: Date
 }
 
-const SUMMARY = `SELECT c.id, c.title, c.created_at, c.updated_at, count(m.id)::int AS message_count
+const SUMMARY = `SELECT c.id, c.title, c.created_at, c.updated_at, c.chat_mode,
+  count(m.id)::int AS message_count
   FROM chat_conversations c LEFT JOIN chat_messages m ON m.conversation_id = c.id`
 
 const toConversation = (row: ConversationRow): StoredConversation => ({
@@ -73,6 +81,7 @@ const toConversation = (row: ConversationRow): StoredConversation => ({
   createdAt: toIso(row.created_at),
   updatedAt: toIso(row.updated_at),
   messageCount: row.message_count,
+  chatMode: row.chat_mode,
 })
 
 const toMessage = (row: MessageRow): StoredMessage => {
@@ -97,7 +106,8 @@ export class ConversationRepository {
 
   /**
    * Stores one question and its answer, creating the conversation when no id is given. Returns
-   * null when the conversation does not exist or belongs to someone else.
+   * null when the conversation does not exist or belongs to someone else. The chat mode is set
+   * when the conversation is created and never changes afterwards.
    */
   async appendTurn(input: NewChatTurn): Promise<StoredConversation | null> {
     const turn = NewChatTurnSchema.parse(input)
@@ -109,8 +119,9 @@ export class ConversationRepository {
             [turn.conversationId, turn.owner],
           )
         : await client.query<{ id: string }>(
-            `INSERT INTO chat_conversations (owner, title) VALUES ($1, $2) RETURNING id`,
-            [turn.owner, turn.title],
+            `INSERT INTO chat_conversations (owner, title, chat_mode) VALUES ($1, $2, $3)
+             RETURNING id`,
+            [turn.owner, turn.title, turn.chatMode],
           )
       const id = target.rows[0]?.id
       if (!id) return null

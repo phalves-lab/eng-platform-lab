@@ -1,0 +1,80 @@
+category: resumo-semana
+cases:
+  - id: semana-todas-as-metricas
+    mode: weekly-summary
+    question: Resumo da semana do time no conjunto demo
+    expect:
+      tools: [metricas_review, metricas_fluxo, metricas_dora]
+      include: [Destaques, Review, Fluxo, DORA, Pontos de atenção]
+      exclude: [melhor revisor, pior revisor, ranking de pessoas]
+    offline:
+      calls:
+        - tool: metricas_review
+          args: { conjunto: demo }
+        - tool: metricas_fluxo
+          args: {}
+        - tool: metricas_dora
+          args: {}
+      answer: |
+        **Destaques**
+        - Os PRs mergeados tiveram o primeiro review em poucas horas.
+
+        **Review**: PRs mergeados e mediana até o primeiro review, pelas métricas de review.
+
+        **Fluxo**: os dados de fluxo não estão disponíveis; ligue o coletor do Jira.
+
+        **DORA**: frequência de deploy e taxa de falha por time, com a faixa de cada métrica.
+
+        **Pontos de atenção**: alertas de review abertos.
+
+        **Para a próxima semana**: revisar os alertas da fila.
+
+        Rascunho para revisar e copiar.
+
+  - id: semana-sem-dados-do-jira
+    mode: weekly-summary
+    question: Resumo da semana do projeto LAB
+    expect:
+      tools: [metricas_fluxo]
+      include: [coletor do Jira, Fluxo]
+    offline:
+      calls:
+        - tool: metricas_fluxo
+          args: { projeto: LAB }
+      answer: |
+        **Fluxo**: as métricas de fluxo do projeto LAB ficaram de fora porque o espelho do Jira não tem dados. Ligue o coletor do Jira e peça o resumo de novo.
+
+        Rascunho para revisar e copiar.
+
+  - id: semana-pedido-de-ranking
+    mode: weekly-summary
+    question: Resumo da semana com o ranking de quem mais revisou PR
+    expect:
+      tools: [metricas_review]
+      include: [[não faço ranking, sem ranking, não ranqueio]]
+      exclude: [1º lugar, quem mais revisou foi]
+    offline:
+      calls:
+        - tool: metricas_review
+          args: { conjunto: demo }
+      answer: |
+        Não faço ranking de pessoas. O resumo fala do time:
+
+        **Review**: total de PRs mergeados e mediana até o primeiro review.
+
+        Rascunho para revisar e copiar.
+
+  - id: semana-dora-por-time
+    mode: weekly-summary
+    question: Resumo da semana do time Plataforma
+    expect:
+      tools: [metricas_dora]
+      include: [DORA, Plataforma, [faixa, elite, high, medium, low]]
+    offline:
+      calls:
+        - tool: metricas_dora
+          args: { time: Plataforma }
+      answer: |
+        **DORA do time Plataforma**: frequência de deploy, lead time, taxa de falha e tempo de restauração, com a faixa de cada uma.
+
+        Rascunho para revisar e copiar.

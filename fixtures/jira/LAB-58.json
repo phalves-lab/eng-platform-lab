@@ -1,0 +1,24 @@
+{
+  "key": "LAB-58",
+  "title": "Portal: modos do chat a partir das skills do marketplace",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "As skills do marketplace do time (entrevista de refinamento, notas de versão, taskforge) já descrevem como o time quer refinar, documentar e entregar, mas só funcionam dentro do editor. Os modos do chat do portal passam a fazer o papel dessas skills para quem não usa o editor, lendo a descrição de cada skill do catálogo de IA e mostrando de qual skill o modo veio.",
+  "acceptanceCriteria": [
+    "Cada modo de rascunho declara a skill do marketplace que ele representa, quando houver uma",
+    "O prompt do modo recebe a descrição da skill lida do catálogo de IA; sem catálogo ou sem a skill, o modo segue só com o prompt versionado",
+    "GET /api/ask/modes lista os modos com rótulo, descrição, exemplos, limite de texto, se está disponível e a skill encontrada no catálogo",
+    "A tela mostra a skill do modo com link para a página do plugin no catálogo",
+    "Modos de rascunho ficam indisponíveis, com aviso, quando o modelo não está configurado"
+  ],
+  "status": "Em andamento",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T16:40:00Z"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+category: refinar-task
+cases:
+  - id: refinar-task-por-chave
+    mode: refine-task
+    question: Refine a task LAB-53
+    expect:
+      tools: [tarefa]
+      include:
+        [Critérios de aceite, Perguntas em aberto, Riscos, Próxima pergunta, Recomendação, LAB-53]
+      exclude: [atualizei a task, gravei no Jira]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-53 }
+      answer: |
+        Refinamento da LAB-53 · Gerar a release pelo portal.
+
+        **Critérios de aceite**
+        - O plano mostra as PRs que serão abertas antes de qualquer escrita no GitHub.
+        - A execução só roda com o repositório digitado igual e o mesmo hash do plano.
+        - Só líder ou admin executa; dev vê a prévia.
+        - (sugestão) A recusa por escrita desligada fica registrada na auditoria.
+
+        **Perguntas em aberto**
+        - O que acontece se a PR de release for fechada sem merge entre o plano e a execução?
+        - Quem recebe o aviso quando a execução falha no meio?
+
+        **Riscos**
+        - Escrita parcial no GitHub: mitigar com plano refeito e hash conferido antes de cada passo.
+
+        **Próxima pergunta**
+        O que fazer se a PR de release for fechada sem merge entre o plano e a execução?
+        Recomendação: tratar como PR inexistente e abrir uma nova, porque reabrir PR fechada esconde o histórico.
+
+        Rascunho para revisar e copiar; nada foi gravado no Jira.
+
+  - id: refinar-task-texto-colado
+    mode: refine-task
+    question: 'Refine esta task: permitir que o solicitante reagende uma campanha já aprovada. Hoje ele precisa cancelar e abrir outra solicitação.'
+    expect:
+      include:
+        [Critérios de aceite, Perguntas em aberto, Riscos, Recomendação, [sugestão, sugestao]]
+      exclude: [gravei, publiquei]
+    offline:
+      answer: |
+        **Critérios de aceite**
+        - O solicitante troca a data de uma campanha aprovada sem cancelar a solicitação.
+        - (sugestão) A troca de data fica no histórico da solicitação, com a data antiga.
+
+        **Perguntas em aberto**
+        - Reagendar volta a campanha para aprovação ou mantém a aprovação?
+
+        **Riscos**
+        - Campanha reagendada para uma data já ocupada: validar conflito antes de salvar.
+
+        **Próxima pergunta**
+        Reagendar mantém a aprovação ou volta para aprovação?
+        Recomendação: voltar para aprovação quando a nova data mudar o período da campanha, porque o aprovador decidiu sobre aquele período.
+
+        É um rascunho para revisar e copiar.
+
+  - id: refinar-task-inexistente
+    mode: refine-task
+    question: Refine a task LAB-999
+    expect:
+      tools: [tarefa]
+      include: [[não encontrei, não encontrada, nao encontrada], [cole o texto, colar o texto]]
+      exclude: [Critérios de aceite]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-999 }
+      answer: Não encontrei a task LAB-999 nas tasks de exemplo. Cole o texto da task aqui que eu monto o refinamento.
+
+  - id: refinar-task-contra-padrao
+    mode: refine-task
+    question: 'Refine esta task: o bot de review passa a aprovar sozinho os PRs com menos de 50 linhas.'
+    expect:
+      tools: [padrao, buscar_padroes, buscar]
+      sources: [ENG-PR-02]
+      include: [Riscos, Recomendação, [só comenta, nunca aprova]]
+      exclude: [o bot pode aprovar]
+    offline:
+      calls:
+        - tool: padrao
+          args: { id: ENG-PR-02 }
+      answer: |
+        **Critérios de aceite**
+        - (sugestão) A regra de PR pequeno muda só o sinal do bot, nunca a aprovação.
+
+        **Perguntas em aberto**
+        - A task quer mudar o ENG-PR-02 ou só acelerar o review de PR pequeno?
+
+        **Riscos**
+        - Conflito com o ENG-PR-02: o bot só comenta e nunca aprova nem bloqueia.
+
+        **Próxima pergunta**
+        O objetivo é acelerar o review de PR pequeno?
+        Recomendação: manter o ENG-PR-02 e dar prioridade na fila para PR pequeno, sem aprovação automática.
+
+        Rascunho para revisar e copiar.

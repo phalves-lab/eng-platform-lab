@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { ChatModeIdSchema } from './chat-modes.js'
 import { AskRequestSchema, AskResponseSchema, AskStreamEventSchema } from './index.js'
 
 /**
@@ -24,6 +25,7 @@ export const ConversationSummarySchema = z.object({
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
   messageCount: z.number().int().nonnegative(),
+  chatMode: ChatModeIdSchema.default('ask'),
 })
 export type ConversationSummary = z.infer<typeof ConversationSummarySchema>
 

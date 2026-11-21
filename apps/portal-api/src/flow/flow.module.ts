@@ -16,6 +16,6 @@ import { JIRA_DATA, createJiraData } from './jira-data.js'
     },
     { provide: FLOW_CLOCK, useValue: () => new Date() },
   ],
-  exports: [JIRA_DATA],
+  exports: [JIRA_DATA, FlowService],
 })
 export class FlowModule {}

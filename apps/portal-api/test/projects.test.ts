@@ -386,7 +386,7 @@ describe('ferramenta projeto no chat', () => {
       .send({ question: 'Como está o projeto fora do espelho?' })
       .buffer(true)
       .expect(200)
-    expect(toolOutputs()).toEqual(['A ferramenta projeto falhou agora. Tente de novo mais tarde.'])
+    expect(toolOutputs()).toEqual(['Não foi possível ler projeto agora: conexão recusada'])
     await failing.close()
   })
 })

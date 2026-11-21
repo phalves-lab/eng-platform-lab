@@ -1,9 +1,12 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { findTool } from '@lab/handbook'
+import { ASK_MAX_LENGTH, ChatModeIdSchema, DRAFT_MAX_LENGTH } from '@lab/contracts'
 import { parse } from 'yaml'
 import { z } from 'zod'
+import { toolNamesOf } from '../ask/modes/mode-definitions.js'
+import { HANDBOOK_TOOL_NAMES } from '../ask/tools/chat-tool.js'
+import { PORTAL_TOOL_NAMES } from '../ask/tools/portal-tools.js'
 
 export const GOLDEN_SET_DIR = fileURLToPath(
   new URL('../../../../review/chat-golden', import.meta.url),
@@ -17,11 +20,18 @@ export const CATEGORIES = [
   'onboarding',
   'sem-resposta',
   'fora-do-escopo',
+  'refinar-task',
+  'descricao-pr',
+  'nota-release',
+  'adr',
+  'resumo-semana',
 ] as const
+
+const KNOWN_TOOLS = new Set<string>([...HANDBOOK_TOOL_NAMES, ...PORTAL_TOOL_NAMES])
 
 const ToolNameSchema = z
   .string()
-  .refine((name) => findTool(name) !== null, { message: 'unknown handbook tool' })
+  .refine((name) => KNOWN_TOOLS.has(name), { message: 'unknown chat tool' })
 
 /** One expected phrase or source, or a list of accepted alternatives for it. */
 const AlternativesSchema = z.union([z.string().min(1), z.array(z.string().min(1)).min(1)])
@@ -33,7 +43,8 @@ const ScriptedCallSchema = z
 const GoldenCaseSchema = z
   .object({
     id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-    question: z.string().trim().min(3).max(500),
+    mode: ChatModeIdSchema.default('ask'),
+    question: z.string().trim().min(3).max(DRAFT_MAX_LENGTH),
     expect: z
       .object({
         tools: z.array(ToolNameSchema).default([]),
@@ -48,6 +59,16 @@ const GoldenCaseSchema = z
       .strict(),
   })
   .strict()
+  .superRefine((golden, ctx) => {
+    if (golden.mode === 'ask' && golden.question.length > ASK_MAX_LENGTH) {
+      ctx.addIssue({ code: 'custom', message: `questions take up to ${ASK_MAX_LENGTH} characters` })
+    }
+    const allowed = new Set(toolNamesOf(golden.mode))
+    const used = [...golden.expect.tools, ...golden.offline.calls.map((call) => call.tool)]
+    for (const tool of used.filter((name) => !allowed.has(name))) {
+      ctx.addIssue({ code: 'custom', message: `tool ${tool} is not available in ${golden.mode}` })
+    }
+  })
 
 const GoldenFileSchema = z
   .object({ category: z.enum(CATEGORIES), cases: z.array(GoldenCaseSchema).min(1) })

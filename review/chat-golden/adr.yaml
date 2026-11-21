@@ -1,0 +1,84 @@
+category: adr
+cases:
+  - id: adr-decisao-tomada
+    mode: adr
+    question: 'Dev: o bot de review está caro com o modelo atual. Líder: vamos testar outro modelo no golden set antes de trocar. Dev: se o acerto não cair, trocamos. Líder: combinado, fica proposto até o resultado.'
+    expect:
+      tools: [buscar]
+      sources: [[Modelo de ADR, Seções do ADR]]
+      include: [Contexto, Opções consideradas, Decisão, Consequências, Proposto, IA-02]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: modelo de ADR }
+        - tool: decisoes_pendentes
+          args: {}
+      answer: |
+        ADR-NNN · Trocar o modelo do bot de review se o golden set não cair (número a confirmar)
+
+        **Status**: Proposto
+        **Data**: a confirmar
+
+        **Contexto**: o custo do bot de review com o modelo atual está alto.
+
+        **Opções consideradas**
+        - Manter o modelo atual: sem risco de precisão, custo alto.
+        - Trocar de modelo: custo menor, risco de o acerto cair.
+
+        **Decisão**: testar outro modelo no golden set e trocar só se o acerto não cair.
+
+        **Consequências**: a troca passa a exigir o golden set rodado com o novo modelo.
+
+        **Relacionados**: decisão pendente IA-02 (modelo do bot).
+
+        **Pendências**: resultado do golden set, confirmado pelo líder.
+
+        Segue o modelo de ADR do handbook. Rascunho para revisar e copiar.
+
+  - id: adr-sem-decisao
+    mode: adr
+    question: 'Dev: quantas aprovações um PR precisa quando tem mais de um revisor? Líder: não sei, depende do repositório. Dev: vamos ver na próxima reunião.'
+    expect:
+      tools: [buscar]
+      include: [a confirmar, Pendências, ENG-PR-03]
+      exclude: ['**Status**: Aceito']
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: modelo de ADR }
+        - tool: padrao
+          args: { id: ENG-PR-03 }
+      answer: |
+        A conversa não chegou a uma decisão, então a decisão fica a confirmar.
+
+        ADR-NNN · Número de aprovações por PR (a confirmar)
+
+        **Status**: Proposto
+        **Contexto**: o ENG-PR-03 ainda é lacuna: não define quantas aprovações cada PR precisa.
+        **Opções consideradas**: depende do repositório, levantada pelo líder.
+        **Decisão**: a confirmar.
+        **Pendências**: quantas aprovações cada PR precisa; o líder confirma na próxima reunião.
+
+        Segue o modelo de ADR do handbook. Rascunho para revisar e copiar.
+
+  - id: adr-sem-nomes-de-pessoas
+    mode: adr
+    question: 'Gustavo: proponho cache de 5 minutos nas métricas de review. Renata: aceito, desde que o painel mostre a hora da coleta. Gustavo: fechado, aceito.'
+    expect:
+      tools: [buscar]
+      include: [Aceito, [dev, líder, produto]]
+      exclude: [Gustavo, Renata]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: modelo de ADR }
+      answer: |
+        ADR-NNN · Cache de 5 minutos nas métricas de review (número a confirmar)
+
+        **Status**: Aceito
+        **Contexto**: a dev propôs cache nas métricas de review.
+        **Opções consideradas**: cache de 5 minutos, com a hora da coleta no painel.
+        **Decisão**: cache de 5 minutos, aceito pela líder com a condição de mostrar a hora da coleta.
+        **Consequências**: o painel passa a exibir a hora da coleta.
+
+        Segue o modelo de ADR do handbook. Rascunho para revisar e copiar.

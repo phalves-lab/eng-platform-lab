@@ -37,6 +37,7 @@ const summary: StoredConversation = {
   createdAt: '2026-11-21T12:00:00.000Z',
   updatedAt: '2026-11-21T12:00:00.000Z',
   messageCount: 2,
+  chatMode: 'ask',
 }
 
 const storedConversation = {
@@ -59,6 +60,7 @@ const storedConversation = {
 class MemoryStore implements ConversationStore {
   readonly turns: NewChatTurn[] = []
   failWith: unknown = null
+  chatMode = 'ask'
 
   private fail() {
     if (this.failWith) throw this.failWith
@@ -77,7 +79,7 @@ class MemoryStore implements ConversationStore {
 
   async find(_owner: string, id: string) {
     this.fail()
-    return id === ID ? storedConversation : null
+    return id === ID ? { ...storedConversation, chatMode: this.chatMode } : null
   }
 
   async remove(_owner: string, id: string) {
@@ -185,6 +187,25 @@ describe('histórico de conversas na API', () => {
       .post('/api/ask/stream')
       .send({ question: 'Continua?', conversationId: '6b1f0a3e-2c4d-4e5f-8a9b-0c1d2e3f4a5b' })
       .expect(404)
+  })
+
+  it('mantém o modo em que a conversa começou e grava o modo de uma conversa nova', async () => {
+    const store = new MemoryStore()
+    store.chatMode = 'refine-task'
+    const fake = new FakeProvider()
+    fake.play({ text: ['Próxima pergunta.'] }, { text: ['Rascunho.'] })
+    app = await start({ store, close: async () => undefined }, fake)
+    await stream(app, { question: 'Aceito a recomendação.', conversationId: ID, mode: 'ask' })
+    const first = fake.requests[0]?.messages[0]
+    expect(first?.role === 'system' && first.content).toContain('# Modo Refinar task')
+    expect(store.turns[0]).toMatchObject({ conversationId: ID, chatMode: 'refine-task' })
+
+    await stream(app, { question: '#1 feat: x (LAB-1)', mode: 'release-notes' })
+    expect(store.turns[1]).toMatchObject({ conversationId: null, chatMode: 'release-notes' })
+
+    store.chatMode = 'modo-de-outra-versao'
+    const opened = await request(app.getHttpServer()).get(`/api/conversations/${ID}`).expect(200)
+    expect(opened.body.chatMode).toBe('ask')
   })
 
   it('lista, abre e apaga só pelo ID válido e devolve a resposta no formato do chat', async () => {

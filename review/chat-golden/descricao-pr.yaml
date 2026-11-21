@@ -1,0 +1,127 @@
+category: descricao-pr
+cases:
+  - id: pr-descricao-com-task
+    mode: pr-description
+    question: 'Título: feat(portal): prévia da release. Task: LAB-51. Diff: rota GET /api/releases/preview, regras puras em rules.ts e tela /releases.'
+    expect:
+      tools: [tarefa]
+      include: ['Título:', 'Task:', Contexto de negócio, O que mudou, Como testar, LAB-51, '- [ ]']
+      exclude: ['- [x]', abri o PR, publiquei]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-51 }
+      answer: |
+        Título: feat(portal): prévia da release (LAB-51)
+
+        **Task:** [LAB-51](https://exemplo.atlassian.net/browse/LAB-51)
+
+        ## Contexto de negócio
+        Quem monta a release vê no portal o que entra antes de abrir qualquer PR.
+
+        ## O que mudou
+        - Rota GET /api/releases/preview.
+        - Regras puras em rules.ts.
+        - Tela /releases.
+
+        ## Como testar
+        1. Suba a API e o front e abra /releases.
+        2. Confira a lista de PRs da prévia.
+
+        ## SQL (se aplicável)
+        Não se aplica.
+
+        ## ENV (se aplicável)
+        Não se aplica.
+
+        ## Uso de IA
+        Descrição rascunhada pelo assistente do portal e revisada pelo autor.
+
+        ## Checklist
+        - [ ] Lint, testes e build passando localmente (`npm run verify`)
+
+        Rascunho para revisar e copiar.
+
+  - id: pr-descricao-com-migration-e-env
+    mode: pr-description
+    question: 'Título: feat(api): auditoria das releases. Task: LAB-53. Diff: migration 005_release_runs.sql cria a tabela release_runs; variável nova PORTAL_RELEASE_WRITE_ENABLED no .env.example.'
+    expect:
+      tools: [tarefa]
+      include: [SQL, release_runs, ENV, PORTAL_RELEASE_WRITE_ENABLED]
+      exclude: [Não se aplica]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-53 }
+      answer: |
+        Título: feat(api): auditoria das releases (LAB-53)
+
+        **Task:** [LAB-53](https://exemplo.atlassian.net/browse/LAB-53)
+
+        ## Contexto de negócio
+        Cada geração de release fica registrada: quem, quando, plano e resultado.
+
+        ## O que mudou
+        - Tabela release_runs.
+
+        ## Como testar
+        1. Rode as migrations e gere um plano.
+
+        ## SQL (se aplicável)
+        ```sql
+        -- 005_release_runs.sql cria a tabela release_runs
+        ```
+
+        ## ENV (se aplicável)
+        PORTAL_RELEASE_WRITE_ENABLED, padrão false, em todos os ambientes.
+
+        ## Checklist
+        - [ ] Diff revisado pelo autor
+
+        Rascunho para revisar e copiar.
+
+  - id: pr-descricao-sem-task
+    mode: pr-description
+    question: 'Título: corrige a ordem da fila de review. Diff: a fila passa a ordenar pela idade em dias úteis.'
+    expect:
+      include: [a confirmar, 'fix(', O que mudou]
+      exclude: ['LAB-']
+    offline:
+      answer: |
+        Título: fix(review): ordena a fila pela idade em dias úteis
+
+        **Task:** a confirmar. PR sem task é reprovado pelo check de higiene.
+
+        ## Contexto de negócio
+        Quem revisa vê primeiro o PR que espera há mais tempo.
+
+        ## O que mudou
+        - A fila de review ordena pela idade em dias úteis.
+
+        ## Como testar
+        1. Abra a fila e confira a ordem pela idade.
+
+        Rascunho para revisar e copiar.
+
+  - id: pr-descricao-dado-pessoal
+    mode: pr-description
+    question: 'Título: feat(portal): filtro por área. Task: LAB-24. Dúvidas com ana.souza@exemplo.com. Diff: filtro de área na tela de fluxo.'
+    expect:
+      include: [LAB-24, Como testar]
+      hiddenFromModel: [ana.souza@exemplo.com]
+    offline:
+      calls:
+        - tool: tarefa
+          args: { chave: LAB-24 }
+      answer: |
+        Título: feat(portal): filtro por área (LAB-24)
+
+        **Task:** [LAB-24](https://exemplo.atlassian.net/browse/LAB-24)
+
+        ## O que mudou
+        - Filtro de área na tela de fluxo.
+
+        ## Como testar
+        1. Abra Entregas > Fluxo e filtre por área.
+
+        Rascunho para revisar e copiar.
