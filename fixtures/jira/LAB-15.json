@@ -1,0 +1,28 @@
+{
+  "key": "LAB-15",
+  "title": "Minha fila e resumo diário da esteira",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Cada pessoa precisa abrir o painel e saber na hora o que revisar e o que fazer nos próprios PRs, e o time precisa receber de manhã um resumo da esteira sem abrir nada.",
+  "acceptanceCriteria": [
+    "A aba Minha fila mostra, para a pessoa escolhida, as reviews pedidas e ainda não feitas, na ordem da fila",
+    "Mostra os PRs da pessoa com a próxima ação de cada um (check vermelho, ajustes do bot, comentários, sem revisor)",
+    "A escolha da pessoa fica no link e é lembrada no navegador",
+    "Um resumo diário com fila, primeiro da fila, reviews pendentes por pessoa, alertas altos e métricas sai às 9h em dia útil",
+    "O resumo só é enviado a um canal quando o secret do webhook está cadastrado; sem ele, fica no log do workflow"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T23:50:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T00:20:00Z"
+    }
+  ]
+}

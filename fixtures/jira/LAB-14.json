@@ -11,7 +11,7 @@
     "Funciona em tema claro e escuro e no celular",
     "O coletor publica só os dados calculados; a página não chama API externa e usa os mesmos componentes do MMS (shadcn/ui, lucide, recharts)"
   ],
-  "status": "Code Review",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
   "url": null,
@@ -23,6 +23,10 @@
     {
       "status": "Code Review",
       "at": "2026-11-20T23:10:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T23:47:00Z"
     }
   ]
 }

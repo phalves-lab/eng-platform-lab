@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ListOrdered,
   type LucideIcon,
+  UserRoundCheck,
   UsersRound,
 } from 'lucide-react'
 import type { RouteId } from '@/lib/routes'
@@ -21,6 +22,13 @@ export const NAV_ITEMS: NavItem[] = [
     title: 'Visão geral',
     description: 'O que pede atenção agora na esteira.',
     icon: LayoutDashboard,
+  },
+  {
+    id: 'minha-fila',
+    title: 'Minha fila',
+    description:
+      'O que você precisa revisar e o que cada PR seu precisa agora. Escolha seu usuário uma vez e o painel lembra neste navegador.',
+    icon: UserRoundCheck,
   },
   {
     id: 'fila',

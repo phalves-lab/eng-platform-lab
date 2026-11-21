@@ -16,6 +16,7 @@ export interface QueueRow {
   taskKey: string | null
   taskStatus: string | null
   requestedReviewers: string[]
+  reviewedBy: string[]
   enteredAt: string
   enteredFrom: 'jira' | 'pr'
   ageBusinessDays: number

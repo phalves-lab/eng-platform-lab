@@ -15,6 +15,7 @@ Laboratório da esteira de engenharia: gates, segurança, review de IA com conte
 - `apps/api/src/http`: traduz HTTP para o domínio; `src/db`: repositório Postgres e migrations.
 - `tools/review-bot`: monta contexto (task, critérios de aceite, módulo do catálogo, documentação, diff), revisa em 3 camadas, verifica achados graves e publica comentário fixo.
 - `tools/eng-metrics`: coletor só leitura (GitHub e tasks) que calcula fila, alertas e métricas e publica o `data.json`. O contrato do arquivo fica em `src/contract.ts`.
+- Resumo diário: `npm run digest -- --data <data.json>` monta o texto; o workflow `digest` roda às 9h em dia útil e só envia a um canal se o secret `DIGEST_WEBHOOK_URL` existir.
 - `apps/panel`: app do painel (Vite, React e shadcn/ui), estático, lê só o `data.json` publicado ao lado. Componentes do shadcn ficam em `src/components/ui`. Para rodar local: `npm run panel -- --only-demo --out "$PWD/apps/panel/public"` e `npm run dev --workspace @lab/panel`.
 - `review/`: prompts versionados, rubrica e golden set. `catalog/modules/`: dono, tier e caminhos de cada módulo. `policy/`: rulesets, risco, Semgrep e política de IA.
 - `fixtures/`: tasks e páginas sintéticas usadas no CI.

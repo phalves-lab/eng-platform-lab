@@ -1,0 +1,46 @@
+name: digest
+
+on:
+  schedule:
+    - cron: '0 12 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    name: digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+    env:
+      HAS_WEBHOOK: ${{ secrets.DIGEST_WEBHOOK_URL != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Coletar os dados do painel
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run panel -- --out "$GITHUB_WORKSPACE/site" --fixtures "$GITHUB_WORKSPACE/fixtures/jira"
+      - name: Resumo no log do workflow
+        if: env.HAS_WEBHOOK != 'true'
+        run: npm run digest -- --data "$GITHUB_WORKSPACE/site/data.json"
+      - name: Resumo no canal do time
+        if: env.HAS_WEBHOOK == 'true'
+        env:
+          DIGEST_WEBHOOK_URL: ${{ secrets.DIGEST_WEBHOOK_URL }}
+        run: npm run digest -- --data "$GITHUB_WORKSPACE/site/data.json" --post

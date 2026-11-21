@@ -14,7 +14,7 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "tools/eng-metrics": {
-      "entry": ["src/cli.ts", "src/contract.ts"],
+      "entry": ["src/cli.ts", "src/digest-cli.ts", "src/contract.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "apps/panel": {
