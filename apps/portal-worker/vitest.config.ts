@@ -8,7 +8,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/cli.ts', 'src/collect-jira.ts', 'src/scorecard-cli.ts'],
+      exclude: [
+        'src/cli.ts',
+        'src/collect-jira.ts',
+        'src/scorecard-cli.ts',
+        'src/instrumentation.ts',
+        'src/healthcheck.ts',
+      ],
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: 'coverage',
     },

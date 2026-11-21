@@ -1,0 +1,22 @@
+{
+  "key": "LAB-41",
+  "title": "Observabilidade do portal: OpenTelemetry, logs estruturados e health",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Quando o portal fica lento ou cai, hoje ninguém sabe se o problema está na API, no banco, no GitHub ou no modelo. A API e o worker passam a emitir traces e métricas por OpenTelemetry, logs em JSON com id de requisição e de trace e rotas de saúde que dizem se o serviço está vivo e se está pronto para receber tráfego.",
+  "acceptanceCriteria": [
+    "API e worker instrumentados com OpenTelemetry: traces de HTTP, pg e fetch e métricas básicas",
+    "Exportador OTLP configurável por variável de ambiente e desligado por padrão",
+    "Logs estruturados em JSON com id de requisição e de trace, sem dado pessoal",
+    "GET /health responde se o processo está vivo",
+    "GET /health/ready confere banco, handbook carregado e configuração do modelo, sem expor segredo, e responde 503 quando algo falha"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "observabilidade"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T16:50:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T19:30:00Z" }
+  ]
+}

@@ -1,0 +1,102 @@
+name: images
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'apps/portal-api/**'
+      - 'apps/portal-web/**'
+      - 'apps/portal-worker/**'
+      - 'packages/**'
+      - 'tools/eng-metrics/**'
+      - 'handbook/**'
+      - 'catalog/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.dockerignore'
+      - 'docker-compose.portal.yml'
+      - '.github/workflows/images.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: images-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TRIVY_IMAGE: aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+
+jobs:
+  build:
+    name: image (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [portal-api, portal-web, portal-worker]
+    env:
+      IMAGE: eng-platform-lab/${{ matrix.app }}:${{ github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build da imagem (sem push)
+        env:
+          APP: ${{ matrix.app }}
+        run: docker build --file "apps/$APP/Dockerfile" --tag "$IMAGE" .
+      - name: Tamanho e usuário da imagem
+        run: |
+          size=$(docker image inspect "$IMAGE" --format '{{.Size}}')
+          user=$(docker image inspect "$IMAGE" --format '{{.Config.User}}')
+          healthcheck=$(docker image inspect "$IMAGE" --format '{{if .Config.Healthcheck}}sim{{else}}não{{end}}')
+          {
+            echo "### $IMAGE"
+            echo "- Tamanho: $((size / 1024 / 1024)) MB"
+            echo "- Usuário: ${user:-root}"
+            echo "- Healthcheck: $healthcheck"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$user" ] || [ "$user" = "root" ] || [ "$user" = "0" ]; then
+            echo "A imagem precisa rodar com usuário não root." >&2
+            exit 1
+          fi
+          if [ "$healthcheck" != "sim" ]; then
+            echo "A imagem precisa declarar HEALTHCHECK." >&2
+            exit 1
+          fi
+      - name: Scan de vulnerabilidades (Trivy)
+        run: >-
+          docker run --rm
+          --volume /var/run/docker.sock:/var/run/docker.sock
+          --volume "$RUNNER_TEMP/trivy-cache:/root/.cache/trivy"
+          "$TRIVY_IMAGE" image
+          --scanners vuln
+          --severity HIGH,CRITICAL
+          --ignore-unfixed
+          --exit-code 1
+          --no-progress
+          "$IMAGE"
+
+  compose:
+    name: compose-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Subir a stack integrada
+        run: docker compose -f docker-compose.portal.yml up --build --detach --wait --wait-timeout 300
+      - name: Conferir saúde da API e do front
+        run: |
+          curl --fail --silent --show-error http://127.0.0.1:4100/health/ready
+          curl --fail --silent --show-error http://127.0.0.1:3200/api/health
+          curl --fail --silent --show-error --output /dev/null http://127.0.0.1:3200/entregas/dora
+      - name: Logs da stack
+        if: failure()
+        run: docker compose -f docker-compose.portal.yml logs --no-color --tail 200
+      - name: Derrubar a stack
+        if: always()
+        run: docker compose -f docker-compose.portal.yml down --volumes

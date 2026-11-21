@@ -60,6 +60,7 @@
   "overrides": {
     "next": {
       "postcss": "^8.5.33"
-    }
+    },
+    "playwright-core": "1.65.0"
   }
 }

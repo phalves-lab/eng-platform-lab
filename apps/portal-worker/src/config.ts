@@ -187,6 +187,10 @@ const EnvSchema = z
     ATLASSIAN_EMAIL: z.string().default(''),
     ATLASSIAN_API_TOKEN: z.string().default(''),
     CI: z.string().optional(),
+    WORKER_HEARTBEAT_FILE: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      z.string().min(1).optional(),
+    ),
   })
   .superRefine((env, ctx) => {
     if (env.WORKER_DATASETS.includes('lab') && (!env.GITHUB_TOKEN || !env.GITHUB_REPOSITORY)) {
@@ -210,6 +214,7 @@ export interface WorkerConfig {
     github: { token: string; apiUrl: string } | null
   }
   jira: JiraConfig | null
+  heartbeatFile: string | null
 }
 
 /** Parses the worker environment once at boot and fails fast on anything missing. */
@@ -224,6 +229,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): WorkerConfig => {
   return {
     databaseUrl: value.DATABASE_URL,
     jira: loadJiraConfig(env),
+    heartbeatFile: value.WORKER_HEARTBEAT_FILE ? resolve(value.WORKER_HEARTBEAT_FILE) : null,
     intervalMs: value.WORKER_INTERVAL_MINUTES * 60_000,
     timeZone: value.WORKER_TIMEZONE,
     chatRetentionDays: value.WORKER_CHAT_RETENTION_DAYS,

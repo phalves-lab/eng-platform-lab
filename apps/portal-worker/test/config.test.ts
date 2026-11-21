@@ -127,3 +127,17 @@ describe('Jira configuration', () => {
     )
   })
 })
+
+describe('worker heartbeat configuration', () => {
+  it('writes no heartbeat unless a file is configured', () => {
+    expect(loadConfig({ DATABASE_URL, WORKER_DATASETS: 'demo' }).heartbeatFile).toBeNull()
+    expect(
+      loadConfig({ DATABASE_URL, WORKER_DATASETS: 'demo', WORKER_HEARTBEAT_FILE: ' ' })
+        .heartbeatFile,
+    ).toBeNull()
+    expect(
+      loadConfig({ DATABASE_URL, WORKER_DATASETS: 'demo', WORKER_HEARTBEAT_FILE: '/tmp/beat' })
+        .heartbeatFile,
+    ).toBe('/tmp/beat')
+  })
+})

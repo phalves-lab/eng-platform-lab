@@ -1,0 +1,76 @@
+name: eng-lab-portal
+
+x-telemetry: &telemetry
+  OTEL_ENABLED: ${OTEL_ENABLED:-false}
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+
+x-database: &database
+  DATABASE_URL: postgres://postgres:5432/lab
+  PGUSER: lab
+  PGPASSWORD: lab
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab
+      POSTGRES_DB: lab
+    ports:
+      - '${PORTAL_DB_PORT:-5434}:5432'
+    volumes:
+      - portal-stack-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U lab -d lab']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/portal-worker/Dockerfile
+    environment:
+      <<: [*telemetry, *database]
+      WORKER_DATASETS: demo
+      WORKER_JIRA_SOURCE: fixture
+      WORKER_SCORECARD_OUT: /data/scorecard.json
+      WORKER_INTERVAL_MINUTES: ${WORKER_INTERVAL_MINUTES:-60}
+    volumes:
+      - portal-stack-data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/portal-api/Dockerfile
+    environment:
+      <<: [*telemetry, *database]
+      NODE_ENV: development
+      PORTAL_AUTH_MODE: dev
+      PORTAL_SCORECARD_DATA: /data/scorecard.json
+    ports:
+      - '${PORTAL_API_PORT:-4100}:4100'
+    volumes:
+      - portal-stack-data:/data:ro
+    depends_on:
+      worker:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/portal-web/Dockerfile
+    environment:
+      PORTAL_API_URL: http://api:4100
+    ports:
+      - '${PORTAL_WEB_PORT:-3200}:3200'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  portal-stack-db:
+  portal-stack-data:

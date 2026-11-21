@@ -1,5 +1,7 @@
+import { withSpan } from '@lab/telemetry'
 import type { Collector } from './collector.js'
 import type { Logger } from './logger.js'
+import { type CollectorMetrics, createCollectorMetrics } from './metrics.js'
 
 export interface RunResult {
   collector: string
@@ -11,6 +13,7 @@ export interface SchedulerOptions {
   collectors: Collector[]
   logger: Logger
   clock?: () => Date
+  metrics?: CollectorMetrics
 }
 
 /**
@@ -21,16 +24,20 @@ export class Scheduler {
   private readonly inFlight = new Map<string, Promise<RunResult>>()
   private readonly timers: NodeJS.Timeout[] = []
   private readonly clock: () => Date
+  private readonly metrics: CollectorMetrics
 
   constructor(private readonly options: SchedulerOptions) {
     this.clock = options.clock ?? (() => new Date())
+    this.metrics = options.metrics ?? createCollectorMetrics()
   }
 
   run(collector: Collector): Promise<RunResult> {
     const logger = this.options.logger.child({ collector: collector.name })
     if (this.inFlight.has(collector.name)) {
       logger.warn('collector.skipped', { reason: 'previous run still in progress' })
-      return Promise.resolve({ collector: collector.name, status: 'skipped', durationMs: 0 })
+      const skipped: RunResult = { collector: collector.name, status: 'skipped', durationMs: 0 }
+      this.metrics.record(skipped)
+      return Promise.resolve(skipped)
     }
     const execution = this.execute(collector, logger).finally(() =>
       this.inFlight.delete(collector.name),
@@ -60,17 +67,24 @@ export class Scheduler {
   }
 
   private async execute(collector: Collector, logger: Logger): Promise<RunResult> {
+    const result = await this.traced(collector, logger)
+    this.metrics.record(result)
+    return result
+  }
+
+  private traced(collector: Collector, logger: Logger): Promise<RunResult> {
     const startedAt = this.clock()
-    logger.info('collector.started')
-    try {
-      await collector.run({ now: startedAt, logger })
-      const durationMs = this.clock().getTime() - startedAt.getTime()
-      logger.info('collector.finished', { durationMs })
-      return { collector: collector.name, status: 'ok', durationMs }
-    } catch (error) {
-      const durationMs = this.clock().getTime() - startedAt.getTime()
-      logger.error('collector.failed', { durationMs, error })
-      return { collector: collector.name, status: 'failed', durationMs }
-    }
+    const elapsed = () => this.clock().getTime() - startedAt.getTime()
+    return withSpan('collector.run', { 'collector.name': collector.name }, async () => {
+      logger.info('collector.started')
+      try {
+        await collector.run({ now: startedAt, logger })
+        logger.info('collector.finished', { durationMs: elapsed() })
+        return { collector: collector.name, status: 'ok', durationMs: elapsed() }
+      } catch (error) {
+        logger.error('collector.failed', { durationMs: elapsed(), error })
+        return { collector: collector.name, status: 'failed', durationMs: elapsed() }
+      }
+    })
   }
 }
