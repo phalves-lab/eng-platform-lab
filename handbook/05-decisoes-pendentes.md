@@ -2,6 +2,7 @@
 title: Handbook do laboratório, decisões pendentes
 type: documento
 status: draft
+revisado_em: 2025-12-01
 ---
 
 # Decisões pendentes

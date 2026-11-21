@@ -2,6 +2,8 @@
 title: Handbook do laboratório, índice
 type: documento
 status: draft
+dono: '@phalves-lab/platform'
+revisado_em: 2026-10-02
 ---
 
 # Handbook do laboratório

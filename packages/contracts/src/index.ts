@@ -274,6 +274,8 @@ export * from './conversations.js'
 export * from './release-write.js'
 export * from './dora.js'
 export * from './flow.js'
+export * from './scorecard.js'
+export * from './docs.js'
 
 /** Serializes one server-sent event carrying a JSON payload. */
 export const encodeSseEvent = (data: unknown) => `data: ${JSON.stringify(data)}\n\n`

@@ -1,0 +1,32 @@
+{
+  "defaultBranch": "master",
+  "branches": [
+    {
+      "name": "master",
+      "exists": true,
+      "protection": "unknown",
+      "requiresPullRequest": false,
+      "blocksForcePush": false,
+      "blocksDeletion": false,
+      "mergeQueue": false
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/nightly.yml",
+      "content": "name: nightly\non:\n  schedule:\n    - cron: '0 3 * * *'\njobs:\n  run:\n    steps:\n      - run: npm start\n"
+    }
+  ],
+  "agentsMd": {
+    "present": false,
+    "updatedAt": null
+  },
+  "nvmrc": "22",
+  "secretScanning": {
+    "secretScanning": null,
+    "pushProtection": null
+  },
+  "dependabotAlerts": null,
+  "codeScanning": null,
+  "labels": []
+}

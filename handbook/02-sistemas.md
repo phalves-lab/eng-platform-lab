@@ -2,6 +2,8 @@
 title: Handbook do laboratório, sistemas
 type: documento
 status: draft
+dono: '@phalves-lab/arquitetura'
+revisado_em: 2026-03-15
 ---
 
 # Sistemas do laboratório

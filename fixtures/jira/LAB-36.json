@@ -1,0 +1,24 @@
+{
+  "key": "LAB-36",
+  "title": "Scorecard de boas práticas por repositório no portal",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Cada repositório segue os padrões do handbook em graus diferentes e ninguém enxerga onde está o buraco: branch sem proteção, CI copiado, AGENTS.md esquecido, alerta de segurança aberto. O portal passa a dar uma nota de 0 a 100 por repositório, com cada checagem ligada ao padrão que a exige e o que fazer para corrigir.",
+  "acceptanceCriteria": [
+    "Os repositórios ficam em YAML versionado em catalog/repos, com o próprio laboratório e repositórios fictícios servidos por fixture",
+    "Checagens de proteção da branch padrão e de develop, fila de merge, CI reutilizável, cobertura publicada, AGENTS.md presente e atualizado, secret scanning e push protection, versão do Node, alertas do Dependabot e de code scanning e fluxo de release",
+    "Cada checagem tem peso, nota de 0 a 100 e o ID do padrão do handbook que a exige, configurados em catalog/scorecard/policy.yaml",
+    "O coletor do worker tem um adaptador GitHub que só faz GET com o token do ambiente e um adaptador fixture para os testes",
+    "Leitura sem permissão aparece como checagem sem leitura e não entra na nota",
+    "A API expõe GET /api/quality/scorecard com filtro e o detalhe por repositório, e responde 503 quando o relatório ainda não foi gerado",
+    "A tela Qualidade > Scorecard mostra a tabela por repositório com filtro e o detalhe de cada checagem com o que fazer para corrigir"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "qualidade"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T14:20:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T15:30:00Z" }
+  ]
+}

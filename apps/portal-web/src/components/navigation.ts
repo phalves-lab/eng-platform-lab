@@ -3,6 +3,7 @@ import {
   Boxes,
   ChartNoAxesCombined,
   Gauge,
+  FileClock,
   GitPullRequestArrow,
   House,
   Languages,
@@ -14,6 +15,7 @@ import {
   Rocket,
   SquareKanban,
   Workflow,
+  ShieldCheck,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -48,6 +50,13 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { href: '/entregas/fluxo', title: 'Fluxo', icon: Workflow },
       { href: '/entregas/boards', title: 'Boards', icon: SquareKanban },
       { href: '/releases', title: 'Releases', icon: Rocket },
+    ],
+  },
+  {
+    label: 'Qualidade',
+    items: [
+      { href: '/qualidade/scorecard', title: 'Scorecard', icon: ShieldCheck },
+      { href: '/qualidade/documentacao', title: 'Documentação', icon: FileClock },
     ],
   },
   {

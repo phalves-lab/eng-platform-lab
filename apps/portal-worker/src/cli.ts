@@ -18,6 +18,7 @@ import { createFixtureSource } from './collectors/dora/fixture-source.js'
 import { createGitHubSource } from './collectors/dora/github-source.js'
 import { createEngMetricsCollector } from './collectors/eng-metrics.js'
 import { createJiraCollector, createJiraSource } from './collectors/jira/index.js'
+import { buildScorecardCollector, loadScorecardConfig } from './collectors/scorecard/index.js'
 import { loadConfig } from './config.js'
 import { createLogger } from './logger.js'
 import { Scheduler } from './scheduler.js'
@@ -32,6 +33,7 @@ const main = async () => {
     applicationName: 'portal-worker',
   })
   logger.info('migrations.applied', { applied: await runMigrations(pool) })
+  const scorecard = loadScorecardConfig(process.env)
 
   const collectors: Collector[] = [
     createEngMetricsCollector({
@@ -65,6 +67,9 @@ const main = async () => {
         intervalMs: config.intervalMs,
       }),
     )
+  }
+  if (scorecard.out) {
+    collectors.push(await buildScorecardCollector(scorecard, scorecard.out, config.intervalMs))
   }
   const scheduler = new Scheduler({ logger, collectors })
 

@@ -2,6 +2,8 @@
 title: Handbook do laboratório, padrões
 type: documento
 status: draft
+dono: '@phalves-lab/platform'
+revisado_em: 2026-11-21
 ---
 
 # Padrões do laboratório
@@ -72,6 +74,8 @@ status: draft
 - **Por quê:** segredo vazado vira incidente.
 - **Fonte:** .github/workflows/security.yml
 - **Na prática hoje:** trufflehog no CI e push protection ligados.
+- **Dono:** @phalves-lab/seguranca
+- **Revisado em:** 2026-08-20
 
 ### ENG-SEC-02 · Dados confidenciais e IA
 
@@ -79,6 +83,43 @@ status: draft
 - **Status:** VIGENTE
 - **Por quê:** a chave do laboratório não tem contrato corporativo.
 - **Fonte:** tools/review-bot/src/boundary.ts
+
+## ENG-REPO: configuração do repositório
+
+### ENG-REPO-01 · CI reutilizável
+
+- **Regra:** o CI do repositório chama o workflow reutilizável da esteira (`uses: <dono>/<repo>/.github/workflows/<arquivo>.yml@<ref>` ou `./.github/workflows/<arquivo>.yml`) em vez de copiar os passos.
+- **Status:** VIGENTE
+- **Por quê:** um gate corrigido num lugar vale para todos os repositórios.
+- **Fonte:** .github/workflows/ci.yml
+
+### ENG-REPO-02 · AGENTS.md atualizado
+
+- **Regra:** todo repositório tem `AGENTS.md` na raiz com stack, arquitetura, comandos e o que não fazer, revisado nos últimos 90 dias.
+- **Status:** VIGENTE
+- **Por quê:** o agente de IA e quem chega ao repositório leem o mesmo contexto.
+- **Fonte:** AGENTS.md
+
+### ENG-REPO-03 · Versão do Node
+
+- **Regra:** o `.nvmrc` fixa uma versão LTS aceita em `catalog/scorecard/policy.yaml`.
+- **Status:** VIGENTE
+- **Por quê:** CI, máquina de dev e produção rodam a mesma versão.
+- **Fonte:** .nvmrc
+
+### ENG-REPO-04 · Alertas de dependência e de código
+
+- **Regra:** alertas abertos do Dependabot e do code scanning são tratados; crítico e alto não ficam abertos.
+- **Status:** VIGENTE
+- **Por quê:** vulnerabilidade conhecida é a mais barata de explorar.
+- **Fonte:** .github/dependabot.yml
+
+### ENG-REPO-05 · Release com resumo
+
+- **Regra:** o repositório tem o workflow `release-summary.yml` e os rótulos `release` e `pre-release-notes`.
+- **Status:** VIGENTE
+- **Por quê:** o portal monta a PR de release e a nota a partir deles.
+- **Fonte:** catalog/releases/
 
 ## IA: uso de agentes
 
@@ -88,6 +129,8 @@ status: draft
 - **Status:** VIGENTE
 - **Por quê:** medir precisão antes de publicar.
 - **Fonte:** .github/workflows/evals.yml
+- **Dono:** @phalves-lab/ia
+- **Revisado em:** 2026-04-02
 
 ### IA-02 · Modelo do bot
 
@@ -95,6 +138,7 @@ status: draft
 - **Status:** PROPOSTO
 - **Por quê:** comparar precisão e custo no golden set antes de decidir.
 - **Fonte:** plano do laboratório
+- **Dono:** @phalves-lab/ia
 
 ## Para IA
 

@@ -1,6 +1,13 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { type Section, normalize, parseFields, parseSections, sourceOf } from './markdown.js'
+import {
+  type Section,
+  normalize,
+  parseFields,
+  parseFrontmatter,
+  parseSections,
+  sourceOf,
+} from './markdown.js'
 
 export type StandardStatus = 'VIGENTE' | 'CONFLITO' | 'PROPOSTO' | 'LACUNA' | 'DESCONHECIDO'
 
@@ -44,9 +51,17 @@ export interface SearchHit {
   score: number
 }
 
+/** One handbook file with its frontmatter, where `dono` and `revisado_em` drive the review alert. */
+export interface HandbookDocument {
+  file: string
+  title: string
+  frontmatter: Record<string, string>
+}
+
 export interface Handbook {
   directory: string
   files: string[]
+  documents: HandbookDocument[]
   sections: Section[]
   standards: Standard[]
   systems: SystemCard[]
@@ -146,11 +161,15 @@ const readDecisions = (sections: Section[]): PendingDecision[] =>
 /** Loads every `.md` file in the handbook folder and indexes standards, systems, glossary and decisions. */
 export const loadHandbook = async (directory: string): Promise<Handbook> => {
   const files = (await readdir(directory)).filter((file) => file.endsWith('.md')).sort()
-  const sections = (
-    await Promise.all(
-      files.map(async (file) => parseSections(file, await readFile(join(directory, file), 'utf8'))),
-    )
-  ).flat()
+  const contents = await Promise.all(
+    files.map(async (file) => ({ file, markdown: await readFile(join(directory, file), 'utf8') })),
+  )
+  const sections = contents.flatMap(({ file, markdown }) => parseSections(file, markdown))
+  const documents = contents.map(({ file, markdown }) => {
+    const frontmatter = parseFrontmatter(markdown)
+    const heading = sections.find((section) => section.file === file && section.level === 1)
+    return { file, title: frontmatter['title'] ?? heading?.title ?? file, frontmatter }
+  })
   const rules = sections.find(
     (section) => section.level === 2 && normalize(section.title) === 'para ia',
   )
@@ -158,6 +177,7 @@ export const loadHandbook = async (directory: string): Promise<Handbook> => {
   return {
     directory,
     files,
+    documents,
     sections,
     standards: readStandards(sections),
     systems: readSystems(sections),

@@ -53,6 +53,8 @@ const EnvSchema = z
     PORTAL_LLM_MODEL: z.preprocess(emptyAsUnset, z.string().optional()),
     PORTAL_LLM_TIMEOUT_MS: z.coerce.number().int().min(1).max(120_000).default(30_000),
     PORTAL_LLM_MAX_TOOL_ROUNDS: z.coerce.number().int().min(1).max(8).default(4),
+    PORTAL_SCORECARD_DATA: z.preprocess(emptyAsUnset, z.string().min(1).optional()),
+    PORTAL_DOCS_MAX_AGE_MONTHS: z.coerce.number().int().min(1).max(36).default(6),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -114,6 +116,8 @@ export type PortalConfig = {
   dora: { catalogFile: string; incidentsDir: string; fixturesDir: string }
   jiraWorkflowPath: string
   llm: LlmConfig | null
+  scorecardData: string
+  docsMaxAgeMonths: number
 }
 
 type LlmConfig = {
@@ -181,5 +185,9 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
             maxToolRounds: value.PORTAL_LLM_MAX_TOOL_ROUNDS,
           }
         : null,
+    scorecardData: value.PORTAL_SCORECARD_DATA
+      ? resolve(value.PORTAL_SCORECARD_DATA)
+      : resolve(value.PORTAL_HANDBOOK_DIR, '../.portal-data/scorecard.json'),
+    docsMaxAgeMonths: value.PORTAL_DOCS_MAX_AGE_MONTHS,
   }
 }

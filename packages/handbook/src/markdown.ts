@@ -12,6 +12,28 @@ const HEADING = /^(#{1,6})\s+(.+?)\s*$/
 const stripFrontmatter = (markdown: string) =>
   markdown.startsWith('---\n') ? markdown.slice(markdown.indexOf('\n---', 4) + 4) : markdown
 
+const unquote = (value: string) => {
+  const quote = value.at(0)
+  return value.length > 1 && (quote === "'" || quote === '"') && value.endsWith(quote)
+    ? value.slice(1, -1)
+    : value
+}
+
+/** Reads the flat `key: value` pairs of a leading frontmatter block; lists and nesting are ignored. */
+export const parseFrontmatter = (markdown: string): Record<string, string> => {
+  if (!markdown.startsWith('---\n')) return {}
+  const end = markdown.indexOf('\n---', 4)
+  if (end < 0) return {}
+  const fields: Record<string, string> = {}
+  for (const line of markdown.slice(4, end).split('\n')) {
+    const colon = line.indexOf(':')
+    const key = line.slice(0, colon)
+    const value = unquote(line.slice(colon + 1).trim())
+    if (colon > 0 && /^\w[\w-]*$/.test(key) && value) fields[key] = value
+  }
+  return fields
+}
+
 /** Splits markdown into heading sections, keeping the trail of enclosing headings. */
 export const parseSections = (file: string, markdown: string): Section[] => {
   const sections: Section[] = []

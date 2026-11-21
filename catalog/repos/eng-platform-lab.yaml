@@ -1,0 +1,7 @@
+id: eng-platform-lab
+repo: phalves-lab/eng-platform-lab
+name: Laboratório da esteira
+team: Plataforma
+description: Monorepo do laboratório com a API de campanhas, o portal e as ferramentas da esteira
+source: github
+integrationBranch: develop

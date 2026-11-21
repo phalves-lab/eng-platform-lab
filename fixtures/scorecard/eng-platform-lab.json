@@ -1,0 +1,63 @@
+{
+  "defaultBranch": "main",
+  "branches": [
+    {
+      "name": "main",
+      "exists": true,
+      "protection": "ruleset",
+      "requiresPullRequest": true,
+      "blocksForcePush": true,
+      "blocksDeletion": true,
+      "mergeQueue": true
+    },
+    {
+      "name": "develop",
+      "exists": true,
+      "protection": "ruleset",
+      "requiresPullRequest": true,
+      "blocksForcePush": true,
+      "blocksDeletion": true,
+      "mergeQueue": true
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "content": "name: ci\njobs:\n  verify:\n    uses: ./.github/workflows/verify.yml\n  security:\n    uses: ./.github/workflows/security.yml\n"
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "content": "name: verify\non:\n  workflow_call:\njobs:\n  gates:\n    steps:\n      - run: npm run test:coverage\n      - run: npm run diff-coverage -- \"$DIFF_BASE\"\n"
+    },
+    {
+      "path": ".github/workflows/security.yml",
+      "content": "name: security\non:\n  workflow_call:\njobs:\n  secrets:\n    steps:\n      - uses: trufflesecurity/trufflehog@v3\n"
+    }
+  ],
+  "agentsMd": {
+    "present": true,
+    "updatedAt": "2026-11-21T10:00:00.000Z"
+  },
+  "nvmrc": "22",
+  "secretScanning": {
+    "secretScanning": true,
+    "pushProtection": true
+  },
+  "dependabotAlerts": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "codeScanning": {
+    "enabled": false
+  },
+  "labels": [
+    "release",
+    "pre-release-notes",
+    "risk:db-migration",
+    "risk:auth",
+    "risk:infra",
+    "risk:ai-behavior"
+  ]
+}

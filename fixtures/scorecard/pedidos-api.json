@@ -1,0 +1,58 @@
+{
+  "defaultBranch": "main",
+  "branches": [
+    {
+      "name": "main",
+      "exists": true,
+      "protection": "ruleset",
+      "requiresPullRequest": true,
+      "blocksForcePush": true,
+      "blocksDeletion": true,
+      "mergeQueue": true
+    },
+    {
+      "name": "develop",
+      "exists": true,
+      "protection": "ruleset",
+      "requiresPullRequest": true,
+      "blocksForcePush": false,
+      "blocksDeletion": true,
+      "mergeQueue": false
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "content": "name: ci\njobs:\n  node:\n    uses: lab-ficticio/esteira/.github/workflows/ci-node.yml@v3\n    with:\n      coverage: true\n  report:\n    steps:\n      - uses: codecov/codecov-action@v5\n"
+    },
+    {
+      "path": ".github/workflows/release-summary.yml",
+      "content": "name: release-summary\non:\n  pull_request:\n    branches: [main]\n"
+    }
+  ],
+  "agentsMd": {
+    "present": true,
+    "updatedAt": "2026-07-01T12:00:00.000Z"
+  },
+  "nvmrc": "v24.11.0",
+  "secretScanning": {
+    "secretScanning": true,
+    "pushProtection": true
+  },
+  "dependabotAlerts": {
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "low": 0
+  },
+  "codeScanning": {
+    "enabled": true,
+    "alerts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  "labels": ["release", "bug"]
+}
