@@ -55,6 +55,10 @@ const EnvSchema = z
     PORTAL_LLM_MAX_TOOL_ROUNDS: z.coerce.number().int().min(1).max(8).default(4),
     PORTAL_SCORECARD_DATA: z.preprocess(emptyAsUnset, z.string().min(1).optional()),
     PORTAL_DOCS_MAX_AGE_MONTHS: z.coerce.number().int().min(1).max(36).default(6),
+    PORTAL_TASKS_DIR: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('fixtures/jira')),
+    ),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -118,6 +122,7 @@ export type PortalConfig = {
   llm: LlmConfig | null
   scorecardData: string
   docsMaxAgeMonths: number
+  tasksDir: string
 }
 
 type LlmConfig = {
@@ -189,5 +194,6 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
       ? resolve(value.PORTAL_SCORECARD_DATA)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../.portal-data/scorecard.json'),
     docsMaxAgeMonths: value.PORTAL_DOCS_MAX_AGE_MONTHS,
+    tasksDir: resolve(value.PORTAL_TASKS_DIR),
   }
 }

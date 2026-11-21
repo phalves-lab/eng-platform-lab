@@ -13,6 +13,7 @@ const summary = {
   createdAt: '2026-11-21T12:00:00.000Z',
   updatedAt: '2026-11-21T12:05:00.000Z',
   messageCount: 2,
+  chatMode: 'refine-task',
 }
 
 describe('conversation contracts', () => {
@@ -44,6 +45,9 @@ describe('conversation contracts', () => {
       ],
     })
     expect(conversation.messages[1]).toMatchObject({ response: { mode: 'llm' } })
+    expect(conversation.chatMode).toBe('refine-task')
+    const older = { ...summary, chatMode: undefined, messages: [] }
+    expect(ConversationSchema.parse(older).chatMode).toBe('ask')
     expect(
       ConversationSchema.safeParse({
         ...summary,

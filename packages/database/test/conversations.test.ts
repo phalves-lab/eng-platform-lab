@@ -108,6 +108,31 @@ describe.skipIf(!databaseUrl)('ConversationRepository on Postgres', () => {
     await expect(repository.removeInactiveSince('ontem')).rejects.toThrow()
   })
 
+  it('keeps the chat mode the conversation started in', async () => {
+    const asked = await repository.appendTurn(turn({ owner: 'modo' }))
+    expect(asked?.chatMode).toBe('ask')
+
+    const draft = await repository.appendTurn(turn({ owner: 'modo', chatMode: 'refine-task' }))
+    const id = draft?.id as string
+    expect(draft?.chatMode).toBe('refine-task')
+    const next = await repository.appendTurn(
+      turn({ owner: 'modo', conversationId: id, chatMode: 'ask' }),
+    )
+    expect(next).toMatchObject({ id, chatMode: 'refine-task', messageCount: 4 })
+    expect((await repository.find('modo', id))?.chatMode).toBe('refine-task')
+    expect((await repository.list('modo')).map((item) => item.chatMode).sort()).toEqual([
+      'ask',
+      'refine-task',
+    ])
+
+    await expect(repository.appendTurn(turn({ chatMode: 'Modo Livre' }))).rejects.toThrow()
+    await expect(
+      db.pool.query(
+        `INSERT INTO chat_conversations (owner, title, chat_mode) VALUES ('x', 'y', 'DROP')`,
+      ),
+    ).rejects.toThrow(/chat_conversations_chat_mode_check|violates check constraint/)
+  })
+
   it('refuses plain e-mail or CPF in stored text and invalid turns', async () => {
     await expect(
       repository.appendTurn(turn({ owner: 'fabi', question: 'sou fabi@exemplo.com' })),

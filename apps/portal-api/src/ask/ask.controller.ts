@@ -10,9 +10,9 @@ import {
 import {
   type AskRequest,
   AskRequestSchema,
-  type ChatRequest,
-  ChatRequestSchema,
   type ChatStreamEvent,
+  type ModeChatRequest,
+  ModeChatRequestSchema,
   type User,
   encodeSseEvent,
 } from '@lab/contracts'
@@ -49,18 +49,21 @@ export class AskController {
 
   /**
    * Streams the answer as server-sent events and stops the model when the client disconnects.
-   * With `conversationId` the earlier turns go along as context; a finished answer is stored in
-   * the person's history and announced with a `conversation` event after `done`.
+   * With `conversationId` the earlier turns go along as context and the conversation keeps the
+   * mode it started in; a finished answer is stored in the person's history and announced with a
+   * `conversation` event after `done`. Draft modes only write the draft into the chat.
    */
   @Post('stream')
   @Throttle(ASK_LIMIT)
   async stream(
-    @Body(new ZodPipe(ChatRequestSchema)) body: ChatRequest,
+    @Body(new ZodPipe(ModeChatRequestSchema)) body: ModeChatRequest,
     @CurrentUser() user: User | undefined,
     @Res() res: Response,
   ) {
     const owner = user?.login ?? null
-    const history = owner ? await this.conversations.history(owner, body.conversationId) : []
+    const { chatMode, turns } = owner
+      ? await this.conversations.continuation(owner, body.conversationId, body.mode)
+      : { chatMode: body.mode, turns: [] }
     const client = new AbortController()
     res.on('close', () => {
       if (!res.writableFinished) client.abort()
@@ -81,7 +84,7 @@ export class AskController {
       send(event)
     }
     try {
-      const response = await this.chat.answer(body.question, relay, client.signal, history)
+      const response = await this.chat.answer(body.question, relay, client.signal, turns, chatMode)
       if (response && owner && !client.signal.aborted) {
         const conversation = await this.conversations.record({
           owner,
@@ -89,6 +92,7 @@ export class AskController {
           question: body.question,
           response,
           tools,
+          chatMode,
         })
         if (conversation) send({ type: 'conversation', conversation })
       }

@@ -9,6 +9,8 @@ import { ChatService } from '../src/ask/chat.service.js'
 import { loadSystemPrompt } from '../src/ask/system-prompt.js'
 import { type Observation, evaluateCase } from '../src/evals/checks.js'
 import { runChatEvals } from '../src/evals/cli.js'
+import { createEvalModes } from '../src/evals/eval-modes.js'
+import { DRAFT_MODE_IDS } from '../src/ask/modes/mode-definitions.js'
 import { CATEGORIES, type GoldenCase, loadGoldenSet } from '../src/evals/golden-set.js'
 import { MeteredProvider } from '../src/evals/metered-provider.js'
 import { summarize, toMarkdown } from '../src/evals/report.js'
@@ -21,6 +23,7 @@ const HANDBOOK = fileURLToPath(new URL('../../../handbook', import.meta.url))
 
 const golden = (overrides: Partial<GoldenCase> & Pick<GoldenCase, 'offline'>): GoldenCase => ({
   id: 'caso-teste',
+  mode: 'ask',
   category: 'padroes',
   question: 'Qual o padrão de nome de branch?',
   expect: { tools: [], sources: [], include: [], exclude: [], hiddenFromModel: [] },
@@ -56,6 +59,7 @@ describe('golden set do chat', () => {
       provider,
       { llm: null },
       await loadSystemPrompt(),
+      await createEvalModes(handbook),
     )
 
   it('cobre ao menos 25 perguntas em todas as categorias do handbook', () => {
@@ -64,6 +68,12 @@ describe('golden set do chat', () => {
     const unanswerable = cases.filter((c) => c.category === 'sem-resposta')
     expect(unanswerable.length).toBeGreaterThanOrEqual(3)
     expect(cases.every((c) => c.expect.include.length || c.expect.sources.length)).toBe(true)
+  })
+
+  it('tem ao menos 3 casos para cada modo de rascunho', () => {
+    for (const mode of DRAFT_MODE_IDS) {
+      expect(cases.filter((c) => c.mode === mode).length, mode).toBeGreaterThanOrEqual(3)
+    }
   })
 
   it('passa inteiro no modo offline, com as ferramentas rodando sobre o handbook real', async () => {
@@ -304,12 +314,33 @@ cases:
     offline: { answer: ok }
 `
     await writeFile(join(dir, 'a.yaml'), unknownTool)
-    await expect(loadGoldenSet(dir)).rejects.toThrow('unknown handbook tool')
+    await expect(loadGoldenSet(dir)).rejects.toThrow('unknown chat tool')
 
     const valid = unknownTool.replace('apagar_tudo', 'padrao')
     await writeFile(join(dir, 'a.yaml'), valid)
     await writeFile(join(dir, 'b.yml'), valid.replace('padroes', 'sistemas'))
     await expect(loadGoldenSet(dir)).rejects.toThrow('Repeated golden case id: x')
+  })
+
+  it('recusa ferramenta fora do modo do caso e pergunta longa no modo Perguntar', async () => {
+    const dir = await tempDir()
+    const draft = `category: resumo-semana
+cases:
+  - id: semana
+    mode: weekly-summary
+    question: Resumo da semana
+    expect: { tools: [padrao] }
+    offline: { calls: [{ tool: tarefa, args: { chave: LAB-1 } }], answer: ok }
+`
+    await writeFile(join(dir, 'a.yaml'), draft)
+    await expect(loadGoldenSet(dir)).rejects.toThrow(
+      'tool padrao is not available in weekly-summary; cases.0: tool tarefa is not available',
+    )
+    await writeFile(
+      join(dir, 'a.yaml'),
+      `category: padroes\ncases:\n  - id: longa\n    question: ${'x'.repeat(501)}\n    expect: {}\n    offline: { answer: ok }\n`,
+    )
+    await expect(loadGoldenSet(dir)).rejects.toThrow('questions take up to 500 characters')
   })
 })
 

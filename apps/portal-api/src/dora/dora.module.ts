@@ -16,5 +16,6 @@ import { DORA_CATALOG, DoraService } from './dora.service.js'
     { provide: DORA_SOURCE, inject: [CONFIG], useFactory: createDoraSource },
     DoraService,
   ],
+  exports: [DoraService],
 })
 export class DoraModule {}

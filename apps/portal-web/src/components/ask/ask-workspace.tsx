@@ -1,8 +1,14 @@
 'use client'
 
-import { type Conversation, ConversationSchema, type ConversationSummary } from '@lab/contracts'
+import {
+  type ChatMode,
+  type ChatModeId,
+  type Conversation,
+  ConversationSchema,
+  type ConversationSummary,
+} from '@lab/contracts'
 import { AlertCircle, History, MessageSquarePlus } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -13,11 +19,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import type { Turn } from '@/lib/ask-stream'
+import { findMode } from '@/lib/chat-modes'
 import { conversationHref, turnsFromConversation, upsertConversation } from '@/lib/conversations'
 import { AskChat } from './ask-chat'
 import { ConversationList, type HistoryState } from './conversation-list'
+import { ModeSelector } from './mode-selector'
 
 interface AskWorkspaceProps {
+  readonly modes: readonly ChatMode[]
   readonly history: HistoryState
   readonly conversation: Conversation | null
   readonly notice: string | null
@@ -26,30 +35,59 @@ interface AskWorkspaceProps {
 interface ChatSession {
   key: number
   id: string | null
+  mode: ChatModeId
   turns: Turn[]
 }
 
 const replaceUrl = (id: string | null) =>
   window.history.replaceState(null, '', conversationHref(id))
 
-/** Pergunte with the person's history: open, continue, start or delete a conversation. */
-export function AskWorkspace({ history: initialHistory, conversation, notice }: AskWorkspaceProps) {
+/**
+ * Pergunte with the person's history and the chat modes: open, continue, start or delete a
+ * conversation. A conversation keeps the mode it started in, so switching mode starts a new one.
+ */
+export function AskWorkspace({
+  modes,
+  history: initialHistory,
+  conversation,
+  notice,
+}: AskWorkspaceProps) {
   const [history, setHistory] = useState<HistoryState>(initialHistory)
   const [session, setSession] = useState<ChatSession>({
     key: 0,
     id: conversation?.id ?? null,
+    mode: conversation?.chatMode ?? 'ask',
     turns: conversation ? turnsFromConversation(conversation) : [],
   })
+  const mode = findMode(modes, session.mode)
+  const modeLabels = useMemo(
+    () => Object.fromEntries(modes.map((option) => [option.id, option.label])),
+    [modes],
+  )
   const [openingId, setOpeningId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(notice)
   const [sheetOpen, setSheetOpen] = useState(false)
 
-  const startNew = useCallback(() => {
-    setSession((current) => ({ key: current.key + 1, id: null, turns: [] }))
+  const startNew = useCallback((nextMode?: ChatModeId) => {
+    setSession((current) => ({
+      key: current.key + 1,
+      id: null,
+      mode: nextMode ?? current.mode,
+      turns: [],
+    }))
     setError(null)
     setSheetOpen(false)
     replaceUrl(null)
   }, [])
+
+  const changeMode = (next: ChatModeId) => {
+    if (next === session.mode) return
+    if (session.id || session.turns.length) {
+      startNew(next)
+      return
+    }
+    setSession((current) => ({ ...current, key: current.key + 1, mode: next }))
+  }
 
   const open = async (id: string) => {
     if (openingId) return
@@ -69,6 +107,7 @@ export function AskWorkspace({ history: initialHistory, conversation, notice }: 
       setSession((current) => ({
         key: current.key + 1,
         id: loaded.id,
+        mode: loaded.chatMode,
         turns: turnsFromConversation(loaded),
       }))
       setSheetOpen(false)
@@ -110,8 +149,9 @@ export function AskWorkspace({ history: initialHistory, conversation, notice }: 
       activeId={session.id}
       openingId={openingId}
       onOpen={(id) => void open(id)}
-      onNew={startNew}
+      onNew={() => startNew()}
       onDelete={remove}
+      modeLabels={modeLabels}
     />
   )
   const count = history.state === 'ready' ? history.items.length : 0
@@ -121,7 +161,7 @@ export function AskWorkspace({ history: initialHistory, conversation, notice }: 
       <div className="min-w-0 space-y-4">
         <div className="flex items-center justify-end gap-2 lg:hidden">
           {session.id ? (
-            <Button variant="outline" size="sm" onClick={startNew}>
+            <Button variant="outline" size="sm" onClick={() => startNew()}>
               <MessageSquarePlus aria-hidden />
               Nova conversa
             </Button>
@@ -153,8 +193,16 @@ export function AskWorkspace({ history: initialHistory, conversation, notice }: 
           </p>
         ) : null}
 
+        <ModeSelector
+          modes={modes}
+          mode={mode}
+          locked={Boolean(session.id || session.turns.length)}
+          onChange={changeMode}
+        />
+
         <AskChat
           key={session.key}
+          mode={mode}
           conversationId={session.id}
           initialTurns={session.turns}
           onSaved={onSaved}

@@ -10,6 +10,7 @@ import { OpenAICompatibleProvider } from '../ask/model/openai-compatible.provide
 import { loadSystemPrompt } from '../ask/system-prompt.js'
 import type { PortalConfig } from '../config/config.js'
 import { HandbookService } from '../handbook/handbook.service.js'
+import { createEvalModes } from './eval-modes.js'
 import { GOLDEN_SET_DIR, loadGoldenSet } from './golden-set.js'
 import { MeteredProvider } from './metered-provider.js'
 import { summarize, toMarkdown } from './report.js'
@@ -112,6 +113,7 @@ export const runChatEvals = async (argv: string[], io: CliIo): Promise<number> =
     metered,
     { llm: setup.llm },
     await loadSystemPrompt(),
+    await createEvalModes(handbook),
   )
 
   const results = await runGoldenSet({
