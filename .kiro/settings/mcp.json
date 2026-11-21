@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "martech-context": {
+      "command": "npx",
+      "args": ["tsx", "tools/mcp-context/src/cli.ts"],
+      "env": {},
+      "disabled": false,
+      "autoApprove": [
+        "regras_para_ia",
+        "padrao",
+        "buscar_padroes",
+        "sistema",
+        "buscar_sistemas",
+        "glossario",
+        "decisoes_pendentes",
+        "buscar"
+      ]
+    }
+  }
+}

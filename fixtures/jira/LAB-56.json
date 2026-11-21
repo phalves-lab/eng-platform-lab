@@ -1,0 +1,22 @@
+{
+  "key": "LAB-56",
+  "title": "Servidor MCP de contexto também no Kiro",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Parte do time usa o Kiro. O servidor martech-context precisa funcionar nele como já funciona no Claude Code, com o agente consultando as regras do handbook no começo de cada tarefa.",
+  "acceptanceCriteria": [
+    "Abrir o repositório no Kiro já registra o servidor martech-context pela configuração do workspace",
+    "As ferramentas de leitura rodam sem pedir confirmação a cada chamada",
+    "Um steering sempre incluído orienta o agente a chamar regras_para_ia e citar o ID do padrão",
+    "A documentação explica como usar em outro repositório no Claude Code, no Kiro e em outros clientes",
+    "Um teste quebra se uma ferramenta nova for criada sem entrar na configuração do Kiro"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T06:10:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T06:20:00Z" }
+  ]
+}
