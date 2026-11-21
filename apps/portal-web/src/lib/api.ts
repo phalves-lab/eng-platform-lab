@@ -1,5 +1,6 @@
 import 'server-only'
 import {
+  type ChatRequest,
   type DatasetId,
   DecisionSchema,
   GlossaryEntrySchema,
@@ -130,11 +131,11 @@ export const api = {
     request(`/api/handbook/decisions${query({ priority })}`, z.array(DecisionSchema)),
   search: (q: string, limit = 6) =>
     request(`/api/handbook/search${query({ q, limit })}`, z.array(SearchHitSchema)),
-  askStream: async (question: string, signal: AbortSignal) => {
+  askStream: async (body: ChatRequest, signal: AbortSignal) => {
     const response = await fetch(`${baseUrl()}/api/ask/stream`, {
       method: 'POST',
       headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify(body),
       cache: 'no-store',
       signal,
     })

@@ -14,6 +14,7 @@ describe('worker configuration', () => {
       databaseUrl: DATABASE_URL,
       intervalMs: 3_600_000,
       timeZone: 'America/Sao_Paulo',
+      chatRetentionDays: 90,
       collect: { demo: false, lab: { taskSource: 'fixtures', ci: false } },
     })
     expect(config.collect.lab?.fixturesDir).toMatch(/fixtures\/jira$/)
@@ -25,8 +26,9 @@ describe('worker configuration', () => {
       WORKER_DATASETS: 'demo',
       WORKER_INTERVAL_MINUTES: '15',
       WORKER_TIMEZONE: 'UTC',
+      WORKER_CHAT_RETENTION_DAYS: '30',
     })
-    expect(config).toMatchObject({ intervalMs: 900_000, timeZone: 'UTC' })
+    expect(config).toMatchObject({ intervalMs: 900_000, timeZone: 'UTC', chatRetentionDays: 30 })
     expect(config.collect).toEqual({ demo: true, lab: null })
   })
 
@@ -37,6 +39,7 @@ describe('worker configuration', () => {
     const demo = { DATABASE_URL, WORKER_DATASETS: 'demo' }
     expect(() => loadConfig({ ...demo, WORKER_INTERVAL_MINUTES: '0' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_TIMEZONE: 'Mars/Base' })).toThrow('IANA')
+    expect(() => loadConfig({ ...demo, WORKER_CHAT_RETENTION_DAYS: '0' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_DATASETS: 'lab,prod' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_DATASETS: ' , ' })).toThrow('at least one')
   })

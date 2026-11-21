@@ -1,6 +1,6 @@
 'use client'
 
-import type { AskStreamEvent } from '@lab/contracts'
+import type { ChatStreamEvent, ConversationSummary } from '@lab/contracts'
 import { ArrowUp, Sparkles, Square } from 'lucide-react'
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -24,12 +24,19 @@ const errorFor = (status: number, body: unknown) => {
     : 'Não foi possível consultar o handbook agora.'
 }
 
-export function AskChat() {
+interface AskChatProps {
+  readonly conversationId: string | null
+  readonly initialTurns: Turn[]
+  readonly onSaved: (conversation: ConversationSummary) => void
+}
+
+/** The chat of one conversation; a new conversation starts empty and gets its id once saved. */
+export function AskChat({ conversationId, initialTurns, onSaved }: AskChatProps) {
   const [question, setQuestion] = useState('')
-  const [turns, setTurns] = useState<Turn[]>([])
+  const [turns, setTurns] = useState<Turn[]>(initialTurns)
   const [loading, setLoading] = useState(false)
   const controller = useRef<AbortController | null>(null)
-  const nextId = useRef(0)
+  const nextId = useRef(initialTurns.length)
   const list = useRef<HTMLOListElement>(null)
 
   useEffect(() => () => controller.current?.abort(), [])
@@ -55,7 +62,9 @@ export function AskChat() {
       const response = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-        body: JSON.stringify({ question: trimmed }),
+        body: JSON.stringify(
+          conversationId ? { question: trimmed, conversationId } : { question: trimmed },
+        ),
         signal: aborter.signal,
       })
       if (!response.ok || !response.body) {
@@ -63,9 +72,10 @@ export function AskChat() {
         update(id, (turn) => ({ ...turn, error: errorFor(response.status, body), status: 'error' }))
         return
       }
-      await readAskStream(response.body, (event: AskStreamEvent) =>
-        update(id, (turn) => applyEvent(turn, event)),
-      )
+      await readAskStream(response.body, (event: ChatStreamEvent) => {
+        if (event.type === 'conversation') onSaved(event.conversation)
+        else update(id, (turn) => applyEvent(turn, event))
+      })
       update(id, finishTurn)
     } catch {
       update(id, (turn) =>
@@ -91,6 +101,8 @@ export function AskChat() {
         <p>
           As respostas usam só o handbook e mostram de onde vieram. O selo de cada resposta diz se
           ela foi escrita pela IA ou montada pela busca, que entra quando o modelo não está ligado.
+          A conversa fica no seu histórico, visível só para você, com e-mail, CPF, telefone, cartão
+          e RA mascarados.
         </p>
       </div>
 

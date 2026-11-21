@@ -3,8 +3,11 @@ const EMAIL = /[\w.+-]{1,64}@[\w-]{1,63}(?:\.[\w-]{1,63}){1,8}/g
 const CPF = /(?<![\w.-])\d{3}\.?\d{3}\.?\d{3}-?\d{2}(?![\w-])/g
 const PHONE_WITH_AREA = /(?<![\w(+])(?:\+?55[\s.-]?)?\(?\d{2}\)?[\s.-]?9?\d{4}[\s.-]?\d{4}(?!\w)/g
 const LOCAL_PHONE = /(?<![\w-])9?\d{4}-\d{4}(?![\w-])/g
-const CARD_CANDIDATE =
-  /(?<![\w.-])(?:\d{4}([ -])\d{4}\1\d{4}\1\d{4}(?:\1\d{1,3})?|\d{4}[ -]\d{6}[ -]\d{5}|\d{13,19})(?![\w-])/g
+const CARD_PATTERNS = [
+  /(?<![\w.-])\d{4}([ -])\d{4}\1\d{4}\1\d{4}(?:\1\d{1,3})?(?![\w-])/g,
+  /(?<![\w.-])\d{4}[ -]\d{6}[ -]\d{5}(?![\w-])/g,
+  /(?<![\w.-])\d{13,19}(?![\w-])/g,
+]
 
 const passesLuhn = (digits: string) => {
   let sum = 0
@@ -18,8 +21,12 @@ const passesLuhn = (digits: string) => {
 
 /** Long numbers count as card numbers only when their check digit is valid (Luhn). */
 const maskCards = (text: string) =>
-  text.replace(CARD_CANDIDATE, (match) =>
-    passesLuhn(match.replace(/\D/g, '')) ? '[cartão]' : match,
+  CARD_PATTERNS.reduce(
+    (masked, pattern) =>
+      masked.replace(pattern, (match) =>
+        passesLuhn(match.replace(/\D/g, '')) ? '[cartão]' : match,
+      ),
+    text,
   )
 
 /**
