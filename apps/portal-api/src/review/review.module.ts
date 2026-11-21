@@ -14,6 +14,6 @@ import { ReviewService } from './review.service.js'
     },
     ReviewService,
   ],
-  exports: [ReviewService],
+  exports: [ReviewService, PANEL_SOURCE],
 })
 export class ReviewModule {}

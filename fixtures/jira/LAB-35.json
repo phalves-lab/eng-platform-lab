@@ -1,0 +1,21 @@
+{
+  "key": "LAB-35",
+  "title": "Fichas de sistema com eventos produzidos e consumidos",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Antes de mudar um evento da fila, quem desenvolve precisa saber quem consome o tópico, e hoje isso depende de perguntar no canal. O handbook passa a ter os contratos de evento e a ficha de sistema mostra dono, eventos dos dois lados com link para o outro sistema e o módulo do catálogo.",
+  "acceptanceCriteria": [
+    "O handbook do laboratório tem contratos de evento com tópico, evento, produtor e consumidores num formato que o parser lê",
+    "A ficha de sistema mostra dono, eventos produzidos e consumidos com link para o sistema do outro lado e o módulo de catalog/modules ligado",
+    "O servidor MCP e o chat têm a ferramenta quem_consome, que recebe tópico ou evento e devolve produtores e consumidores com a fonte",
+    "As ferramentas existentes do MCP não mudam de comportamento"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "handbook"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T14:20:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T17:30:00Z" }
+  ]
+}

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { type EventContract, findEvents } from './events.js'
 import {
   type Handbook,
   type PendingDecision,
@@ -101,6 +102,22 @@ const citeDecision = (handbook: Handbook, decision: PendingDecision): Citation =
     source: decision.source,
   }
 }
+
+const describeEvent = (contract: EventContract) =>
+  [
+    `${contract.topic} · ${contract.event}`,
+    `  Produz: ${contract.producer}`,
+    `  Consomem: ${contract.consumers.join(', ') || 'ninguém cadastrado'}`,
+    ...(contract.payload ? [`  Carrega: ${contract.payload}`] : []),
+  ].join('\n')
+
+const citeEventSystems = (handbook: Handbook, contracts: EventContract[]): Citation[] =>
+  contracts
+    .flatMap((contract) => [contract.producer, ...contract.consumers])
+    .flatMap((name) => {
+      const system = handbook.systems.find((card) => card.name === name)
+      return system ? [citeSystem(system)] : []
+    })
 
 const defineTool = <S extends z.ZodObject>(tool: {
   name: string
@@ -257,6 +274,30 @@ export const handbookTools: readonly HandbookTool[] = [
         hits.map((h) => `[${h.source}]\n${h.snippet}`).join('\n\n'),
         hits.map((h) => citePassage(handbook, h.source)),
       )
+    },
+  }),
+  defineTool({
+    name: 'quem_consome',
+    title: 'Quem produz e quem consome',
+    description:
+      'Para um tópico ou evento da fila (ex.: campanhas.solicitacoes ou solicitacao.aprovada), diz qual sistema produz e quais consomem, com o que o evento carrega e a fonte.',
+    input: z.object({
+      topico: z.string().min(2).describe('Tópico ou evento, como campanhas.solicitacoes'),
+    }),
+    run: (handbook, { topico }) => {
+      if (!handbook.events.length) return result('O handbook não tem contratos de evento.')
+      const found = findEvents(handbook.events, topico)
+      if (!found.length) {
+        const topics = [...new Set(handbook.events.map((contract) => contract.topic))]
+        return result(
+          notFound(`Tópico ou evento "${topico}"`, `Tópicos conhecidos: ${topics.join(', ')}.`),
+        )
+      }
+      const sources = [...new Set(found.map((contract) => contract.source))]
+      return result(withSource(found.map(describeEvent).join('\n'), sources.join('; ')), [
+        ...citeEventSystems(handbook, found),
+        ...sources.map((source) => citePassage(handbook, source)),
+      ])
     },
   }),
 ]

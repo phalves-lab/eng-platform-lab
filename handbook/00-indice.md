@@ -15,4 +15,5 @@ Exemplo de handbook no mesmo formato do handbook do time, com as regras reais de
 | 01-padroes.md            | Padrões numerados com status e a seção "Para IA" |
 | 02-sistemas.md           | Fichas dos sistemas do laboratório               |
 | 03-glossario.md          | Termos usados na esteira                         |
+| 04-eventos.md            | Contratos de evento: quem produz e quem consome  |
 | 05-decisoes-pendentes.md | Conflitos e lacunas a decidir                    |

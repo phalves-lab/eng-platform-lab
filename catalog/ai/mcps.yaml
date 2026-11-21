@@ -24,7 +24,8 @@ mcps:
                 "args": ["tsx", "<repo>/tools/mcp-context/src/cli.ts"],
                 "autoApprove": [
                   "regras_para_ia", "padrao", "buscar_padroes", "sistema",
-                  "buscar_sistemas", "glossario", "decisoes_pendentes", "buscar"
+                  "buscar_sistemas", "glossario", "decisoes_pendentes", "buscar",
+                  "quem_consome"
                 ]
               }
             }

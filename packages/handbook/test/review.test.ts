@@ -68,6 +68,7 @@ describe('validade da documentação', () => {
       '01-padroes.md',
       '02-sistemas.md',
       '03-glossario.md',
+      '04-eventos.md',
       '05-decisoes-pendentes.md',
     ])
     expect(items.find((entry) => entry.ref === '02-sistemas.md')).toMatchObject({

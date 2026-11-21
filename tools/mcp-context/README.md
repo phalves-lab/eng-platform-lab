@@ -1,6 +1,6 @@
 # martech-context
 
-Servidor MCP só de leitura sobre o handbook: padrões, sistemas, glossário e decisões pendentes. Toda resposta cita o arquivo e a seção de origem.
+Servidor MCP só de leitura sobre o handbook: padrões, sistemas, glossário, decisões pendentes e contratos de evento. Toda resposta cita o arquivo e a seção de origem.
 
 | Ferramenta           | O que devolve                                                 |
 | -------------------- | ------------------------------------------------------------- |
@@ -12,6 +12,7 @@ Servidor MCP só de leitura sobre o handbook: padrões, sistemas, glossário e d
 | `glossario`          | Definição de termo, sigla ou métrica                          |
 | `decisoes_pendentes` | Conflitos e lacunas por prioridade                            |
 | `buscar`             | Busca livre em todo o handbook                                |
+| `quem_consome`       | Quem produz e quem consome um tópico ou evento da fila        |
 
 Lê `handbook/` do repositório por padrão. Para outro handbook, passe a pasta como argumento ou em `MARTECH_HANDBOOK_DIR`.
 
@@ -23,7 +24,7 @@ claude mcp add martech-context -- npx tsx <repo>/tools/mcp-context/src/cli.ts
 
 ## Kiro
 
-Quem abre este repositório no Kiro já recebe o servidor pela configuração do workspace em `.kiro/settings/mcp.json`, com as 8 ferramentas em `autoApprove` (são todas de leitura). O steering em `.kiro/steering/handbook.md` manda o agente chamar `regras_para_ia` no começo da tarefa e citar o ID do padrão.
+Quem abre este repositório no Kiro já recebe o servidor pela configuração do workspace em `.kiro/settings/mcp.json`, com as 9 ferramentas em `autoApprove` (são todas de leitura). O steering em `.kiro/steering/handbook.md` manda o agente chamar `regras_para_ia` no começo da tarefa e citar o ID do padrão.
 
 Para usar em outro repositório, adicione em `~/.kiro/settings/mcp.json` (vale para todos os workspaces) ou em `.kiro/settings/mcp.json` do repositório, com caminho absoluto:
 
@@ -42,7 +43,8 @@ Para usar em outro repositório, adicione em `~/.kiro/settings/mcp.json` (vale p
         "buscar_sistemas",
         "glossario",
         "decisoes_pendentes",
-        "buscar"
+        "buscar",
+        "quem_consome"
       ]
     }
   }

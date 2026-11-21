@@ -1,0 +1,15 @@
+id: reprocessamento-de-filas
+name: Reprocessamento de filas de notificação
+objective: Reprocessar avisos que falharam sem mandar a mesma notificação duas vezes para quem pediu a campanha.
+status: done
+owner: '@lab-demo/mensageria'
+epic: OPS-1
+repos:
+  - lab-demo/notificacoes-worker
+systems:
+  - Worker de notificações
+decisions: []
+risks:
+  - title: Aviso duplicado quando o mesmo evento chega duas vezes
+    severity: medium
+    mitigation: Consumo idempotente pelo id da solicitação, conforme as regras de 04-eventos.md.
