@@ -124,7 +124,7 @@ describe('chat com modelo', () => {
     fake.play(loop, loop, loop)
     const response = doneOf(await streamAsk(app, 'Qual o padrão de branch?'))
 
-    expect(fake.requests.map((r) => r.tools.length)).toEqual([8, 8, 0])
+    expect(fake.requests.map((r) => r.tools.length)).toEqual([10, 10, 0])
     expect(response).toMatchObject({
       mode: 'llm',
       answer: expect.stringContaining('Não consegui'),

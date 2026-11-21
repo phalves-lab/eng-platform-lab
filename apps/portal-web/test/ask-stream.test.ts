@@ -103,6 +103,6 @@ describe('resposta em streaming', () => {
       '/glossario?termo=Merge%20queue%2C%20fila',
     )
     expect(citationHref(cite('passage', 'a.md › Times'))).toBeNull()
-    expect(Object.keys(TOOL_LABEL)).toHaveLength(8)
+    expect(Object.keys(TOOL_LABEL)).toHaveLength(10)
   })
 })

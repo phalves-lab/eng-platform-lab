@@ -61,8 +61,9 @@ describe('utils and navigation', () => {
     expect(activeItem('/entregas/review')?.title).toBe('Review')
     expect(activeItem('/releases')?.title).toBe('Releases')
     expect(activeItem('/entregas/dora?time=Campanhas')?.title).toBe('DORA')
+    expect(activeItem('/projetos/metricas-de-fluxo')?.title).toBe('Projetos')
     expect(activeItem('/nada')).toBeUndefined()
-    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(16)
+    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(17)
   })
 })
 

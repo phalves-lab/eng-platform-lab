@@ -1,0 +1,20 @@
+id: metricas-de-fluxo
+name: Métricas de fluxo no portal
+objective: Mostrar no portal o tempo de ciclo, o WIP e os bloqueios de cada área a partir do espelho do Jira, para o time enxergar onde o trabalho para sem montar planilha.
+status: active
+owner: '@phalves-lab/platform'
+epic: LAB-201
+repos:
+  - phalves-lab/eng-platform-lab
+systems:
+  - Portal de engenharia
+  - Worker do portal
+decisions:
+  - ENG-PR-03
+risks:
+  - title: Status novo no Jira fica fora das colunas e distorce o WIP
+    severity: medium
+    mitigation: O board avisa status fora do workflow e o PR que cria o status atualiza catalog/jira/workflow.yaml.
+  - title: Espelho desatualizado quando o coletor do Jira falha em silêncio
+    severity: low
+    mitigation: null

@@ -4,6 +4,7 @@ import {
   ChartNoAxesCombined,
   Gauge,
   FileClock,
+  FolderKanban,
   GitPullRequestArrow,
   House,
   Languages,
@@ -45,6 +46,7 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Entregas',
     items: [
+      { href: '/projetos', title: 'Projetos', icon: FolderKanban },
       { href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined },
       { href: '/entregas/dora', title: 'DORA', icon: Gauge },
       { href: '/entregas/fluxo', title: 'Fluxo', icon: Workflow },

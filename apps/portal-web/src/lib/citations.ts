@@ -23,4 +23,6 @@ export const TOOL_LABEL: Record<string, string> = {
   glossario: 'glossário',
   decisoes_pendentes: 'decisões pendentes',
   buscar: 'busca no handbook',
+  quem_consome: 'quem consome o evento',
+  projeto: 'situação do projeto',
 }

@@ -16,7 +16,7 @@ const run = (handbook: Awaited<ReturnType<typeof loadHandbook>>, name: string, a
 describe('ferramentas do handbook', async () => {
   const handbook = await loadHandbook(LAB)
 
-  it('expõe as oito ferramentas com schema de entrada', () => {
+  it('expõe as nove ferramentas com schema de entrada', () => {
     expect(handbookTools.map((tool) => tool.name)).toEqual([
       'regras_para_ia',
       'padrao',
@@ -26,6 +26,7 @@ describe('ferramentas do handbook', async () => {
       'glossario',
       'decisoes_pendentes',
       'buscar',
+      'quem_consome',
     ])
     expect(findTool('nao_existe')).toBeNull()
   })
