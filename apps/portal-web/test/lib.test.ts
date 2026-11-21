@@ -62,7 +62,7 @@ describe('utils and navigation', () => {
     expect(activeItem('/releases')?.title).toBe('Releases')
     expect(activeItem('/entregas/dora?time=Campanhas')?.title).toBe('DORA')
     expect(activeItem('/nada')).toBeUndefined()
-    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(12)
+    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(14)
   })
 })
 

@@ -29,6 +29,14 @@ describe('schemas', () => {
   it('validates Jira keys and deploy SHAs', () => {
     expect(JiraIssueSchema.safeParse({ ...issue('LAB-1'), key: 'lab-1' }).success).toBe(false)
     expect(
+      JiraIssueSchema.safeParse({ ...issue('LAB-1'), url: 'http://jira.example.test/LAB-1' })
+        .success,
+    ).toBe(false)
+    expect(
+      JiraIssueSchema.safeParse({ ...issue('LAB-1'), url: 'https://jira.example.test/LAB-1' })
+        .success,
+    ).toBe(true)
+    expect(
       DeploySchema.safeParse({
         repo: 'phalves-lab/eng-platform-lab',
         environment: 'production',

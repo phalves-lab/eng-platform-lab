@@ -5,6 +5,8 @@ import {
   type JiraIssue,
   JiraIssueSchema,
   type JiraSprint,
+  type JiraSprintIssue,
+  JiraSprintIssueSchema,
   JiraSprintSchema,
   type JiraStatusChange,
   JiraStatusChangeSchema,
@@ -16,6 +18,8 @@ interface IssueRow {
   component: string | null
   issue_type: string
   status: string
+  summary: string | null
+  url: string | null
   epic_key: string | null
   sprint_id: string | null
   assignee: string | null
@@ -40,17 +44,37 @@ interface StatusChangeRow {
   changed_at: Date
 }
 
+interface SprintIssueRow {
+  sprint_id: string
+  issue_key: string
+  added_at: Date | null
+}
+
+/** Narrows every read to one Jira project when set. */
+export interface JiraProjectFilter {
+  project?: string
+}
+
 const toIssue = (row: IssueRow): JiraIssue => ({
   key: row.key,
   project: row.project,
   component: row.component,
   issueType: row.issue_type,
   status: row.status,
+  summary: row.summary,
+  url: row.url,
   epicKey: row.epic_key,
   sprintId: row.sprint_id === null ? null : Number(row.sprint_id),
   assignee: row.assignee,
   createdAt: toIso(row.created_at),
   resolvedAt: toIsoOrNull(row.resolved_at),
+})
+
+const toStatusChange = (row: StatusChangeRow): JiraStatusChange => ({
+  issueKey: row.issue_key,
+  fromStatus: row.from_status,
+  toStatus: row.to_status,
+  changedAt: toIso(row.changed_at),
 })
 
 const toSprint = (row: SprintRow): JiraSprint => ({
@@ -98,11 +122,12 @@ export class JiraRepository {
         await client.query(
           `INSERT INTO jira_issues
              (key, project, component, issue_type, status, epic_key, sprint_id, assignee,
-              created_at, resolved_at, synced_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now())
+              created_at, resolved_at, summary, url, synced_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, now())
            ON CONFLICT (key) DO UPDATE SET project = EXCLUDED.project,
              component = EXCLUDED.component, issue_type = EXCLUDED.issue_type,
              status = EXCLUDED.status, epic_key = EXCLUDED.epic_key,
+             summary = EXCLUDED.summary, url = EXCLUDED.url,
              sprint_id = EXCLUDED.sprint_id, assignee = EXCLUDED.assignee,
              created_at = EXCLUDED.created_at, resolved_at = EXCLUDED.resolved_at,
              synced_at = now()`,
@@ -117,6 +142,8 @@ export class JiraRepository {
             issue.assignee,
             issue.createdAt,
             issue.resolvedAt,
+            issue.summary,
+            issue.url,
           ],
         )
       }
@@ -163,11 +190,70 @@ export class JiraRepository {
        WHERE issue_key = $1 ORDER BY changed_at, id`,
       [issueKey],
     )
+    return result.rows.map(toStatusChange)
+  }
+
+  /** Records which sprints each issue was part of and when it entered each one. */
+  async upsertSprintIssues(input: JiraSprintIssue[]): Promise<void> {
+    const entries = input.map((entry) => JiraSprintIssueSchema.parse(entry))
+    await withTransaction(this.pool, async (client) => {
+      for (const entry of entries) {
+        await client.query(
+          `INSERT INTO jira_sprint_issues (sprint_id, issue_key, added_at) VALUES ($1, $2, $3)
+           ON CONFLICT (sprint_id, issue_key) DO UPDATE SET added_at = EXCLUDED.added_at`,
+          [entry.sprintId, entry.issueKey, entry.addedAt],
+        )
+      }
+    })
+  }
+
+  async listProjects(): Promise<string[]> {
+    const result = await this.pool.query<{ project: string }>(
+      'SELECT DISTINCT project FROM jira_issues ORDER BY project',
+    )
+    return result.rows.map((row) => row.project)
+  }
+
+  async listIssues(filter: JiraProjectFilter = {}): Promise<JiraIssue[]> {
+    const result = await this.pool.query<IssueRow>(
+      `SELECT * FROM jira_issues WHERE ($1::text IS NULL OR project = $1) ORDER BY key`,
+      [filter.project ?? null],
+    )
+    return result.rows.map(toIssue)
+  }
+
+  async listStatusChanges(filter: JiraProjectFilter = {}): Promise<JiraStatusChange[]> {
+    const result = await this.pool.query<StatusChangeRow>(
+      `SELECT c.issue_key, c.from_status, c.to_status, c.changed_at
+       FROM jira_status_changes c JOIN jira_issues i ON i.key = c.issue_key
+       WHERE ($1::text IS NULL OR i.project = $1)
+       ORDER BY c.issue_key, c.changed_at, c.id`,
+      [filter.project ?? null],
+    )
+    return result.rows.map(toStatusChange)
+  }
+
+  async listSprints(filter: JiraProjectFilter = {}): Promise<JiraSprint[]> {
+    const result = await this.pool.query<SprintRow>(
+      `SELECT * FROM jira_sprints WHERE ($1::text IS NULL OR project = $1)
+       ORDER BY starts_at NULLS LAST, id`,
+      [filter.project ?? null],
+    )
+    return result.rows.map(toSprint)
+  }
+
+  async listSprintIssues(filter: JiraProjectFilter = {}): Promise<JiraSprintIssue[]> {
+    const result = await this.pool.query<SprintIssueRow>(
+      `SELECT m.sprint_id, m.issue_key, m.added_at
+       FROM jira_sprint_issues m JOIN jira_sprints s ON s.id = m.sprint_id
+       WHERE ($1::text IS NULL OR s.project = $1)
+       ORDER BY m.sprint_id, m.issue_key`,
+      [filter.project ?? null],
+    )
     return result.rows.map((row) => ({
+      sprintId: Number(row.sprint_id),
       issueKey: row.issue_key,
-      fromStatus: row.from_status,
-      toStatus: row.to_status,
-      changedAt: toIso(row.changed_at),
+      addedAt: toIsoOrNull(row.added_at),
     }))
   }
 }

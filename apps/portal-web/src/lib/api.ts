@@ -2,8 +2,11 @@ import 'server-only'
 import {
   type ChatRequest,
   type DatasetId,
+  BoardResponseSchema,
+  BoardSummarySchema,
   DecisionSchema,
   DoraMetricsResponseSchema,
+  FlowMetricsResponseSchema,
   GlossaryEntrySchema,
   HandbookOverviewSchema,
   ReviewMetricsResponseSchema,
@@ -153,6 +156,11 @@ export const api = {
     request(`/api/metrics/review${query({ dataset })}`, ReviewMetricsResponseSchema),
   doraMetrics: (filter: { team?: string; repo?: string }) =>
     request(`/api/metrics/dora${query(filter)}`, DoraMetricsResponseSchema),
+  flowMetrics: (filter: { project?: string; component?: string; weeks: number }) =>
+    request(`/api/metrics/flow${query(filter)}`, FlowMetricsResponseSchema),
+  boards: () => request('/api/boards', z.array(BoardSummarySchema)),
+  board: (project: string) =>
+    request(`/api/boards/${encodeURIComponent(project)}`, BoardResponseSchema),
   plugins: (filter: { term?: string; maturity?: string }) =>
     request(`/api/catalog/plugins${query(filter)}`, z.array(PluginSummarySchema)),
   plugin: (name: string) =>

@@ -1,0 +1,29 @@
+{
+  "key": "LAB-25",
+  "title": "Boards por área na tela Entregas > Boards",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Cada área quer acompanhar o próprio board sem abrir o Jira: o que está em cada coluna, como o fluxo acumulou nas últimas semanas, quanto da sprint foi entregue do que foi previsto e quanto falta para fechar cada épico. O portal só lê; nada é editado no Jira.",
+  "acceptanceCriteria": [
+    "GET /api/boards/:project e lista de projetos em GET /api/boards, com contrato em packages/contracts",
+    "Kanban só de leitura com as colunas do workflow",
+    "Fluxo cumulativo (CFD) de 8 semanas",
+    "Previsto contra entregue da sprint ativa e das 3 anteriores, separando o escopo que entrou depois do início",
+    "Progresso de épicos em percentual concluído",
+    "Tela Entregas > Boards com estados de vazio, carregamento e erro, responsiva até 375 px"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T11:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:00:00Z"
+    }
+  ]
+}

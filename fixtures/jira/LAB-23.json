@@ -1,0 +1,29 @@
+{
+  "key": "LAB-23",
+  "title": "Coletor do Jira para métricas de fluxo",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "As métricas de fluxo e os boards por área precisam do histórico de status, das sprints e dos épicos do Jira. O worker do portal ganha um coletor só de leitura que espelha esses dados no Postgres, com um adaptador de fixture para o laboratório e outro para o Jira Cloud.",
+  "acceptanceCriteria": [
+    "Porta JiraSource com adaptador fixture (fixtures/jira-board, projetos LAB e OPS, dois componentes cada, cerca de 60 itens em 10 semanas, com bloqueios e itens envelhecendo) e adaptador Jira Cloud só leitura",
+    "Adaptador Jira Cloud usa a busca JQL v3 com paginação e expand=changelog e a agile API para sprints, com e-mail e token vindos do ambiente; só GET e o POST da busca",
+    "Gravação com upsert idempotente pelo repositório de packages/database, incluindo a participação de cada issue nas sprints",
+    "Mapa de status para categorias (a fazer, em andamento, em review, bloqueado, concluído) em catalog/jira/workflow.yaml, versionado e validado",
+    "Testes do adaptador Jira com fetch falso cobrindo paginação, changelog e 429 com retry respeitando Retry-After",
+    "Comando no worker que roda o coletor uma vez com o adaptador fixture, documentado no README do worker e no AGENTS.md"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T11:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:00:00Z"
+    }
+  ]
+}

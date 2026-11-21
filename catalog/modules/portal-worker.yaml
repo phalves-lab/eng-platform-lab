@@ -10,3 +10,5 @@ paths:
   - apps/portal-worker/
   - packages/database/
   - docker-compose.yml
+  - catalog/jira/
+  - fixtures/jira-board/

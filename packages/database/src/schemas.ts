@@ -102,6 +102,8 @@ export const JiraIssueSchema = z.object({
   component: z.string().min(1).nullable(),
   issueType: z.string().min(1),
   status: z.string().min(1),
+  summary: z.string().min(1).nullable(),
+  url: z.url({ protocol: /^https$/ }).nullable(),
   epicKey: issueKey.nullable(),
   sprintId: z.number().int().positive().nullable(),
   assignee: z.string().min(1).nullable(),
@@ -117,6 +119,14 @@ export const JiraStatusChangeSchema = z.object({
   changedAt: isoDateTime,
 })
 export type JiraStatusChange = z.infer<typeof JiraStatusChangeSchema>
+
+/** Membership of an issue in a sprint; `addedAt` after the sprint start means scope added late. */
+export const JiraSprintIssueSchema = z.object({
+  sprintId: z.number().int().positive(),
+  issueKey,
+  addedAt: isoDateTime.nullable(),
+})
+export type JiraSprintIssue = z.infer<typeof JiraSprintIssueSchema>
 
 const repoName = z.string().regex(/^[\w.-]+\/[\w.-]+$/)
 const commitSha = z.string().regex(/^[0-9a-f]{7,40}$/)
