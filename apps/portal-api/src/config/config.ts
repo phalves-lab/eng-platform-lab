@@ -36,6 +36,11 @@ const EnvSchema = z
       .transform((token) => token?.trim() || null),
     PORTAL_GITHUB_API_URL: z.url().default('https://api.github.com'),
     PORTAL_RELEASES_DIR: z.string().min(1).optional(),
+    PORTAL_RELEASE_WRITE_ENABLED: z.preprocess(
+      emptyAsUnset,
+      z.enum(['true', 'false']).default('false'),
+    ),
+    PORTAL_GITHUB_WRITE_TOKEN: z.preprocess(emptyAsUnset, z.string().trim().min(1).optional()),
     PORTAL_LLM_BASE_URL: z.preprocess(emptyAsUnset, z.url().optional()),
     PORTAL_LLM_API_KEY: z.preprocess(emptyAsUnset, z.string().optional()),
     PORTAL_LLM_MODEL: z.preprocess(emptyAsUnset, z.string().optional()),
@@ -65,6 +70,21 @@ const EnvSchema = z
         message: 'model mode requires PORTAL_LLM_BASE_URL, PORTAL_LLM_API_KEY and PORTAL_LLM_MODEL',
       })
     }
+    if (env.PORTAL_RELEASE_WRITE_ENABLED === 'true') {
+      if (!env.PORTAL_GITHUB_WRITE_TOKEN || !env.PORTAL_GITHUB_TOKEN?.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            'PORTAL_RELEASE_WRITE_ENABLED=true requires PORTAL_GITHUB_TOKEN and PORTAL_GITHUB_WRITE_TOKEN',
+        })
+      }
+      if (!env.DATABASE_URL) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'PORTAL_RELEASE_WRITE_ENABLED=true requires DATABASE_URL for the release audit',
+        })
+      }
+    }
     if (env.NODE_ENV === 'production' && env.PORTAL_LLM_BASE_URL?.startsWith('http://')) {
       ctx.addIssue({ code: 'custom', message: 'PORTAL_LLM_BASE_URL must use https in production' })
     }
@@ -83,6 +103,7 @@ export type PortalConfig = {
   aiCatalogDir: string
   github: { token: string | null; apiUrl: string }
   releasesDir: string
+  releaseWrite: { enabled: boolean; token: string | null }
   llm: LlmConfig | null
 }
 
@@ -131,6 +152,10 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     releasesDir: value.PORTAL_RELEASES_DIR
       ? resolve(value.PORTAL_RELEASES_DIR)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../catalog/releases'),
+    releaseWrite: {
+      enabled: value.PORTAL_RELEASE_WRITE_ENABLED === 'true',
+      token: value.PORTAL_GITHUB_WRITE_TOKEN ?? null,
+    },
     llm:
       value.PORTAL_LLM_BASE_URL && value.PORTAL_LLM_API_KEY && value.PORTAL_LLM_MODEL
         ? {

@@ -35,17 +35,24 @@ const SIDES: ReleaseSide[] = ['front', 'back']
 export const NO_TOKEN_MESSAGE =
   'Integração com o GitHub não configurada: defina PORTAL_GITHUB_TOKEN no ambiente da portal-api.'
 
+export interface SideOptions {
+  fresh?: boolean
+  mergedBefore?: string | null
+}
+
 /** Read-only release preview: catalog, branches and what would go into the next release. */
 @Injectable()
 export class ReleasesService {
   private readonly catalog: ReleaseProject[]
   private readonly github: GitHubClient | null
+  private readonly raw: GitHubClient | null
 
   constructor(
     @Inject(CONFIG) config: PortalConfig,
     @Inject(GITHUB_CLIENT) github: GitHubClient | null,
   ) {
     this.catalog = loadReleaseCatalog(config.releasesDir)
+    this.raw = github
     this.github = github ? withCache(github, new TtlCache(CACHE_TTL_MS)) : null
   }
 
@@ -65,7 +72,11 @@ export class ReleasesService {
     }
   }
 
-  async preview(query: ReleasePreviewQuery, now = new Date()): Promise<ReleasePreview> {
+  async preview(
+    query: ReleasePreviewQuery,
+    now = new Date(),
+    options: SideOptions = {},
+  ): Promise<ReleasePreview> {
     const project = this.project(query.project)
     const sides = query.side === 'both' ? SIDES.filter((side) => project.repos[side]) : [query.side]
     if (query.side === 'both' && sides.length < 2) {
@@ -76,7 +87,7 @@ export class ReleasesService {
     if (source === target) throw new BadRequestException('Origem e destino iguais.')
 
     const previews = await Promise.all(
-      sides.map((side) => this.previewSide(project, side, source, target, now)),
+      sides.map((side) => this.previewSide(project, side, source, target, now, options)),
     )
     const back = previews.find((preview) => preview.side === 'back')
     return {
@@ -89,15 +100,20 @@ export class ReleasesService {
     }
   }
 
-  private async previewSide(
+  /**
+   * Preview of one side. `mergedBefore` keeps only PRs merged up to that instant, which is what an
+   * existing release branch cut at that moment really contains.
+   */
+  async previewSide(
     project: ReleaseProject,
     side: ReleaseSide,
     source: string,
     target: string,
     now: Date,
+    options: SideOptions = {},
   ): Promise<ReleaseSidePreview> {
     const repo = this.repoOf(project, side)
-    const github = this.client()
+    const github = this.client(options.fresh)
     const [compare, intoTarget, runs, open] = await this.call(
       Promise.all([
         github.compare(repo, target, source),
@@ -110,7 +126,9 @@ export class ReleasesService {
     if (cutoff.kind === 'none') {
       cutoff = findCutoff(project, source, intoTarget, await this.call(github.tags(repo)))
     }
-    const pulls = await this.call(github.mergedPulls(repo, source, cutoff.at))
+    const merged = await this.call(github.mergedPulls(repo, source, cutoff.at))
+    const ceiling = options.mergedBefore
+    const pulls = ceiling ? merged.filter((pull) => (pull.mergedAt ?? '') <= ceiling) : merged
     const tickets = groupByTicket(pulls, project.ticketUrl)
     const found = findOpenRelease(project, source, open)
     const openRelease = found
@@ -144,13 +162,13 @@ export class ReleasesService {
     }
   }
 
-  private project(id: string): ReleaseProject {
+  project(id: string): ReleaseProject {
     const project = this.catalog.find((candidate) => candidate.id === id)
     if (!project) throw new NotFoundException(`Projeto de release ${id} não encontrado.`)
     return project
   }
 
-  private repoOf(project: ReleaseProject, side: ReleaseSide): string {
+  repoOf(project: ReleaseProject, side: ReleaseSide): string {
     const repo = project.repos[side]
     if (!repo) {
       throw new BadRequestException(`O projeto ${project.id} não tem o lado ${side} cadastrado.`)
@@ -158,12 +176,14 @@ export class ReleasesService {
     return repo
   }
 
-  private client(): GitHubClient {
-    if (!this.github) throw new ServiceUnavailableException(NO_TOKEN_MESSAGE)
-    return this.github
+  /** Cached reader for screens; `fresh` skips the cache, as a write must see GitHub as it is now. */
+  client(fresh = false): GitHubClient {
+    const client = fresh ? this.raw : this.github
+    if (!client) throw new ServiceUnavailableException(NO_TOKEN_MESSAGE)
+    return client
   }
 
-  private async call<T>(promise: Promise<T>): Promise<T> {
+  async call<T>(promise: Promise<T>): Promise<T> {
     try {
       return await promise
     } catch (error) {

@@ -1,15 +1,19 @@
-import type { ReleaseBranches } from '@lab/contracts'
-import { KeyRound, PackageOpen, Rocket } from 'lucide-react'
+import type { ReleaseBranches, User } from '@lab/contracts'
+import { KeyRound, PackageOpen } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { ReleaseFilters } from '@/components/releases/release-filters'
+import { ReleaseGenerate } from '@/components/releases/release-generate'
 import { ReleasePreview, ReleasePreviewSkeleton } from '@/components/releases/release-preview'
-import { Button } from '@/components/ui/button'
+import {
+  ReleaseTrackingSection,
+  ReleaseTrackingSkeleton,
+} from '@/components/releases/release-tracking'
 import { Card, CardContent } from '@/components/ui/card'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { ApiError } from '@/lib/api'
+import { api, ApiError } from '@/lib/api'
+import { canWriteReleases } from '@/lib/release-write'
 import { commonBranches, type ReleaseSearchParams, resolveSelection, sidesOf } from '@/lib/releases'
 import { releasesApi } from '@/lib/releases-api'
 
@@ -17,30 +21,6 @@ export const metadata: Metadata = { title: 'Releases' }
 
 interface ReleasesProps {
   readonly searchParams: Promise<ReleaseSearchParams>
-}
-
-function GenerateButton() {
-  return (
-    <div className="flex flex-col items-start gap-1 sm:items-end">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span
-            tabIndex={0}
-            className="rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-          >
-            <Button disabled aria-describedby="generate-release-hint">
-              <Rocket aria-hidden />
-              Gerar release
-            </Button>
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>Em breve (LAB-53)</TooltipContent>
-      </Tooltip>
-      <span id="generate-release-hint" className="text-xs text-muted-foreground">
-        Em breve (LAB-53)
-      </span>
-    </div>
-  )
 }
 
 const loadBranches = async (
@@ -58,23 +38,28 @@ const loadBranches = async (
   }
 }
 
+const roleOf = async (): Promise<User['role'] | null> => {
+  try {
+    return (await api.me()).role
+  } catch (error) {
+    if (error instanceof ApiError) return null
+    throw error
+  }
+}
+
+const DESCRIPTION =
+  'Prévia do que entra na próxima release: PRs mergeados desde o último corte, agrupados por ticket, com SQL, ENV, checks e alertas. Líder ou admin gera a release a partir de um plano conferido antes de qualquer escrita no GitHub.'
+
 export default async function ReleasesPage({ searchParams }: ReleasesProps) {
   const params = await searchParams
-  const projects = await releasesApi.projects()
+  const [projects, role] = await Promise.all([releasesApi.projects(), roleOf()])
   const selection = resolveSelection(params, projects)
-
-  const header = (
-    <PageHeader
-      title="Releases"
-      description="Prévia do que entra na próxima release: PRs mergeados desde o último corte, agrupados por ticket, com SQL, ENV, checks e alertas. Nada é escrito no GitHub."
-      actions={<GenerateButton />}
-    />
-  )
+  const canWrite = canWriteReleases(role)
 
   if (!selection) {
     return (
       <>
-        {header}
+        <PageHeader title="Releases" description={DESCRIPTION} />
         <EmptyState
           icon={PackageOpen}
           title="Nenhum projeto cadastrado"
@@ -90,7 +75,19 @@ export default async function ReleasesPage({ searchParams }: ReleasesProps) {
 
   return (
     <>
-      {header}
+      <PageHeader
+        title="Releases"
+        description={DESCRIPTION}
+        actions={
+          <ReleaseGenerate
+            canWrite={canWrite}
+            project={project.id}
+            side={side}
+            source={source}
+            target={target}
+          />
+        }
+      />
       <Card>
         <CardContent>
           <ReleaseFilters
@@ -121,6 +118,9 @@ export default async function ReleasesPage({ searchParams }: ReleasesProps) {
           <ReleasePreview project={project.id} side={side} source={source} target={target} />
         </Suspense>
       )}
+      <Suspense key={`tracking:${project.id}`} fallback={<ReleaseTrackingSkeleton />}>
+        <ReleaseTrackingSection project={project.id} canWrite={canWrite} />
+      </Suspense>
     </>
   )
 }

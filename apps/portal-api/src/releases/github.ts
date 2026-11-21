@@ -29,6 +29,38 @@ export interface GitHubTag {
   url: string
 }
 
+export interface GitHubBranchHead {
+  sha: string
+  date: string | null
+}
+
+export interface GitHubPullDetail {
+  number: number
+  title: string
+  url: string
+  body: string
+  headRef: string
+  headSha: string
+  baseRef: string
+  state: 'open' | 'closed'
+  merged: boolean
+  mergedAt: string | null
+  mergeSha: string | null
+  mergeable: boolean | null
+}
+
+export interface GitHubReview {
+  author: string
+  state: string
+  submittedAt: string | null
+}
+
+export interface GitHubWorkflowRun {
+  status: string
+  conclusion: string | null
+  url: string
+}
+
 /** Read-only view of the GitHub API used by the release preview. It has no write method. */
 export interface GitHubClient {
   compare(repo: string, base: string, head: string): Promise<GitHubCompare>
@@ -38,6 +70,11 @@ export interface GitHubClient {
   branches(repo: string): Promise<string[]>
   checkRuns(repo: string, ref: string): Promise<GitHubCheckRun[]>
   tags(repo: string): Promise<GitHubTag[]>
+  branchHead(repo: string, branch: string): Promise<GitHubBranchHead | null>
+  pull(repo: string, pullNumber: number): Promise<GitHubPullDetail>
+  reviews(repo: string, pullNumber: number): Promise<GitHubReview[]>
+  workflowRuns(repo: string, workflow: string, branch: string): Promise<GitHubWorkflowRun[]>
+  tagExists(repo: string, tag: string): Promise<boolean>
 }
 
 export class GitHubError extends Error {
@@ -60,6 +97,20 @@ interface RawPull {
   labels: { name: string }[]
   merged_at: string | null
   updated_at: string
+}
+
+interface RawPullDetail {
+  number: number
+  title: string
+  html_url: string
+  body: string | null
+  state: 'open' | 'closed'
+  merged: boolean
+  merged_at: string | null
+  merge_commit_sha: string | null
+  mergeable: boolean | null
+  head: { ref: string; sha: string }
+  base: { ref: string }
 }
 
 interface RestOptions {
@@ -108,6 +159,15 @@ export const createRestGitHub = (options: RestOptions): GitHubClient => {
       limited ? 429 : response.status,
       `GitHub respondeu ${response.status} em ${path.split('?')[0]}`,
     )
+  }
+
+  const orNull = async <T>(read: Promise<T>): Promise<T | null> => {
+    try {
+      return await read
+    } catch (error) {
+      if (error instanceof GitHubError && error.status === 404) return null
+      throw error
+    }
   }
 
   const repoPath = (repo: string) => `/repos/${repo}`
@@ -195,6 +255,62 @@ export const createRestGitHub = (options: RestOptions): GitHubClient => {
           }
         }),
       )
+    },
+
+    async branchHead(repo, branch) {
+      const data = await orNull(
+        get<{ commit: { sha: string; commit: { committer: { date: string } | null } } }>(
+          `${repoPath(repo)}/branches/${ref(branch)}`,
+        ),
+      )
+      if (!data) return null
+      return { sha: data.commit.sha, date: data.commit.commit.committer?.date ?? null }
+    },
+
+    async pull(repo, pullNumber) {
+      const raw = await get<RawPullDetail>(`${repoPath(repo)}/pulls/${pullNumber}`)
+      return {
+        number: raw.number,
+        title: raw.title,
+        url: raw.html_url,
+        body: raw.body ?? '',
+        headRef: raw.head.ref,
+        headSha: raw.head.sha,
+        baseRef: raw.base.ref,
+        state: raw.state,
+        merged: raw.merged,
+        mergedAt: raw.merged_at,
+        mergeSha: raw.merge_commit_sha,
+        mergeable: raw.mergeable,
+      }
+    },
+
+    async reviews(repo, pullNumber) {
+      const data = await get<
+        { user: { login: string } | null; state: string; submitted_at: string | null }[]
+      >(`${repoPath(repo)}/pulls/${pullNumber}/reviews?per_page=${PAGE_SIZE}`)
+      return data.map((review) => ({
+        author: review.user?.login ?? 'desconhecido',
+        state: review.state,
+        submittedAt: review.submitted_at,
+      }))
+    },
+
+    async workflowRuns(repo, workflow, branch) {
+      const data = await orNull(
+        get<{ workflow_runs: { status: string; conclusion: string | null; html_url: string }[] }>(
+          `${repoPath(repo)}/actions/workflows/${ref(workflow)}/runs?branch=${ref(branch)}&per_page=1`,
+        ),
+      )
+      return (data?.workflow_runs ?? []).map((run) => ({
+        status: run.status,
+        conclusion: run.conclusion,
+        url: run.html_url,
+      }))
+    },
+
+    async tagExists(repo, tag) {
+      return Boolean(await orNull(get<unknown>(`${repoPath(repo)}/git/ref/tags/${ref(tag)}`)))
     },
   }
 }

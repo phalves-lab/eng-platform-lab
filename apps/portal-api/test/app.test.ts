@@ -255,6 +255,29 @@ describe('configuration', () => {
     expect(() => loadConfig(handbook)).toThrow('set DATABASE_URL or PORTAL_PANEL_DATA')
     expect(() => loadConfig({ ...handbook, DATABASE_URL: 'mysql://x' })).toThrow('postgres:// URL')
   })
+
+  it('keeps release writes off by default and needs both tokens and the database to turn them on', () => {
+    const base = { PORTAL_HANDBOOK_DIR: HANDBOOK, PORTAL_PANEL_DATA: 'x.json' }
+    expect(loadConfig(base).releaseWrite).toEqual({ enabled: false, token: null })
+    expect(loadConfig({ ...base, PORTAL_RELEASE_WRITE_ENABLED: '' }).releaseWrite.enabled).toBe(
+      false,
+    )
+    const on = {
+      ...base,
+      PORTAL_RELEASE_WRITE_ENABLED: 'true',
+      PORTAL_GITHUB_TOKEN: 'r',
+      PORTAL_GITHUB_WRITE_TOKEN: 'w',
+      DATABASE_URL: 'postgres://lab:lab@localhost:5433/lab',
+    }
+    expect(loadConfig(on).releaseWrite).toEqual({ enabled: true, token: 'w' })
+    expect(() => loadConfig({ ...on, PORTAL_GITHUB_WRITE_TOKEN: '' })).toThrow(
+      'requires PORTAL_GITHUB_TOKEN and PORTAL_GITHUB_WRITE_TOKEN',
+    )
+    expect(() => loadConfig({ ...on, DATABASE_URL: undefined })).toThrow('release audit')
+    expect(() => loadConfig({ ...base, PORTAL_RELEASE_WRITE_ENABLED: 'yes' })).toThrow(
+      'Invalid portal configuration',
+    )
+  })
 })
 
 describe('review metrics endpoint', () => {

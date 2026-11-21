@@ -1,0 +1,33 @@
+{
+  "key": "LAB-53",
+  "title": "Gerar a release pelo portal",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Hoje quem monta a release abre as PRs de develop para main à mão, copia SQL e ENV de cada PR e lembra a ordem de deploy de cabeça. A prévia da LAB-51 já mostra o que entra; esta task faz o portal abrir a release a partir dessa prévia, com um plano conferido antes de qualquer escrita e travas que impedem erro no GitHub.",
+  "acceptanceCriteria": [
+    "Porta GitHubWriter com adaptador falso para testes e adaptador real que só cria branch nova a partir da origem, abre PR, aplica rótulos, atribui autores e edita PR existente; nunca push em branch existente, nunca merge, nunca em branch protegida",
+    "Modos PR direta e branch de release (release/AAAA-MM-DD ou versão), conforme o cadastro do projeto",
+    "Front e back em repositórios diferentes geram duas PRs ligadas uma à outra no corpo, com checklist único de SQL e ENV e a ordem de deploy",
+    "Se a PR de release já existir, o portal atualiza o corpo em vez de abrir outra",
+    "Corpo da PR no template de release do laboratório: PRs agrupados por task, autores, SQL e ENV",
+    "POST /api/releases/plan mostra o plano e POST /api/releases/execute só executa com o nome do repositório digitado igual e o mesmo plano (hash)",
+    "Só papel líder ou admin executa; dev só vê a prévia",
+    "Auditoria própria em tabela nova (quem, quando, plano, resultado)",
+    "Flag PORTAL_RELEASE_WRITE_ENABLED, padrão false; desligada, a execução responde que a escrita está desabilitada",
+    "Tela com o fluxo: prévia, plano, confirmação digitando o repositório e resultado com links"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T14:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:30:00Z"
+    }
+  ]
+}

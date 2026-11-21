@@ -51,5 +51,10 @@ export const withCache = (client: GitHubClient, cache: TtlCache): GitHubClient =
     branches: memo('branches', client.branches.bind(client)),
     checkRuns: memo('checkRuns', client.checkRuns.bind(client)),
     tags: memo('tags', client.tags.bind(client)),
+    branchHead: memo('branchHead', client.branchHead.bind(client)),
+    pull: memo('pull', client.pull.bind(client)),
+    reviews: memo('reviews', client.reviews.bind(client)),
+    workflowRuns: memo('workflowRuns', client.workflowRuns.bind(client)),
+    tagExists: memo('tagExists', client.tagExists.bind(client)),
   }
 }
