@@ -1,19 +1,12 @@
 'use client'
 
-import type { AskResponse } from '@lab/contracts'
-import { ArrowUp, BookOpen, Sparkles } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
-import { Badge } from '@/components/ui/badge'
+import type { AskStreamEvent } from '@lab/contracts'
+import { ArrowUp, Sparkles, Square } from 'lucide-react'
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { cleanSnippet, shortSource } from '@/lib/labels'
-
-interface Turn {
-  question: string
-  response: AskResponse | null
-  error: string | null
-}
+import { applyEvent, finishTurn, newTurn, readAskStream, type Turn } from '@/lib/ask-stream'
+import { AnswerCard } from './answer-card'
 
 const SUGGESTIONS = [
   'Qual o padrão de nome de branch?',
@@ -22,35 +15,66 @@ const SUGGESTIONS = [
   'Como o bot de review funciona?',
 ]
 
+const errorFor = (status: number, body: unknown) => {
+  if (body && typeof body === 'object' && 'error' in body && typeof body.error === 'string') {
+    return body.error
+  }
+  return status === 429
+    ? 'Muitas perguntas em pouco tempo. Espere um minuto e tente de novo.'
+    : 'Não foi possível consultar o handbook agora.'
+}
+
 export function AskChat() {
   const [question, setQuestion] = useState('')
   const [turns, setTurns] = useState<Turn[]>([])
   const [loading, setLoading] = useState(false)
+  const controller = useRef<AbortController | null>(null)
+  const nextId = useRef(0)
+  const list = useRef<HTMLOListElement>(null)
+
+  useEffect(() => () => controller.current?.abort(), [])
+
+  useEffect(() => {
+    list.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [turns.length])
+
+  const update = useCallback((id: number, change: (turn: Turn) => Turn) => {
+    setTurns((current) => current.map((turn) => (turn.id === id ? change(turn) : turn)))
+  }, [])
 
   const ask = async (text: string) => {
     const trimmed = text.trim()
     if (trimmed.length < 3 || loading) return
+    const id = nextId.current++
+    const aborter = new AbortController()
+    controller.current = aborter
     setLoading(true)
     setQuestion('')
+    setTurns((current) => [...current, newTurn(id, trimmed)])
     try {
       const response = await fetch('/api/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
         body: JSON.stringify({ question: trimmed }),
+        signal: aborter.signal,
       })
-      const body = (await response.json()) as AskResponse | { error: string }
-      setTurns((current) => [
-        ...current,
-        'error' in body
-          ? { question: trimmed, response: null, error: body.error }
-          : { question: trimmed, response: body, error: null },
-      ])
+      if (!response.ok || !response.body) {
+        const body: unknown = await response.json().catch(() => null)
+        update(id, (turn) => ({ ...turn, error: errorFor(response.status, body), status: 'error' }))
+        return
+      }
+      await readAskStream(response.body, (event: AskStreamEvent) =>
+        update(id, (turn) => applyEvent(turn, event)),
+      )
+      update(id, finishTurn)
     } catch {
-      setTurns((current) => [
-        ...current,
-        { question: trimmed, response: null, error: 'Falha de rede. Tente de novo.' },
-      ])
+      update(id, (turn) =>
+        aborter.signal.aborted
+          ? { ...turn, status: 'cancelled' }
+          : { ...turn, error: 'Falha de rede. Tente de novo.', status: 'error' },
+      )
     } finally {
+      controller.current = null
       setLoading(false)
     }
   }
@@ -65,8 +89,8 @@ export function AskChat() {
       <div className="flex items-start gap-3 rounded-xl border border-info/30 bg-info-light p-4 text-sm">
         <Sparkles className="mt-0.5 size-4 shrink-0 text-info" aria-hidden />
         <p>
-          Modo busca: as respostas trazem os trechos mais relevantes do handbook com a fonte. A
-          resposta escrita por IA entra quando o gateway corporativo de modelos estiver ligado.
+          As respostas usam só o handbook e mostram de onde vieram. O selo de cada resposta diz se
+          ela foi escrita pela IA ou montada pela busca, que entra quando o modelo não está ligado.
         </p>
       </div>
 
@@ -77,6 +101,7 @@ export function AskChat() {
               key={suggestion}
               variant="outline"
               size="sm"
+              className="h-auto min-h-8 whitespace-normal text-left"
               onClick={() => void ask(suggestion)}
             >
               {suggestion}
@@ -85,38 +110,13 @@ export function AskChat() {
         </div>
       ) : null}
 
-      <ol className="space-y-6" aria-live="polite">
-        {turns.map((turn, index) => (
-          <li key={index} className="space-y-3">
-            <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm text-primary-foreground">
+      <ol ref={list} className="space-y-6">
+        {turns.map((turn) => (
+          <li key={turn.id} className="space-y-3">
+            <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm break-words text-primary-foreground">
               {turn.question}
             </div>
-            <Card className="gap-3 py-4">
-              <CardContent className="space-y-3 px-4">
-                {turn.error ? (
-                  <p className="text-sm text-destructive">{turn.error}</p>
-                ) : (
-                  <>
-                    <p className="text-sm">{turn.response?.answer}</p>
-                    <ul className="space-y-2">
-                      {turn.response?.sources.map((source) => (
-                        <li key={source.source} className="rounded-lg border bg-muted/40 p-3">
-                          <div className="mb-1 flex items-center gap-2">
-                            <BookOpen className="size-3.5 text-primary" aria-hidden />
-                            <Badge variant="outline" className="font-normal">
-                              {shortSource(source.source)}
-                            </Badge>
-                          </div>
-                          <p className="text-sm leading-relaxed text-muted-foreground">
-                            {cleanSnippet(source.snippet)}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <AnswerCard turn={turn} onRetry={() => void ask(turn.question)} canRetry={!loading} />
           </li>
         ))}
       </ol>
@@ -140,14 +140,26 @@ export function AskChat() {
           maxLength={500}
           className="min-h-10 resize-none border-0 shadow-none focus-visible:ring-0"
         />
-        <Button
-          type="submit"
-          size="icon"
-          disabled={loading || question.trim().length < 3}
-          aria-label="Enviar pergunta"
-        >
-          <ArrowUp aria-hidden />
-        </Button>
+        {loading ? (
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            onClick={() => controller.current?.abort()}
+            aria-label="Parar resposta"
+          >
+            <Square className="fill-current" aria-hidden />
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            size="icon"
+            disabled={question.trim().length < 3}
+            aria-label="Enviar pergunta"
+          >
+            <ArrowUp aria-hidden />
+          </Button>
+        )}
       </form>
     </div>
   )

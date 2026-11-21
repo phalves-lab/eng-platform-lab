@@ -1,6 +1,5 @@
 import 'server-only'
 import {
-  AskResponseSchema,
   type DatasetId,
   DecisionSchema,
   GlossaryEntrySchema,
@@ -131,8 +130,19 @@ export const api = {
     request(`/api/handbook/decisions${query({ priority })}`, z.array(DecisionSchema)),
   search: (q: string, limit = 6) =>
     request(`/api/handbook/search${query({ q, limit })}`, z.array(SearchHitSchema)),
-  ask: (question: string) =>
-    request('/api/ask', AskResponseSchema, { method: 'POST', body: JSON.stringify({ question }) }),
+  askStream: async (question: string, signal: AbortSignal) => {
+    const response = await fetch(`${baseUrl()}/api/ask/stream`, {
+      method: 'POST',
+      headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+      cache: 'no-store',
+      signal,
+    })
+    if (!response.ok || !response.body) {
+      throw new ApiError(response.status, `portal-api ${response.status} on /api/ask/stream`)
+    }
+    return response.body
+  },
   datasets: () => request('/api/review/datasets', z.array(DatasetInfoSchema)),
   dataset: (id: string) => request(`/api/review/datasets/${encodeURIComponent(id)}`, DatasetSchema),
   myReview: (dataset: string, login?: string) =>

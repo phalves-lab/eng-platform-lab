@@ -7,6 +7,11 @@ export const CONFIG = Symbol('CONFIG')
 /** Lab folder of this repository, resolved from the module so the default works from any cwd. */
 const fromRepo = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url))
 
+const emptyAsUnset = (value: unknown) =>
+  typeof value === 'string' && value.trim() === '' ? undefined : value
+
+const withoutTrailingSlash = (url: string) => (url.endsWith('/') ? url.slice(0, -1) : url)
+
 const EnvSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -31,6 +36,11 @@ const EnvSchema = z
       .transform((token) => token?.trim() || null),
     PORTAL_GITHUB_API_URL: z.url().default('https://api.github.com'),
     PORTAL_RELEASES_DIR: z.string().min(1).optional(),
+    PORTAL_LLM_BASE_URL: z.preprocess(emptyAsUnset, z.url().optional()),
+    PORTAL_LLM_API_KEY: z.preprocess(emptyAsUnset, z.string().optional()),
+    PORTAL_LLM_MODEL: z.preprocess(emptyAsUnset, z.string().optional()),
+    PORTAL_LLM_TIMEOUT_MS: z.coerce.number().int().min(1).max(120_000).default(30_000),
+    PORTAL_LLM_MAX_TOOL_ROUNDS: z.coerce.number().int().min(1).max(8).default(4),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -48,6 +58,16 @@ const EnvSchema = z
         message: 'entra mode requires PORTAL_JWKS_URL, PORTAL_JWT_ISSUER and PORTAL_JWT_AUDIENCE',
       })
     }
+    const llm = [env.PORTAL_LLM_BASE_URL, env.PORTAL_LLM_API_KEY, env.PORTAL_LLM_MODEL]
+    if (llm.some(Boolean) && !llm.every(Boolean)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'model mode requires PORTAL_LLM_BASE_URL, PORTAL_LLM_API_KEY and PORTAL_LLM_MODEL',
+      })
+    }
+    if (env.NODE_ENV === 'production' && env.PORTAL_LLM_BASE_URL?.startsWith('http://')) {
+      ctx.addIssue({ code: 'custom', message: 'PORTAL_LLM_BASE_URL must use https in production' })
+    }
   })
 
 export type PortalConfig = {
@@ -63,6 +83,15 @@ export type PortalConfig = {
   aiCatalogDir: string
   github: { token: string | null; apiUrl: string }
   releasesDir: string
+  llm: LlmConfig | null
+}
+
+type LlmConfig = {
+  baseUrl: string
+  apiKey: string
+  model: string
+  timeoutMs: number
+  maxToolRounds: number
 }
 
 /** Parses the environment once at boot and fails fast on invalid or unsafe settings. */
@@ -102,5 +131,15 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     releasesDir: value.PORTAL_RELEASES_DIR
       ? resolve(value.PORTAL_RELEASES_DIR)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../catalog/releases'),
+    llm:
+      value.PORTAL_LLM_BASE_URL && value.PORTAL_LLM_API_KEY && value.PORTAL_LLM_MODEL
+        ? {
+            baseUrl: withoutTrailingSlash(value.PORTAL_LLM_BASE_URL),
+            apiKey: value.PORTAL_LLM_API_KEY,
+            model: value.PORTAL_LLM_MODEL,
+            timeoutMs: value.PORTAL_LLM_TIMEOUT_MS,
+            maxToolRounds: value.PORTAL_LLM_MAX_TOOL_ROUNDS,
+          }
+        : null,
   }
 }

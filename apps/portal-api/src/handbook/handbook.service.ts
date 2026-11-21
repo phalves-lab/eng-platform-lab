@@ -100,6 +100,11 @@ export class HandbookService implements OnModuleInit {
     return search(this.data, query, limit)
   }
 
+  /** The loaded handbook, for the shared tools that run over it. */
+  snapshot(): Handbook {
+    return this.data
+  }
+
   standardIds(): string[] {
     return this.data.standards.map((standard) => standard.id)
   }
