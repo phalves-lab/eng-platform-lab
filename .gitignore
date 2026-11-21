@@ -12,3 +12,6 @@ review/evals/private/
 
 site/
 apps/panel/public/data.json
+.portal-data/
+.next/
+*.tsbuildinfo

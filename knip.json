@@ -24,6 +24,18 @@
     },
     "tools/mcp-context": {
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "apps/portal-api": {
+      "entry": ["src/main.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "apps/portal-web": {
+      "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
+      "ignore": ["src/components/ui/**", "src/hooks/use-mobile.ts"]
+    },
+    "packages/*": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   },
   "ignoreDependencies": ["jscpd"]

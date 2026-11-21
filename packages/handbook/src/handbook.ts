@@ -4,7 +4,7 @@ import { type Section, normalize, parseFields, parseSections, sourceOf } from '.
 
 export type StandardStatus = 'VIGENTE' | 'CONFLITO' | 'PROPOSTO' | 'LACUNA' | 'DESCONHECIDO'
 
-interface Standard {
+export interface Standard {
   id: string
   area: string
   title: string
@@ -14,7 +14,8 @@ interface Standard {
   source: string
 }
 
-interface SystemCard {
+export interface SystemCard {
+  slug: string
   name: string
   layer: string
   fields: Record<string, string>
@@ -22,13 +23,13 @@ interface SystemCard {
   source: string
 }
 
-interface GlossaryEntry {
+export interface GlossaryEntry {
   term: string
   definition: string
   source: string
 }
 
-interface PendingDecision {
+export interface PendingDecision {
   id: string
   topic: string
   kind: string
@@ -59,6 +60,12 @@ const LAYER_HEADING = /^\d+(\.\d+)+\s+/
 const GLOSSARY_LINE = /^\*\*(.+?)\*\*:\s*(.+)$/
 const STATUSES: StandardStatus[] = ['VIGENTE', 'CONFLITO', 'PROPOSTO', 'LACUNA']
 
+/** URL-safe identifier derived from a title. */
+export const slugify = (value: string) =>
+  normalize(value)
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
 const sectionText = (section: Section) => `### ${section.title}\n${section.body}`
 
 const toStatus = (value: string | undefined): StandardStatus => {
@@ -84,7 +91,7 @@ const readStandards = (sections: Section[]): Standard[] =>
     ]
   })
 
-/** Fichas de sistema: títulos de nível 3 com campos, fora dos títulos numerados de camada. */
+/** System cards are level-3 sections with fields that are not numbered layer headings. */
 const readSystems = (sections: Section[]): SystemCard[] => {
   const systems: SystemCard[] = []
   let layer = ''
@@ -97,6 +104,7 @@ const readSystems = (sections: Section[]): SystemCard[] => {
     const fields = parseFields(section.body)
     if (!fields['O que é']) continue
     systems.push({
+      slug: slugify(section.title),
       name: section.title,
       layer,
       fields,
@@ -135,7 +143,7 @@ const readDecisions = (sections: Section[]): PendingDecision[] =>
       })
   })
 
-/** Carrega todos os `.md` da pasta do handbook e indexa padrões, sistemas, glossário e decisões. */
+/** Loads every `.md` file in the handbook folder and indexes standards, systems, glossary and decisions. */
 export const loadHandbook = async (directory: string): Promise<Handbook> => {
   const files = (await readdir(directory)).filter((file) => file.endsWith('.md')).sort()
   const sections = (
@@ -182,8 +190,10 @@ export const filterStandards = (handbook: Handbook, filter: StandardFilter) => {
   )
 }
 
-/** Acha a ficha pelo nome exato, depois pelo começo do nome e por fim por trecho do nome. */
+/** Matches a system by exact name first, then by prefix, then by substring. */
 export const findSystem = (handbook: Handbook, name: string) => {
+  const bySlug = handbook.systems.find((system) => system.slug === name)
+  if (bySlug) return bySlug
   const target = normalize(name)
   const names = handbook.systems.map((system) => normalize(system.name))
   const index =
@@ -219,7 +229,7 @@ const snippetAround = (text: string, index: number, radius = 160) => {
   return `${start > 0 ? '...' : ''}${text.slice(start, end).replace(/\s+/g, ' ').trim()}${end < text.length ? '...' : ''}`
 }
 
-/** Busca por palavras em todas as seções; pontua por ocorrências e dá peso extra ao título. */
+/** Scores every section by word occurrences, weighting title matches higher. */
 export const search = (handbook: Handbook, query: string, limit = 8): SearchHit[] => {
   const words = normalize(query)
     .split(' ')

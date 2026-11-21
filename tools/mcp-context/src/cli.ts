@@ -2,7 +2,7 @@
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { loadHandbook } from './handbook.js'
+import { loadHandbook } from '@lab/handbook'
 import { createServer } from './server.js'
 
 const defaultDirectory = fileURLToPath(new URL('../../../handbook', import.meta.url))

@@ -1,0 +1,135 @@
+import 'server-only'
+import {
+  AskResponseSchema,
+  DecisionSchema,
+  GlossaryEntrySchema,
+  HandbookOverviewSchema,
+  SearchHitSchema,
+  StandardSchema,
+  StandardSummarySchema,
+  SystemSchema,
+  SystemSummarySchema,
+  UserSchema,
+} from '@lab/contracts'
+import { z, type ZodType } from 'zod'
+
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message)
+  }
+}
+
+const baseUrl = () => process.env.PORTAL_API_URL ?? 'http://localhost:4100'
+
+/**
+ * Server-side client for portal-api. The browser never calls the API or any external service
+ * directly; pages and route handlers go through this module.
+ */
+const request = async <T>(path: string, schema: ZodType<T>, init?: RequestInit): Promise<T> => {
+  const response = await fetch(`${baseUrl()}${path}`, {
+    ...init,
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...init?.headers },
+    cache: 'no-store',
+  })
+  if (!response.ok) throw new ApiError(response.status, `portal-api ${response.status} on ${path}`)
+  return schema.parse(await response.json())
+}
+
+const query = (params: Record<string, string | number | undefined>) => {
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params))
+    if (value !== undefined && value !== '') search.set(key, String(value))
+  const text = search.toString()
+  return text ? `?${text}` : ''
+}
+
+const QueueRowSchema = z.object({
+  position: z.number(),
+  number: z.number(),
+  title: z.string(),
+  url: z.string(),
+  author: z.string(),
+  taskKey: z.string().nullable(),
+  taskStatus: z.string().nullable(),
+  requestedReviewers: z.array(z.string()),
+  reviewedBy: z.array(z.string()),
+  enteredAt: z.string(),
+  ageBusinessDays: z.number(),
+  level: z.enum(['ok', 'atencao', 'atrasado']),
+  hasHumanReview: z.boolean(),
+  checks: z.string().nullable(),
+  botSignal: z.enum(['ajustes', 'gate', 'pronto']).nullable(),
+  risks: z.array(z.string()),
+  lines: z.number(),
+})
+export type QueueRow = z.infer<typeof QueueRowSchema>
+
+const PrStatusSchema = z.object({
+  label: z.string(),
+  tone: z.enum(['success', 'warning', 'destructive', 'secondary']),
+  hint: z.string(),
+  needsAction: z.boolean(),
+})
+
+const MyReviewSchema = z.object({
+  dataset: z.string(),
+  toReview: z.array(QueueRowSchema),
+  reviewed: z.array(QueueRowSchema),
+  mine: z.array(z.object({ row: QueueRowSchema, status: PrStatusSchema })),
+  actions: z.number(),
+})
+export type MyReview = z.infer<typeof MyReviewSchema>
+
+const AlertSchema = z.object({
+  kind: z.string(),
+  severity: z.enum(['alta', 'media']),
+  subject: z.string(),
+  message: z.string(),
+  url: z.string().nullable(),
+})
+
+const DatasetSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  label: z.string(),
+  generatedAt: z.string(),
+  queue: z.array(QueueRowSchema),
+  alerts: z.array(AlertSchema),
+})
+export type ReviewDataset = z.infer<typeof DatasetSchema>
+
+const DatasetInfoSchema = DatasetSchema.pick({
+  id: true,
+  title: true,
+  label: true,
+  generatedAt: true,
+})
+
+export const api = {
+  me: () => request('/api/me', UserSchema),
+  overview: () => request('/api/handbook/overview', HandbookOverviewSchema),
+  rules: () => request('/api/handbook/rules', z.object({ rules: z.string().nullable() })),
+  standards: (filter: { term?: string; area?: string; status?: string }) =>
+    request(`/api/handbook/standards${query(filter)}`, z.array(StandardSummarySchema)),
+  standard: (id: string) =>
+    request(`/api/handbook/standards/${encodeURIComponent(id)}`, StandardSchema),
+  systems: (term?: string) =>
+    request(`/api/handbook/systems${query({ term })}`, z.array(SystemSummarySchema)),
+  system: (slug: string) =>
+    request(`/api/handbook/systems/${encodeURIComponent(slug)}`, SystemSchema),
+  glossary: (term?: string) =>
+    request(`/api/handbook/glossary${query({ term })}`, z.array(GlossaryEntrySchema)),
+  decisions: (priority?: number) =>
+    request(`/api/handbook/decisions${query({ priority })}`, z.array(DecisionSchema)),
+  search: (q: string, limit = 6) =>
+    request(`/api/handbook/search${query({ q, limit })}`, z.array(SearchHitSchema)),
+  ask: (question: string) =>
+    request('/api/ask', AskResponseSchema, { method: 'POST', body: JSON.stringify({ question }) }),
+  datasets: () => request('/api/review/datasets', z.array(DatasetInfoSchema)),
+  dataset: (id: string) => request(`/api/review/datasets/${encodeURIComponent(id)}`, DatasetSchema),
+  myReview: (dataset: string, login?: string) =>
+    request(`/api/me/review${query({ dataset, login })}`, MyReviewSchema),
+}
