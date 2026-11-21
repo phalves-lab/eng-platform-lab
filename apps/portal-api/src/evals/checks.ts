@@ -15,7 +15,7 @@ export interface Observation {
 
 type CheckName = 'resposta' | 'ferramenta' | 'fontes' | 'frases' | 'proibidas' | 'dado-pessoal'
 
-export interface CheckResult {
+interface CheckResult {
   name: CheckName
   ok: boolean
   detail: string
