@@ -27,6 +27,7 @@ export default defineConfig({
         'src/lib/citations.ts',
         'src/lib/conversations.ts',
         'src/lib/quality.ts',
+        'src/lib/ai-quality.ts',
         'src/components/navigation.ts',
       ],
       reporter: ['text-summary', 'lcov'],

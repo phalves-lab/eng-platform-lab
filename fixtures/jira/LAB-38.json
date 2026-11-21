@@ -1,0 +1,24 @@
+{
+  "key": "LAB-38",
+  "title": "Precisão do bot e custo de IA",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Hoje ninguém sabe se o bot de review e o chat estão acertando mais ou menos com o tempo, nem quanto a IA custa por PR, por time ou por origem. Os runners dos golden sets passam a gravar o resultado de cada run, o bot e o chat passam a registrar o uso de cada chamada com custo estimado por tabela de preço versionada, o worker coleta esses registros e o portal mostra precisão e custo, com alerta quando a precisão cai.",
+  "acceptanceCriteria": [
+    "Os runners de evals do bot e do chat gravam data, commit, modelo, prompt, acerto por caso, tokens e latência em JSON versionável e, com banco, em tabela",
+    "O worker coleta os artefatos dos workflows de evals pela API do GitHub, só com GET, ou de uma pasta local de fixtures",
+    "O bot e o chat registram o uso por chamada com modelo, tokens de entrada e saída, custo estimado pela tabela catalog/ai/pricing.yaml e origem, com time e skill quando houver",
+    "A leitura do gasto da chave virtual do LiteLLM fica atrás de uma porta com adaptador fake, sem chamar o LiteLLM real",
+    "A tela Qualidade > IA mostra a precisão do bot e do chat ao longo do tempo e o custo por origem, por time e por PR",
+    "A tela alerta quando a precisão cai abaixo do limiar configurado",
+    "Os registros não guardam dado pessoal, só ids e contagens"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T13:30:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T18:30:00Z" }
+  ]
+}

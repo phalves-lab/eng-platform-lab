@@ -27,6 +27,17 @@ import { listCheckRuns, listPullFiles, upsertStickyComment } from './github.js'
 import { GeminiProvider } from './llm/gemini.js'
 import { checkHygiene, withoutBodyRules } from './pr-hygiene.js'
 import {
+  CaseMeter,
+  UsageLog,
+  buildEvalRun,
+  evalRunArtifact,
+  evalRunId,
+  teamOf,
+  writeArtifact,
+} from './usage.js'
+import type { TokenUsage } from './llm/gemini.js'
+import type { EvalCaseOutcome } from '@lab/contracts'
+import {
   applyVerification,
   buildPrompt,
   buildVerificationPrompt,
@@ -49,12 +60,50 @@ const requireEnv = (name: string): string => {
   return value
 }
 
-const geminiFromEnv = () =>
+const geminiFromEnv = (onUsage?: (usage: TokenUsage) => void) =>
   new GeminiProvider({
     apiKey: requireEnv('GEMINI_API_KEY'),
     model: requireEnv('GEMINI_MODEL'),
     ...(process.env.GEMINI_TIMEOUT_MS ? { timeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) } : {}),
+    ...(onUsage ? { onUsage } : {}),
   })
+
+const usagePath = (value: string | undefined) => value ?? process.env.REVIEW_BOT_USAGE_FILE
+
+/** Writes the usage records when asked to; a failure here never changes the review outcome. */
+const saveUsage = async (path: string | undefined, log: UsageLog | null) => {
+  if (!path || !log) return
+  try {
+    await writeArtifact(resolve(path), log.artifact())
+  } catch (error) {
+    console.error(`Registro de uso não gravado: ${error instanceof Error ? error.message : error}`)
+  }
+}
+
+const saveEvalRun = async (path: string | undefined, input: Parameters<typeof buildEvalRun>[0]) => {
+  if (path) await writeArtifact(resolve(path), evalRunArtifact(buildEvalRun(input)))
+}
+
+/** Model of the golden set, logging each call for the usage file and for the case being scored. */
+const goldenSetProvider = (usage: UsageLog, meter: CaseMeter, runId: string) =>
+  geminiFromEnv((tokens) => {
+    usage.add(
+      { origin: 'golden-set', team: null, repository: null, pullRequest: null, runId },
+      tokens,
+    )
+    meter.add(tokens)
+  })
+
+const commitOf = (directory: string): string => {
+  const fromEnv = process.env.GITHUB_SHA
+  if (fromEnv && /^[0-9a-f]{7,40}$/.test(fromEnv)) return fromEnv
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: directory, encoding: 'utf8' }).trim()
+  } catch (error) {
+    console.error(`Commit não identificado: ${error instanceof Error ? error.message : error}`)
+    return 'desconhecido'
+  }
+}
 
 const atlassianOptions = () => ({
   site: requireEnv('ATLASSIAN_SITE'),
@@ -176,6 +225,7 @@ const runReview = async (argv: string[]) => {
       post: { type: 'boolean', default: false },
       pr: { type: 'string' },
       out: { type: 'string' },
+      usage: { type: 'string' },
     },
   })
   assertDataBoundary({
@@ -232,37 +282,51 @@ const runReview = async (argv: string[]) => {
     return
   }
 
-  const provider = geminiFromEnv()
-  const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
-  const changedContents = await readChangedFiles(repoDir, diff.files)
-  const evidence: VerificationEvidence = {
-    files: { ...changedContents, ...(await readModuleFiles(repoDir, modules, diff.files)) },
-    checks: await readChecks(values.head),
+  const usage = new UsageLog(requireEnv('GEMINI_MODEL'))
+  const usageContext = {
+    origin: 'bot' as const,
+    team: teamOf(modules.map((module) => module.owner)),
+    repository: process.env.GITHUB_REPOSITORY ?? null,
+    pullRequest: values.pr ? Number(values.pr) : null,
+    runId: null,
   }
-  const { review, refuted, uncertain } = await applyVerification(
-    await provider.review(prompt),
-    (finding) =>
-      provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
-  )
-  const comment = renderComment(review, context, {
-    model: provider.model,
-    promptVersion: promptVersion(template),
-    refuted: refuted.length,
-    uncertain,
-  })
-
-  if (values.out) await writeFile(values.out, comment)
-  if (values.post) {
-    if (!values.pr) throw new Error('--post exige --pr.')
-    const result = await upsertStickyComment(
-      { token: requireEnv('GITHUB_TOKEN'), repository: requireEnv('GITHUB_REPOSITORY') },
-      Number(values.pr),
-      comment,
+  const provider = geminiFromEnv((tokens) => usage.add(usageContext, tokens))
+  try {
+    const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
+    const changedContents = await readChangedFiles(repoDir, diff.files)
+    const evidence: VerificationEvidence = {
+      files: { ...changedContents, ...(await readModuleFiles(repoDir, modules, diff.files)) },
+      checks: await readChecks(values.head),
+    }
+    const { review, refuted, uncertain } = await applyVerification(
+      await provider.review(prompt),
+      (finding) =>
+        provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
     )
-    console.log(`Comentário ${result === 'created' ? 'criado' : 'atualizado'} no PR #${values.pr}.`)
-    return
+    const comment = renderComment(review, context, {
+      model: provider.model,
+      promptVersion: promptVersion(template),
+      refuted: refuted.length,
+      uncertain,
+    })
+
+    if (values.out) await writeFile(values.out, comment)
+    if (values.post) {
+      if (!values.pr) throw new Error('--post exige --pr.')
+      const result = await upsertStickyComment(
+        { token: requireEnv('GITHUB_TOKEN'), repository: requireEnv('GITHUB_REPOSITORY') },
+        Number(values.pr),
+        comment,
+      )
+      console.log(
+        `Comentário ${result === 'created' ? 'criado' : 'atualizado'} no PR #${values.pr}.`,
+      )
+      return
+    }
+    console.log(comment)
+  } finally {
+    await saveUsage(usagePath(values.usage), usage)
   }
-  console.log(comment)
 }
 
 const runTask = async (argv: string[]) => {
@@ -421,6 +485,8 @@ const runEval = async (argv: string[]) => {
       'config-dir': { type: 'string', default: '.' },
       'dry-run': { type: 'boolean', default: false },
       min: { type: 'string', default: '0.8' },
+      json: { type: 'string' },
+      usage: { type: 'string' },
     },
   })
   const configDir = resolve(values['config-dir'])
@@ -431,9 +497,14 @@ const runEval = async (argv: string[]) => {
   const agentsGuide = await readOptional(join(configDir, 'AGENTS.md'))
   const template = await readFile(join(configDir, 'review/prompts/review.md'), 'utf8')
   const verifyTemplate = await readFile(join(configDir, 'review/prompts/verify.md'), 'utf8')
-  const provider = values['dry-run'] ? null : geminiFromEnv()
+  const runAt = new Date()
+  const commit = commitOf(configDir)
+  const usage = values['dry-run'] ? null : new UsageLog(requireEnv('GEMINI_MODEL'))
+  const meter = new CaseMeter()
+  const provider = usage ? goldenSetProvider(usage, meter, evalRunId(runAt, commit)) : null
 
   const results: CaseResult[] = []
+  const outcomes: EvalCaseOutcome[] = []
   const skipped: string[] = []
   for (const evalCase of cases) {
     const files = filesFromPatch(evalCase.patch)
@@ -466,6 +537,7 @@ const runEval = async (argv: string[]) => {
       skipped.push(evalCase.id)
       continue
     }
+    meter.start()
     const evidence: VerificationEvidence = {
       files: {
         ...evalCase.fileContents,
@@ -481,13 +553,23 @@ const runEval = async (argv: string[]) => {
       (finding) =>
         provider.verify(buildVerificationPrompt(verifyTemplate, finding, context, evidence)),
     )
-    results.push(scoreCase(evalCase, review, computeSignal(review, context), uncertain))
+    const scored = scoreCase(evalCase, review, computeSignal(review, context), uncertain)
+    results.push(scored)
+    outcomes.push(meter.finish(scored.id, scored.passed))
   }
 
   if (!provider) {
     console.log(`${cases.length} caso(s) válido(s).`)
     return
   }
+  await saveUsage(usagePath(values.usage), usage)
+  await saveEvalRun(values.json, {
+    runAt,
+    commit,
+    model: provider.model,
+    promptVersion: promptVersion(template),
+    cases: outcomes,
+  })
   console.log(renderResults(results, skipped))
   if (summarize(results).rate < Number(values.min)) process.exitCode = 1
 }

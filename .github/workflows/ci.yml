@@ -114,6 +114,7 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          REVIEW_BOT_USAGE_FILE: ${{ runner.temp }}/ai-quality/bot-review-usage.json
         run: >-
           npm run review -- review
           --repo-dir "$GITHUB_WORKSPACE/pr"
@@ -121,6 +122,14 @@ jobs:
           --base "$BASE_SHA" --head "$HEAD_SHA"
           --branch "$HEAD_REF" --title "$PR_TITLE"
           --source fixtures --post --pr "$PR_NUMBER"
+      - name: Artefato de qualidade de IA
+        if: always() && env.HAS_GEMINI_KEY == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ai-quality
+          path: ${{ runner.temp }}/ai-quality/
+          if-no-files-found: ignore
+          retention-days: 30
       - name: Sem chave do Gemini
         if: env.HAS_GEMINI_KEY != 'true'
         run: echo "Secret GEMINI_API_KEY ausente; review de IA pulado."

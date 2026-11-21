@@ -4,10 +4,11 @@ Worker de coleta do portal de engenharia. Cada coletor implementa `Collector` (`
 
 ## Coletores
 
-| Coletor       | O que faz                                                                               | Liga com                                |
-| ------------- | --------------------------------------------------------------------------------------- | --------------------------------------- |
-| `eng-metrics` | Calcula a fila de review e as métricas do `tools/eng-metrics` e grava o snapshot do dia | sempre                                  |
-| `jira`        | Espelha issues, transições de status, sprints e épicos do Jira no Postgres              | `WORKER_JIRA_SOURCE=fixture` ou `cloud` |
+| Coletor       | O que faz                                                                               | Liga com                                     |
+| ------------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `eng-metrics` | Calcula a fila de review e as métricas do `tools/eng-metrics` e grava o snapshot do dia | sempre                                       |
+| `jira`        | Espelha issues, transições de status, sprints e épicos do Jira no Postgres              | `WORKER_JIRA_SOURCE=fixture` ou `cloud`      |
+| `ai-quality`  | Grava os runs dos golden sets e o uso de IA publicados no artefato `ai-quality`         | `WORKER_AI_EVALS_SOURCE=fixture` ou `github` |
 
 ## Coletor do Jira
 
@@ -38,3 +39,23 @@ O comando aplica as migrations, roda o coletor uma vez e sai com código 1 se a 
 | `WORKER_JIRA_SPRINT_FIELD`                                 | `customfield_10020`                   | Campo de sprint da instância                             |
 | `WORKER_JIRA_LOOKBACK_DAYS`                                | `120`                                 | Janela de issues atualizadas (épicos entram sempre)      |
 | `ATLASSIAN_SITE`, `ATLASSIAN_EMAIL`, `ATLASSIAN_API_TOKEN` | vazio                                 | Credenciais só de leitura do adaptador `cloud`           |
+
+## Coletor de qualidade de IA
+
+Lê os arquivos que o golden set do bot, o golden set do chat e o review do bot publicam no artefato `ai-quality` (contrato em `packages/contracts/src/ai-quality.ts`) e grava os runs em `ai_eval_runs` e o uso por chamada em `ai_usage_records`. O id de cada run e de cada registro torna a coleta idempotente. Registro que chega só com tokens recebe o custo estimado pela tabela `catalog/ai/pricing.yaml`, com a versão da tabela. Arquivo fora do contrato vira aviso no log e não para a coleta; falha de download falha a execução no fim.
+
+- **Adaptador fixture** (`fixture`): lê os `*.json` de `fixtures/ai-evals` (sintéticos) ou da pasta em `WORKER_AI_EVALS_DIR`.
+- **Adaptador GitHub** (`github`): `GET /repos/{repo}/actions/artifacts?name=ai-quality` e `GET /repos/{repo}/actions/artifacts/{id}/zip` dos artefatos mais novos ainda válidos. Só faz `GET`.
+
+```bash
+DATABASE_URL=postgres://lab:lab@localhost:5433/lab npm run collect:ai -w @lab/portal-worker
+```
+
+| Variável                        | Padrão                                | Uso                                                |
+| ------------------------------- | ------------------------------------- | -------------------------------------------------- |
+| `WORKER_AI_EVALS_SOURCE`        | `off` no worker, `fixture` no comando | `off`, `fixture` ou `github`                       |
+| `WORKER_AI_EVALS_DIR`           | `fixtures/ai-evals`                   | Pasta do adaptador fixture                         |
+| `WORKER_AI_PRICING`             | `catalog/ai/pricing.yaml`             | Tabela de preço usada para estimar o custo         |
+| `WORKER_AI_EVALS_REPOSITORY`    | `GITHUB_REPOSITORY`                   | Repositório dos workflows, no formato `owner/nome` |
+| `WORKER_AI_EVALS_MAX_ARTIFACTS` | `30`                                  | Quantos artefatos mais novos ler por execução      |
+| `GITHUB_TOKEN`                  | vazio                                 | Token só de leitura do adaptador `github`          |
