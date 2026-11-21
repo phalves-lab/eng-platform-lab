@@ -37,6 +37,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
       expect(tables.rows.map((row) => row.table_name)).toEqual([
         'ai_eval_runs',
         'ai_usage_records',
+        'audit_events',
         'chat_conversations',
         'chat_messages',
         'delivery_changes',

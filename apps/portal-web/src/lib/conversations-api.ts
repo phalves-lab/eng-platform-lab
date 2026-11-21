@@ -3,15 +3,10 @@ import { ConversationSchema, ConversationSummarySchema } from '@lab/contracts'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { ApiError } from '@/lib/api'
+import { portalFetch } from '@/lib/portal-fetch'
 
-const baseUrl = () => process.env.PORTAL_API_URL ?? 'http://localhost:4100'
-
-const call = async (path: string, init?: RequestInit) => {
-  const response = await fetch(`${baseUrl()}${path}`, {
-    ...init,
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  })
+const call = async (path: string, init?: { method: string }) => {
+  const response = await portalFetch(path, { ...init, headers: { Accept: 'application/json' } })
   if (!response.ok) throw new ApiError(response.status, `portal-api ${response.status} on ${path}`)
   return response
 }
@@ -30,6 +25,8 @@ export const conversationsApi = {
 
 const MESSAGES: Record<number, string> = {
   400: 'Conversa inválida.',
+  401: 'Sua sessão expirou. Entre de novo.',
+  403: 'Você não tem acesso a este histórico.',
   404: 'Essa conversa não existe mais.',
   503: 'O histórico de conversas não está disponível agora.',
 }

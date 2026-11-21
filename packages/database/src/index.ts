@@ -36,3 +36,10 @@ export {
   EvalRunSourceSchema,
   type EvalRunSource,
 } from './ai-quality.js'
+export {
+  AuditEventInputSchema,
+  AuditEventRepository,
+  type AuditEventFilter,
+  type AuditEventInput,
+  type StoredAuditEvent,
+} from './audit-events.js'

@@ -51,7 +51,11 @@ export default defineConfig({
       command: `npx next start --port ${WEB_PORT}`,
       cwd: `${REPO_ROOT}apps/portal-web`,
       url: `http://127.0.0.1:${WEB_PORT}/api/health`,
-      env: { PORTAL_API_URL: `http://127.0.0.1:${API_PORT}` },
+      env: {
+        PORTAL_API_URL: `http://127.0.0.1:${API_PORT}`,
+        PORTAL_ENV: 'development',
+        PORTAL_AUTH_MODE: 'dev',
+      },
       reuseExistingServer: false,
       timeout: 60_000,
     },

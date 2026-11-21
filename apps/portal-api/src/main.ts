@@ -11,6 +11,7 @@ const bootstrap = async () => {
   const app = await NestFactory.create(AppModule.register(config), { bufferLogs: true })
   const logger = app.get(NestJsonLogger)
   app.useLogger(logger)
+  app.getHttpAdapter().getInstance().set('trust proxy', config.trustProxy)
   app.use(helmet())
   app.enableShutdownHooks()
   await app.listen(config.port)

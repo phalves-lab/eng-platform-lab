@@ -15,6 +15,7 @@ describe('worker configuration', () => {
       intervalMs: 3_600_000,
       timeZone: 'America/Sao_Paulo',
       chatRetentionDays: 90,
+      auditRetentionDays: 365,
       collect: { demo: false, lab: { taskSource: 'fixtures', ci: false } },
     })
     expect(config.collect.lab?.fixturesDir).toMatch(/fixtures\/jira$/)
@@ -33,8 +34,14 @@ describe('worker configuration', () => {
       WORKER_INTERVAL_MINUTES: '15',
       WORKER_TIMEZONE: 'UTC',
       WORKER_CHAT_RETENTION_DAYS: '30',
+      WORKER_AUDIT_RETENTION_DAYS: '180',
     })
-    expect(config).toMatchObject({ intervalMs: 900_000, timeZone: 'UTC', chatRetentionDays: 30 })
+    expect(config).toMatchObject({
+      intervalMs: 900_000,
+      timeZone: 'UTC',
+      chatRetentionDays: 30,
+      auditRetentionDays: 180,
+    })
     expect(config.collect).toEqual({ demo: true, lab: null })
     expect(config.dora.github).toBeNull()
   })
@@ -47,6 +54,7 @@ describe('worker configuration', () => {
     expect(() => loadConfig({ ...demo, WORKER_INTERVAL_MINUTES: '0' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_TIMEZONE: 'Mars/Base' })).toThrow('IANA')
     expect(() => loadConfig({ ...demo, WORKER_CHAT_RETENTION_DAYS: '0' })).toThrow()
+    expect(() => loadConfig({ ...demo, WORKER_AUDIT_RETENTION_DAYS: '7' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_DATASETS: 'lab,prod' })).toThrow()
     expect(() => loadConfig({ ...demo, WORKER_DATASETS: ' , ' })).toThrow('at least one')
   })

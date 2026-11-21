@@ -1,10 +1,10 @@
 'use client'
 
-import type { PluginMaturity } from '@lab/contracts'
+import type { PluginMaturity, User } from '@lab/contracts'
 import { BookCheck, Boxes, FolderKanban, Languages, Puzzle, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
-import { NAV_GROUPS } from '@/components/navigation'
+import { navGroupsFor } from '@/components/navigation'
 import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
@@ -26,7 +26,7 @@ interface SearchResult {
 
 const EMPTY: SearchResult = { standards: [], systems: [], terms: [], plugins: [], projects: [] }
 
-export function CommandMenu() {
+export function CommandMenu({ role }: { readonly role: User['role'] }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [term, setTerm] = useState('')
@@ -101,12 +101,14 @@ export function CommandMenu() {
           <CommandEmpty>Nada encontrado.</CommandEmpty>
           {term.trim().length < 2 ? (
             <CommandGroup heading="Páginas">
-              {NAV_GROUPS.flatMap((group) => group.items).map((item) => (
-                <CommandItem key={item.href} value={item.href} onSelect={() => go(item.href)}>
-                  <item.icon aria-hidden />
-                  {item.title}
-                </CommandItem>
-              ))}
+              {navGroupsFor(role)
+                .flatMap((group) => group.items)
+                .map((item) => (
+                  <CommandItem key={item.href} value={item.href} onSelect={() => go(item.href)}>
+                    <item.icon aria-hidden />
+                    {item.title}
+                  </CommandItem>
+                ))}
             </CommandGroup>
           ) : null}
           {visible.standards.length ? (

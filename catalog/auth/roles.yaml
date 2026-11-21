@@ -1,0 +1,11 @@
+defaultRole: null
+groups:
+  - id: 0b7a3c1e-0000-4000-8000-00000000d001
+    name: Engenharia do laboratório
+    role: dev
+  - id: 0b7a3c1e-0000-4000-8000-00000000d002
+    name: Lideranças técnicas do laboratório
+    role: lead
+  - id: 0b7a3c1e-0000-4000-8000-00000000d003
+    name: Administração do portal do laboratório
+    role: admin

@@ -65,6 +65,8 @@ services:
       dockerfile: apps/portal-web/Dockerfile
     environment:
       PORTAL_API_URL: http://api:4100
+      PORTAL_ENV: development
+      PORTAL_AUTH_MODE: dev
     ports:
       - '${PORTAL_WEB_PORT:-3200}:3200'
     depends_on:

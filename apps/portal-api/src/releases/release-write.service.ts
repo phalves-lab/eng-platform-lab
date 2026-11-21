@@ -29,6 +29,7 @@ import {
   type User,
 } from '@lab/contracts'
 import type { StoredReleaseRun } from '@lab/database'
+import { linkReleaseRun } from '../audit/audit-context.js'
 import { CONFIG, type PortalConfig } from '../config/config.js'
 import { GitHubError } from './github.js'
 import { GITHUB_WRITER, type GitHubWriter } from './github-writer.js'
@@ -282,7 +283,7 @@ export class ReleaseWriteService {
   ) {
     return async (reason: string) => {
       if (!this.store) return
-      await this.store.record({
+      const stored = await this.store.record({
         projectId,
         action,
         actor: user.login,
@@ -292,6 +293,7 @@ export class ReleaseWriteService {
         status: 'rejected',
         result: { ...emptyResult(0), status: 'rejected', error: reason },
       })
+      linkReleaseRun(stored.id)
     }
   }
 
@@ -657,6 +659,7 @@ export class ReleaseWriteService {
       status: result.status,
       result,
     })
+    linkReleaseRun(stored.id)
     return { ...result, runId: stored.id }
   }
 

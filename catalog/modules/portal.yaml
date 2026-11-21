@@ -13,3 +13,4 @@ paths:
   - catalog/releases/
   - catalog/people/
   - catalog/projects/
+  - catalog/auth/

@@ -15,8 +15,10 @@ import { GITHUB_CLIENT } from '../src/releases/github.js'
 import { GITHUB_WRITER } from '../src/releases/github-writer.js'
 import { releaseDate } from '../src/releases/plan-rules.js'
 import { RELEASE_RUN_STORE } from '../src/releases/run-store.js'
+import { AUDIT_STORE } from '../src/audit/audit-store.js'
 import { FakeGitHub, fakeSha, pull } from './fake-github.js'
 import { FakeGitHubWriter } from './fake-github-writer.js'
+import { MemoryAuditStore } from './memory-audit-store.js'
 import { MemoryReleaseRunStore } from './memory-run-store.js'
 
 const HANDBOOK = fileURLToPath(new URL('../../../handbook', import.meta.url))
@@ -86,6 +88,7 @@ interface Harness {
   github: FakeGitHub
   writer: FakeGitHubWriter
   store: MemoryReleaseRunStore
+  audit: MemoryAuditStore
 }
 
 const start = async (
@@ -95,6 +98,7 @@ const start = async (
   const github = fakeGitHub()
   const writer = new FakeGitHubWriter(github)
   const store = new MemoryReleaseRunStore()
+  const audit = new MemoryAuditStore()
   const config = loadConfig({
     NODE_ENV: 'test',
     PORTAL_HANDBOOK_DIR: HANDBOOK,
@@ -108,10 +112,13 @@ const start = async (
     .useValue(github)
     .overrideProvider(GITHUB_WRITER)
     .useValue(config.releaseWrite.enabled ? writer : null)
-  if (options.store !== false) builder.overrideProvider(RELEASE_RUN_STORE).useValue(store)
+  if (options.store !== false) {
+    builder.overrideProvider(RELEASE_RUN_STORE).useValue(store)
+    builder.overrideProvider(AUDIT_STORE).useValue(audit)
+  }
   const app = (await builder.compile()).createNestApplication()
   await app.init()
-  return { app, github, writer, store }
+  return { app, github, writer, store, audit }
 }
 
 const LEAD = { PORTAL_DEV_USER: 'lider.lab', PORTAL_LEAD_LOGINS: 'lider.lab' }
@@ -184,6 +191,14 @@ describe('release writes with the flag off', () => {
       actor: 'lider.lab',
       status: 'rejected',
       result: { error: expect.stringContaining('desabilitada') },
+    })
+    expect(harness.audit.events.at(-1)).toMatchObject({
+      action: 'POST /api/releases/execute',
+      kind: 'write',
+      outcome: 'denied',
+      status: 403,
+      target: 'project=duo',
+      releaseRunId: harness.store.runs[0]?.id,
     })
     await request(harness.app.getHttpServer())
       .post('/api/releases/publish/execute')
@@ -628,6 +643,14 @@ describe.skipIf(!databaseUrl)('release audit on Postgres', () => {
       'SELECT actor, status, plan_hash FROM release_runs',
     )
     expect(rows.rows).toEqual([{ actor: 'lider.lab', status: 'success', plan_hash: plan.hash }])
+    const runId = (await db.pool.query<{ id: string }>('SELECT id FROM release_runs')).rows[0]?.id
+    const trail = await db.pool.query<{ action: string; release_run_id: string | null }>(
+      'SELECT action, release_run_id FROM audit_events ORDER BY id',
+    )
+    expect(trail.rows).toEqual([
+      { action: 'POST /api/releases/plan', release_run_id: null },
+      { action: 'POST /api/releases/execute', release_run_id: runId },
+    ])
     const server = harness.app.getHttpServer()
     const history = await request(server).get('/api/releases/history?project=cut').expect(200)
     expect(history.body[0]).toMatchObject({ actor: 'lider.lab', role: 'lead', action: 'release' })

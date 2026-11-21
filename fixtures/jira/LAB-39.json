@@ -1,0 +1,23 @@
+{
+  "key": "LAB-39",
+  "title": "Login com Entra ID de ponta a ponta no portal",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "A API do portal já valida o token do Entra ID, mas o front ainda roda sem login e não repassa token nenhum. Para o portal sair do laboratório, a pessoa precisa entrar com a conta corporativa, o papel no portal precisa vir dos grupos da conta e o modo sem login precisa ser recusado em produção.",
+  "acceptanceCriteria": [
+    "O front faz login com Auth.js e o provedor Microsoft Entra ID, com sessão em cookie httpOnly",
+    "O servidor do Next repassa o token de acesso para a portal-api em todas as chamadas, nas páginas e nos route handlers; o navegador nunca recebe o token",
+    "Os papéis vêm dos grupos do Entra ID mapeados em configuração versionada (grupo para papel), e conta sem grupo mapeado recebe acesso negado",
+    "O modo dev continua funcionando localmente sem Entra ID e é recusado em produção, na API e no front",
+    "Existem tela de acesso negado, tela de sessão expirada e logout",
+    "Os testes de ponta a ponta da validação usam um emissor OIDC local gerado no próprio teste, sem conta real da Microsoft"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "seguranca"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T16:40:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T19:30:00Z" }
+  ]
+}
