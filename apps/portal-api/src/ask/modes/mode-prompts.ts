@@ -6,7 +6,11 @@ export const MODE_PROMPTS = Symbol('MODE_PROMPTS')
 export type ModePrompts = Record<DraftModeId, string>
 
 const PROMPTS_DIR = new URL('../../../prompts/', import.meta.url)
-const PR_TEMPLATE = new URL('../../../../../.github/pull_request_template.md', import.meta.url)
+/** Exact-case path of the template, since CI runs on a case-sensitive file system. */
+export const PR_TEMPLATE = new URL(
+  '../../../../../.github/PULL_REQUEST_TEMPLATE.md',
+  import.meta.url,
+)
 const PR_TEMPLATE_SLOT = '{{pull_request_template}}'
 
 export interface ModePromptFiles {

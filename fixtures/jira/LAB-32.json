@@ -7,7 +7,7 @@
   "acceptanceCriteria": [
     "Modos do chat com prompt versionado próprio em apps/portal-api/prompts/modes e seleção na tela: Perguntar, Refinar task, Descrição de PR, Nota de release, ADR e Resumo da semana",
     "Refinar task devolve critérios de aceite, perguntas em aberto e riscos, uma pergunta por vez e sempre com recomendação, a partir do texto colado ou de uma task de exemplo em fixtures/jira",
-    "Descrição de PR segue o template .github/pull_request_template.md a partir de título, task e resumo do diff",
+    "Descrição de PR segue o template .github/PULL_REQUEST_TEMPLATE.md a partir de título, task e resumo do diff",
     "Nota de release com uma parte técnica e uma de negócio a partir da lista de PRs",
     "ADR no formato do modelo de ADR do handbook, criado nesta entrega",
     "Resumo da semana do time com as métricas de review, de fluxo e DORA já calculadas pelo portal, sem ranking de pessoas",

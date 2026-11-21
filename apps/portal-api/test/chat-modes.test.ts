@@ -1,7 +1,7 @@
 import 'reflect-metadata'
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import type { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
@@ -16,7 +16,7 @@ import request from 'supertest'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { AppModule } from '../src/app.module.js'
 import { DRAFT_MODE_IDS, toolNamesOf } from '../src/ask/modes/mode-definitions.js'
-import { loadModePrompts } from '../src/ask/modes/mode-prompts.js'
+import { PR_TEMPLATE, loadModePrompts } from '../src/ask/modes/mode-prompts.js'
 import { skillLookup } from '../src/ask/modes/skill-lookup.js'
 import { MODEL_PROVIDER } from '../src/ask/model/model-provider.js'
 import { createPortalTools, type PortalReaders } from '../src/ask/tools/portal-tools.js'
@@ -234,6 +234,11 @@ describe('prompts dos modos', () => {
       expect(prompts[id]).toMatch(/^# Regras comuns dos rascunhos/)
       expect(prompts[id]).toContain('Tudo é rascunho')
     }
+  })
+
+  it('aponta para o template de PR com a mesma caixa do arquivo versionado', async () => {
+    const path = fileURLToPath(PR_TEMPLATE)
+    expect(await readdir(dirname(path))).toContain(basename(path))
   })
 
   it('falha quando falta o prompt de um modo', async () => {
