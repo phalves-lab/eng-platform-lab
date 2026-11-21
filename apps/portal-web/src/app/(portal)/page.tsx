@@ -15,6 +15,7 @@ import { PrLink } from '@/components/review/pr-link'
 import { ToneBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InlineText } from '@/components/inline-text'
 import { api } from '@/lib/api'
 import { formatBusinessDays, LEVEL_LABEL, LEVEL_TONE, PR_TONE } from '@/lib/labels'
 
@@ -162,9 +163,11 @@ export default async function HomePage({ searchParams }: HomeProps) {
                   >
                     {decision.id}
                   </Link>
-                  <p className="mt-1 text-sm font-medium">{decision.topic}</p>
+                  <p className="mt-1 text-sm font-medium">
+                    <InlineText text={decision.topic} />
+                  </p>
                   <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                    {decision.question}
+                    <InlineText text={decision.question} />
                   </p>
                 </li>
               ))}

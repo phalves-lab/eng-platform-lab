@@ -5,9 +5,13 @@ import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ToneBadge } from '@/components/status-badge'
+import { InlineText } from '@/components/inline-text'
+import type { SystemSummary } from '@lab/contracts'
 import { Input } from '@/components/ui/input'
 import { api } from '@/lib/api'
 import { groupBy } from '@/lib/utils'
+import { splitSystemName, systemStatus } from '@/lib/labels'
 
 export const metadata: Metadata = { title: 'Sistemas' }
 
@@ -56,15 +60,7 @@ export default async function SystemsPage({ searchParams }: SystemsProps) {
               {items.map((system) => (
                 <Link key={system.slug} href={`/sistemas/${system.slug}`} className="group">
                   <Card className="h-full gap-3 transition-colors group-hover:border-primary/60">
-                    <CardHeader>
-                      <CardTitle className="line-clamp-1 text-base">{system.name}</CardTitle>
-                      <CardDescription className="line-clamp-3">{system.summary}</CardDescription>
-                      {system.status ? (
-                        <p className="pt-1 text-xs text-muted-foreground line-clamp-1">
-                          {system.status}
-                        </p>
-                      ) : null}
-                    </CardHeader>
+                    <SystemCardHeader system={system} />
                   </Card>
                 </Link>
               ))}
@@ -79,5 +75,24 @@ export default async function SystemsPage({ searchParams }: SystemsProps) {
         />
       )}
     </>
+  )
+}
+
+function SystemCardHeader({ system }: { readonly system: SystemSummary }) {
+  const { title, repo } = splitSystemName(system.name)
+  const status = systemStatus(system.status)
+  return (
+    <CardHeader className="h-full grid-rows-[auto_auto_1fr_auto]">
+      <CardTitle className="line-clamp-2 text-base leading-snug">{title}</CardTitle>
+      <p className="truncate font-mono text-xs text-muted-foreground">{repo ?? '\u00a0'}</p>
+      <CardDescription className="line-clamp-3 pt-1">
+        <InlineText text={system.summary} />
+      </CardDescription>
+      {status ? (
+        <div className="pt-2">
+          <ToneBadge tone={status.tone}>{status.label}</ToneBadge>
+        </div>
+      ) : null}
+    </CardHeader>
   )
 }

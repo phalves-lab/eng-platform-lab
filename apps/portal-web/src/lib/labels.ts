@@ -68,6 +68,66 @@ export const cleanSnippet = (snippet: string) =>
     .replace(/(^|\s)-\s+\*\*(.+?):\*\*/g, '$1$2:')
     .replace(/\*\*(.+?)\*\*/g, '$1')
     .replace(/`([^`]+)`/g, '$1')
-    .replace(/\s*\|\s*/g, ' ')
+    .replaceAll('|', ' ')
     .replace(/\s{2,}/g, ' ')
     .trim()
+
+/** Uppercases the first letter, since handbook fields are written as sentence continuations. */
+export const capitalize = (text: string) =>
+  text.charAt(0).toLocaleUpperCase('pt-BR') + text.slice(1)
+
+const looksLikeRepo = (value: string) => !/\s/.test(value) && /[-/@]/.test(value)
+
+/**
+ * Splits a system heading such as `MMS API (martech-mms-api)` into a display name and the repository,
+ * keeping parentheses that are not a repository name, such as `Insider (CDP)`.
+ */
+export const splitSystemName = (name: string): { title: string; repo: string | null } => {
+  const open = name.lastIndexOf('(')
+  if (open <= 0 || !name.endsWith(')')) return { title: name, repo: null }
+  const inner =
+    name
+      .slice(open + 1, -1)
+      .split(',')[0]
+      ?.trim() ?? ''
+  if (!looksLikeRepo(inner)) return { title: name, repo: null }
+  return { title: name.slice(0, open).trim(), repo: inner }
+}
+
+const SYSTEM_STATUS: { prefix: string; label: string; tone: BadgeTone }[] = [
+  { prefix: 'producao', label: 'Produção', tone: 'success' },
+  { prefix: 'piloto', label: 'Piloto', tone: 'info' },
+  { prefix: 'homolog', label: 'Homologação', tone: 'info' },
+  { prefix: 'legado', label: 'Legado', tone: 'warning' },
+  { prefix: 'descontinuado', label: 'Descontinuado', tone: 'secondary' },
+  { prefix: 'incerto', label: 'Incerto', tone: 'secondary' },
+]
+
+const trimEnd = (value: string, chars: string) => {
+  let end = value.length
+  while (end > 0 && chars.includes(value.charAt(end - 1))) end -= 1
+  return value.slice(0, end)
+}
+
+/** Reduces the free-text status of a system card to a short label, a badge tone and its detail. */
+export const systemStatus = (status: string | null | undefined) => {
+  if (!status) return null
+  const normalized = status
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+  const known = SYSTEM_STATUS.find((item) => normalized.startsWith(item.prefix))
+  const cut = [...status].findIndex((char) => '(,;'.includes(char))
+  const detail = cut > 0 ? trimEnd(status.slice(cut + 1), '.) ').trim() : ''
+  if (known)
+    return { label: known.label, tone: known.tone, detail: detail ? capitalize(detail) : null }
+  return { label: capitalize(trimEnd(status, '. ')), tone: 'secondary' as BadgeTone, detail: null }
+}
+
+/** Separates the trailing `(Fonte: ...)` of a glossary definition from the definition itself. */
+export const splitSource = (text: string): { body: string; source: string | null } => {
+  const trimmed = text.trim()
+  const at = trimmed.lastIndexOf('(Fonte:')
+  if (at < 0 || !trimmed.endsWith(')')) return { body: text, source: null }
+  return { body: trimmed.slice(0, at).trim(), source: trimmed.slice(at + 7, -1).trim() }
+}
