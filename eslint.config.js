@@ -27,7 +27,16 @@ const sonarAsWarnings = Object.fromEntries(
 )
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', 'site/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/coverage/**',
+      '**/node_modules/**',
+      'site/**',
+      '**/.next/**',
+      '**/next-env.d.ts',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -51,13 +60,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/panel/src/**/*.{ts,tsx}'],
+    files: ['apps/panel/src/**/*.{ts,tsx}', 'apps/portal-web/src/**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
   },
   {
-    files: ['apps/panel/src/components/ui/**'],
+    files: ['apps/panel/src/components/ui/**', 'apps/portal-web/src/components/ui/**'],
     rules: { 'sonarjs/function-return-type': 'off', 'sonarjs/table-header': 'off' },
   },
   {

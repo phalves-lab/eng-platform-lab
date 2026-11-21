@@ -9,6 +9,9 @@
 /apps/panel/ @phalves-lab/platform
 /tools/mcp-context/ @phalves-lab/platform
 /handbook/ @phalves-lab/platform
+/apps/portal-api/ @phalves-lab/platform
+/apps/portal-web/ @phalves-lab/platform
+/packages/ @phalves-lab/platform
 /review/ @phalves-lab/platform
 /policy/ @phalves-lab/platform
 /catalog/ @phalves-lab/platform

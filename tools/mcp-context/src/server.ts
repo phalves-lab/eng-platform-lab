@@ -9,7 +9,7 @@ import {
   findSystem,
   lookupTerm,
   search,
-} from './handbook.js'
+} from '@lab/handbook'
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, openWorldHint: false } as const
 
@@ -22,8 +22,8 @@ const notFound = (what: string, hint: string) => text(`${what} não encontrado. 
 const STATUS = z.enum(['VIGENTE', 'CONFLITO', 'PROPOSTO', 'LACUNA'])
 
 /**
- * Servidor MCP só de leitura sobre o handbook. Toda resposta cita o arquivo e a seção de
- * origem, para a IA e quem lê conferirem a fonte.
+ * Read-only MCP server over the handbook. Every answer cites the file and section it came
+ * from so the agent and the reader can check the source.
  */
 export const createServer = (handbook: Handbook) => {
   const server = new McpServer({ name: 'martech-context', version: '0.1.0' })

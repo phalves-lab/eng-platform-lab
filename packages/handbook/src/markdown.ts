@@ -2,7 +2,7 @@ export interface Section {
   file: string
   level: number
   title: string
-  /** Títulos dos níveis acima, do mais externo ao mais interno. */
+  /** Titles of the enclosing headings, outermost first. */
   parents: string[]
   body: string
 }
@@ -12,7 +12,7 @@ const HEADING = /^(#{1,6})\s+(.+?)\s*$/
 const stripFrontmatter = (markdown: string) =>
   markdown.startsWith('---\n') ? markdown.slice(markdown.indexOf('\n---', 4) + 4) : markdown
 
-/** Quebra o markdown em seções por título, guardando a trilha de títulos acima de cada uma. */
+/** Splits markdown into heading sections, keeping the trail of enclosing headings. */
 export const parseSections = (file: string, markdown: string): Section[] => {
   const sections: Section[] = []
   const stack: { level: number; title: string }[] = []
@@ -39,7 +39,7 @@ export const parseSections = (file: string, markdown: string): Section[] => {
 
 const FIELD = /^-\s+\*\*(.+?):\*\*\s*(.*)$/
 
-/** Lê campos no formato `- **Campo:** valor` do corpo de uma seção. */
+/** Reads `- **Field:** value` lines from a section body. */
 export const parseFields = (body: string): Record<string, string> => {
   const fields: Record<string, string> = {}
   for (const line of body.split('\n')) {
@@ -49,7 +49,7 @@ export const parseFields = (body: string): Record<string, string> => {
   return fields
 }
 
-/** Normaliza para comparação: minúsculas, sem acento e sem pontuação repetida. */
+/** Lowercases, strips accents and collapses whitespace for comparisons. */
 export const normalize = (value: string) =>
   value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()
 

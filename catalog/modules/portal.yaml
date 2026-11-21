@@ -1,0 +1,12 @@
+name: portal
+description: Portal de engenharia (front Next.js, API NestJS e pacotes compartilhados) com Minha página, review, padrões, sistemas, glossário, decisões e pergunte ao handbook
+owner: '@phalves-lab/platform'
+tier: tier-2
+businessUnits:
+  - plataforma
+users: Devs, líderes técnicos e liderança de engenharia
+confluencePageId: null
+paths:
+  - apps/portal-api/
+  - apps/portal-web/
+  - packages/
