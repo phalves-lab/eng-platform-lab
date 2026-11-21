@@ -1,0 +1,29 @@
+{
+  "key": "LAB-28",
+  "title": "Portal: chat do Pergunte com modelo e ferramentas do handbook",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "O Pergunte só devolve trechos soltos do handbook e quem pergunta precisa montar a resposta sozinho. O portal passa a responder com um modelo de linguagem que consulta o handbook pelas mesmas ferramentas do servidor MCP, sempre citando a fonte, e continua no modo busca quando o modelo não está ligado.",
+  "acceptanceCriteria": [
+    "As oito ferramentas do handbook ficam num módulo compartilhado e o servidor MCP e o chat usam as mesmas definições",
+    "A API chama um gateway compatível com a API da OpenAI só pelo backend, com tool calling, timeout e limite de rodadas; sem configuração, vale o modo busca",
+    "O prompt de sistema fica versionado em arquivo e manda responder em PT-BR, citar a fonte, avisar CONFLITO, LACUNA ou PROPOSTO e recusar o que está fora do handbook",
+    "E-mail, CPF e telefone são mascarados na pergunta antes de ir ao modelo",
+    "A resposta chega por streaming (SSE) até o navegador, com citações que levam ao padrão, ao sistema ou ao termo, indicador de modo e cancelamento",
+    "Testes com provider roteirizado cobrem rodada de ferramenta, citação, fallback, timeout e filtro de dado pessoal, sem chamar modelo real"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T07:05:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T07:40:00Z"
+    }
+  ]
+}

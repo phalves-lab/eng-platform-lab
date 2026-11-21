@@ -1,7 +1,12 @@
 import { AskRequestSchema } from '@lab/contracts'
 import { NextResponse } from 'next/server'
 import { api, ApiError } from '@/lib/api'
+import { validatedAskStream } from '@/lib/ask-stream'
 
+/**
+ * Relays the streamed answer from portal-api to the browser. The browser only talks to this
+ * route; closing the page aborts the upstream request and, with it, the model call.
+ */
 export async function POST(request: Request) {
   const parsed = AskRequestSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
@@ -11,9 +16,24 @@ export async function POST(request: Request) {
     )
   }
   try {
-    return NextResponse.json(await api.ask(parsed.data.question))
+    const upstream = await api.askStream(parsed.data.question, request.signal)
+    return new Response(upstream.pipeThrough(validatedAskStream()), {
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'X-Accel-Buffering': 'no',
+      },
+    })
   } catch (error) {
-    const status = error instanceof ApiError && error.status === 429 ? 429 : 502
-    return NextResponse.json({ error: 'Não foi possível consultar o handbook agora.' }, { status })
+    if (error instanceof ApiError && error.status === 429) {
+      return NextResponse.json(
+        { error: 'Muitas perguntas em pouco tempo. Espere um minuto e tente de novo.' },
+        { status: 429 },
+      )
+    }
+    return NextResponse.json(
+      { error: 'Não foi possível consultar o handbook agora.' },
+      { status: 502 },
+    )
   }
 }

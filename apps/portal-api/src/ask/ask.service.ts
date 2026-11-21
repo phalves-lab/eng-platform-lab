@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common'
-import type { AskResponse, SearchHit } from '@lab/contracts'
+import type { RetrievalAskResponse, SearchHit } from '@lab/contracts'
 import { HandbookService } from '../handbook/handbook.service.js'
 
 const STANDARD_ID = /\b[A-Z]{2,}(?:-[A-Z]{2,})?-\d{1,3}\b/g
 
 /**
  * Answers questions from the handbook without a language model: it returns the most relevant
- * passages with their sources. The model-backed mode plugs in here later, behind the same
- * response contract.
+ * passages with their sources. It is also the fallback when the chat model is off or fails.
  */
 @Injectable()
 export class AskService {
   constructor(private readonly handbook: HandbookService) {}
 
-  ask(question: string): AskResponse {
+  ask(question: string): RetrievalAskResponse {
     const known = new Set(this.handbook.standardIds())
     const ids = [...new Set(question.toUpperCase().match(STANDARD_ID) ?? [])].filter((id) =>
       known.has(id),

@@ -7,9 +7,12 @@ import {
   ReviewMetricsSchema,
   McpServerSchema,
   PluginFilterSchema,
+  AskStreamEventSchema,
   StandardFilterSchema,
   StandardSchema,
   UserSchema,
+  createSseParser,
+  encodeSseEvent,
 } from '../src/index.js'
 
 describe('contracts', () => {
@@ -35,6 +38,30 @@ describe('contracts', () => {
     )
     expect(UserSchema.safeParse({ login: 'a', name: 'A', role: 'owner' }).success).toBe(false)
     expect(StandardFilterSchema.parse({ status: 'LACUNA' })).toEqual({ status: 'LACUNA' })
+  })
+
+  it('accepts model answers with citations and the streamed events', () => {
+    const answer = {
+      mode: 'llm',
+      answer: 'Use ENG-GIT-02.',
+      citations: [{ kind: 'standard', ref: 'ENG-GIT-02', label: 'ENG-GIT-02', source: 'a.md' }],
+    }
+    expect(AskResponseSchema.parse(answer).mode).toBe('llm')
+    expect(
+      AskResponseSchema.safeParse({ ...answer, citations: [{ kind: 'pessoa', ref: 'x' }] }).success,
+    ).toBe(false)
+    expect(AskStreamEventSchema.parse({ type: 'done', response: answer }).type).toBe('done')
+    expect(AskStreamEventSchema.safeParse({ type: 'start', mode: 'outro' }).success).toBe(false)
+  })
+})
+
+describe('server-sent events', () => {
+  it('encodes JSON events and reads them back across split chunks', () => {
+    const read = createSseParser()
+    const wire = encodeSseEvent({ type: 'delta', text: 'olá' }) + encodeSseEvent({ n: 2 })
+    expect(read(wire.slice(0, 10))).toEqual([])
+    expect(read(wire.slice(10))).toEqual(['{"type":"delta","text":"olá"}', '{"n":2}'])
+    expect(read(': ping\r\n\r\nevent: x\r\ndata: a\r\ndata: b\r\n\r\n')).toEqual(['a\nb'])
   })
 })
 

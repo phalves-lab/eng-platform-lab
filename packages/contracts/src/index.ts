@@ -66,12 +66,47 @@ export type SearchHit = z.infer<typeof SearchHitSchema>
 export const AskRequestSchema = z.object({ question: z.string().trim().min(3).max(500) })
 export type AskRequest = z.infer<typeof AskRequestSchema>
 
-export const AskResponseSchema = z.object({
+export const CitationKindSchema = z.enum(['standard', 'system', 'term', 'passage'])
+
+/** A handbook item the answer relies on: standard ID, system slug, glossary term or section. */
+export const CitationSchema = z.object({
+  kind: CitationKindSchema,
+  ref: z.string(),
+  label: z.string(),
+  source: z.string(),
+})
+export type Citation = z.infer<typeof CitationSchema>
+
+export const RetrievalAskResponseSchema = z.object({
   mode: z.literal('retrieval'),
   answer: z.string(),
   sources: z.array(SearchHitSchema),
 })
+export type RetrievalAskResponse = z.infer<typeof RetrievalAskResponseSchema>
+
+export const LlmAskResponseSchema = z.object({
+  mode: z.literal('llm'),
+  answer: z.string(),
+  citations: z.array(CitationSchema),
+})
+export type LlmAskResponse = z.infer<typeof LlmAskResponseSchema>
+
+export const AskResponseSchema = z.discriminatedUnion('mode', [
+  RetrievalAskResponseSchema,
+  LlmAskResponseSchema,
+])
 export type AskResponse = z.infer<typeof AskResponseSchema>
+export type AskMode = AskResponse['mode']
+
+/** Server-sent events of a streamed answer, in order: start, tool and delta events, then done or error. */
+export const AskStreamEventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('start'), mode: z.enum(['retrieval', 'llm']) }),
+  z.object({ type: z.literal('tool'), name: z.string() }),
+  z.object({ type: z.literal('delta'), text: z.string() }),
+  z.object({ type: z.literal('done'), response: AskResponseSchema }),
+  z.object({ type: z.literal('error'), message: z.string() }),
+])
+export type AskStreamEvent = z.infer<typeof AskStreamEventSchema>
 
 export const UserSchema = z.object({
   login: z.string(),
@@ -235,3 +270,31 @@ export const McpServerSchema = z.object({
 export type McpServer = z.infer<typeof McpServerSchema>
 
 export * from './releases.js'
+
+/** Serializes one server-sent event carrying a JSON payload. */
+export const encodeSseEvent = (data: unknown) => `data: ${JSON.stringify(data)}\n\n`
+
+/**
+ * Incremental `text/event-stream` reader: feed it decoded chunks as they arrive and it returns
+ * the `data` payload of every event completed so far. Partial events wait for the next chunk.
+ */
+export const createSseParser = () => {
+  let buffer = ''
+  return (chunk: string): string[] => {
+    buffer = (buffer + chunk).replace(/\r\n/g, '\n')
+    const payloads: string[] = []
+    let boundary = buffer.indexOf('\n\n')
+    while (boundary >= 0) {
+      const data = buffer
+        .slice(0, boundary)
+        .split('\n')
+        .filter((line) => line.startsWith('data:'))
+        .map((line) => line.slice(5).trimStart())
+        .join('\n')
+      if (data) payloads.push(data)
+      buffer = buffer.slice(boundary + 2)
+      boundary = buffer.indexOf('\n\n')
+    }
+    return payloads
+  }
+}
