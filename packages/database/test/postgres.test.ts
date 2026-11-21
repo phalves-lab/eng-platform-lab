@@ -40,6 +40,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         'delivery_changes',
         'deploys',
         'incidents',
+        'jira_issue_links',
         'jira_issues',
         'jira_sprint_issues',
         'jira_sprints',
@@ -250,6 +251,35 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
       expect((await repository.listSprints({ project: 'OPS' })).map((s) => s.id)).toEqual([20])
       expect(await repository.listSprintIssues({ project: 'OPS' })).toEqual(membership)
       expect(await repository.listSprintIssues({ project: 'LAB' })).toEqual([])
+    })
+
+    it('replaces the blocking links of the synced issues and keeps the others', async () => {
+      const repository = new JiraRepository(db.pool)
+      await repository.upsertIssues([issue('LAB-61'), issue('LAB-62'), issue('LAB-63')])
+      await repository.replaceIssueLinks(
+        ['LAB-61', 'LAB-62', 'LAB-63'],
+        [
+          { blockedKey: 'LAB-62', blockerKey: 'LAB-61' },
+          { blockedKey: 'LAB-63', blockerKey: 'LAB-61' },
+        ],
+      )
+      await repository.replaceIssueLinks(['LAB-63'], [])
+      await repository.replaceIssueLinks(
+        ['LAB-62'],
+        [{ blockedKey: 'LAB-62', blockerKey: 'LAB-61' }],
+      )
+      const links = (await repository.listIssueLinks()).filter((link) =>
+        link.blockedKey.startsWith('LAB-6'),
+      )
+      expect(links).toEqual([{ blockedKey: 'LAB-62', blockerKey: 'LAB-61' }])
+      await expect(
+        repository.replaceIssueLinks([], [{ blockedKey: 'LAB-62', blockerKey: 'LAB-404' }]),
+      ).rejects.toThrow(/foreign key/)
+      await expect(
+        db.pool.query(
+          `INSERT INTO jira_issue_links (blocked_key, blocker_key) VALUES ('LAB-61', 'LAB-61')`,
+        ),
+      ).rejects.toThrow(/check constraint/)
     })
 
     it('keeps only https links to the issue in the database', async () => {

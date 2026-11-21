@@ -1,0 +1,33 @@
+team: dados
+name: Dados e integrações
+people:
+  - login: elisa.rocha
+    name: Elisa Rocha
+    jira: elisa
+    github: elisa
+    role: lead
+  - login: felipe.nunes
+    name: Felipe Nunes
+    jira: felipe
+    github: null
+    role: dev
+  - login: diego.alves
+    name: Diego Alves
+    jira: null
+    github: diego
+    role: dev
+  - login: fabio.lins
+    name: Fábio Lins
+    jira: null
+    github: fabio
+    role: dev
+  - login: gabi.souza
+    name: Gabi Souza
+    jira: null
+    github: gabi
+    role: dev
+  - login: heitor.campos
+    name: Heitor Campos
+    jira: null
+    github: heitor
+    role: dev

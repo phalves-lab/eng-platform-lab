@@ -1,140 +1,287 @@
+import type { MyWorkResponse, TeamWorkResponse, User } from '@lab/contracts'
 import {
-  BookCheck,
+  BellRing,
   CircleCheckBig,
+  DatabaseZap,
   GitPullRequest,
+  Hand,
+  Hourglass,
   Inbox,
+  Layers,
   ListTodo,
-  MessageSquareReply,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { EmptyState } from '@/components/empty-state'
+import { InlineText } from '@/components/inline-text'
 import { KpiCard } from '@/components/kpi-card'
 import { PageHeader } from '@/components/page-header'
 import { DatasetSwitch } from '@/components/review/dataset-switch'
-import { PrLink } from '@/components/review/pr-link'
-import { ToneBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { InlineText } from '@/components/inline-text'
-import { api } from '@/lib/api'
-import { formatBusinessDays, LEVEL_LABEL, LEVEL_TONE, PR_TONE } from '@/lib/labels'
+import { AlertList } from '@/components/work/alert-list'
+import { BlockedByMeList } from '@/components/work/blocked-by-me-list'
+import { MyPullRequestList, ReviewRequestList } from '@/components/work/review-lists'
+import { TaskList } from '@/components/work/task-list'
+import { TeamSection } from '@/components/work/team-section'
+import { api, ApiError } from '@/lib/api'
+import { NO_DATA } from '@/lib/delivery'
+import { daySummary, jiraNotice, parseHomeSearch, reviewNotice, staleHint } from '@/lib/work'
 
 interface HomeProps {
-  readonly searchParams: Promise<{ conjunto?: string; pessoa?: string }>
+  readonly searchParams: Promise<{ conjunto?: string | string[]; time?: string | string[] }>
+}
+
+const canSeeTeam = (user: User) => user.role === 'lead' || user.role === 'admin'
+
+const loadDatasets = async () => {
+  try {
+    return await api.datasets()
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 503) return []
+    throw error
+  }
+}
+
+const loadTeam = async (
+  user: User,
+  filter: { team?: string; dataset?: string },
+): Promise<TeamWorkResponse | null> => {
+  if (!canSeeTeam(user)) return null
+  try {
+    return await api.teamWork(filter)
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 403)) return null
+    throw error
+  }
+}
+
+function JiraNoticeCard({ work }: { readonly work: MyWorkResponse }) {
+  if (work.jira.state === 'ready') return null
+  const notice = jiraNotice(work.jira.reason, work.login)
+  return <EmptyState icon={DatabaseZap} title={notice.title} description={notice.description} />
+}
+
+function ReviewNoticeCard({ work }: { readonly work: MyWorkResponse }) {
+  if (work.review.state === 'ready') return null
+  const notice = reviewNotice(work.review)
+  return <EmptyState icon={DatabaseZap} title={notice.title} description={notice.description} />
+}
+
+interface SectionCardProps {
+  readonly title: string
+  readonly description: string
+  readonly icon?: LucideIcon
+  readonly children: ReactNode
+}
+
+function SectionCard({ title, description, icon: Icon, children }: SectionCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {Icon ? <Icon className="size-4 text-primary" aria-hidden /> : null}
+          {title}
+        </CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  )
+}
+
+function MyTasks({ work }: { readonly work: MyWorkResponse }) {
+  if (work.jira.state !== 'ready') return <JiraNoticeCard work={work} />
+  const { inProgress, review, blocked } = work.jira
+  return (
+    <div className="grid gap-6 lg:grid-cols-3">
+      <section aria-label="Em andamento">
+        <h3 className="text-sm font-medium">Em andamento ({inProgress.length})</h3>
+        <TaskList items={inProgress} empty="Nada em andamento." />
+      </section>
+      <section aria-label="Em review">
+        <h3 className="text-sm font-medium">Em review ({review.length})</h3>
+        <TaskList items={review} empty="Nada em review." />
+      </section>
+      <section aria-label="Bloqueadas">
+        <h3 className="text-sm font-medium">Bloqueadas ({blocked.length})</h3>
+        <TaskList items={blocked} empty="Nenhuma task bloqueada." />
+      </section>
+    </div>
+  )
+}
+
+function ToReview({ work }: { readonly work: MyWorkResponse }) {
+  if (work.review.state !== 'ready') return <ReviewNoticeCard work={work} />
+  if (work.review.toReview.length) return <ReviewRequestList items={work.review.toReview} />
+  return (
+    <EmptyState
+      icon={CircleCheckBig}
+      title="Nenhuma review pedida para você"
+      description="Quando alguém pedir sua review, ela aparece aqui na ordem da fila."
+    />
+  )
+}
+
+function WaitingOnMe({ work }: { readonly work: MyWorkResponse }) {
+  if (work.jira.state !== 'ready') return <JiraNoticeCard work={work} />
+  if (work.jira.blockedByMe.length) return <BlockedByMeList items={work.jira.blockedByMe} />
+  return (
+    <EmptyState
+      icon={CircleCheckBig}
+      title="Ninguém espera por você"
+      description="Quando uma task sua bloquear a de alguém no Jira, ela aparece aqui."
+    />
+  )
+}
+
+function ChangesRequested({ work }: { readonly work: MyWorkResponse }) {
+  if (work.review.state !== 'ready') return <ReviewNoticeCard work={work} />
+  if (work.review.changesRequested.length) {
+    return <MyPullRequestList items={work.review.changesRequested} />
+  }
+  return (
+    <EmptyState
+      icon={CircleCheckBig}
+      title="Nenhum PR com mudança pedida"
+      description="PRs com ajuste do bot ou review devolvida aparecem aqui."
+    />
+  )
+}
+
+function MyPullRequests({ work }: { readonly work: MyWorkResponse }) {
+  if (work.review.state !== 'ready') return <ReviewNoticeCard work={work} />
+  if (work.review.mine.length) return <MyPullRequestList items={work.review.mine} />
+  return (
+    <EmptyState
+      icon={GitPullRequest}
+      title="Nenhum PR seu aberto"
+      description="Seus PRs abertos aparecem aqui com o que cada um precisa."
+    />
+  )
+}
+
+function Alerts({ work }: { readonly work: MyWorkResponse }) {
+  if (work.alerts.length) return <AlertList alerts={work.alerts} />
+  return (
+    <EmptyState
+      icon={CircleCheckBig}
+      title="Nenhum alerta"
+      description="Tasks paradas ou bloqueadas, reviews atrasadas e checks vermelhos aparecem aqui."
+    />
+  )
+}
+
+const staleTone = (stale: number | null) => {
+  if (stale === null) return 'muted'
+  return stale ? 'warning' : 'success'
 }
 
 export default async function HomePage({ searchParams }: HomeProps) {
-  const { conjunto = 'lab', pessoa } = await searchParams
-  const [user, datasets, overview, decisions] = await Promise.all([
+  const search = parseHomeSearch(await searchParams)
+  const [user, datasets, decisions] = await Promise.all([
     api.me(),
-    api.datasets(),
-    api.overview(),
+    loadDatasets(),
     api.decisions(1),
   ])
-  const dataset = datasets.some((d) => d.id === conjunto) ? conjunto : (datasets[0]?.id ?? 'lab')
-  const queue = await api.myReview(dataset, pessoa)
-  const pendingMine = queue.mine.filter((item) => item.status.needsAction).length
+  const dataset =
+    datasets.find((item) => item.id === search.dataset)?.id ?? datasets[0]?.id ?? undefined
+  const [work, team] = await Promise.all([
+    api.myWork(dataset),
+    loadTeam(user, { team: search.team, dataset }),
+  ])
+  const summary = daySummary(work)
+  const name = work.person?.name ?? user.name
 
   return (
     <>
       <PageHeader
-        title={`Olá, ${user.name}`}
-        description="O que espera por você agora: reviews pedidas, seus PRs e o que o time precisa decidir."
-        actions={<DatasetSwitch basePath="/" current={dataset} datasets={datasets} />}
+        title={`Olá, ${name}`}
+        description="Seu dia em um lugar: suas tasks, o que depende de você, alertas e as reviews pedidas."
+        actions={
+          datasets.length ? (
+            <DatasetSwitch basePath="/" current={dataset ?? ''} datasets={datasets} />
+          ) : undefined
+        }
       />
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Resumo">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Resumo do dia">
         <KpiCard
-          label="Para eu revisar"
-          value={queue.toReview.length}
-          icon={Inbox}
-          tone={queue.toReview.some((row) => row.level === 'atrasado') ? 'danger' : 'default'}
-          hint="Reviews pedidas para você"
+          label="Minhas tasks abertas"
+          value={summary.open ?? NO_DATA}
+          icon={Layers}
+          tone={summary.open === null ? 'muted' : 'default'}
+          hint={summary.inReview === null ? 'Jira não ligado' : `${summary.inReview} em review`}
         />
         <KpiCard
-          label="Meus PRs abertos"
-          value={queue.mine.length}
-          icon={GitPullRequest}
-          hint={`${pendingMine} pedem ação sua`}
+          label="Paradas"
+          value={summary.stale ?? NO_DATA}
+          icon={Hourglass}
+          tone={staleTone(summary.stale)}
+          hint={staleHint(work.staleAfterBusinessDays)}
         />
         <KpiCard
-          label="Ações pendentes"
-          value={queue.actions}
-          icon={MessageSquareReply}
-          tone={queue.actions ? 'warning' : 'success'}
-          hint={queue.actions ? 'Reviews e ajustes esperando você' : 'Nada esperando por você'}
+          label="Dependem de mim"
+          value={summary.dependsOnMe}
+          icon={Hand}
+          tone={summary.dependsOnMe ? 'warning' : 'success'}
+          hint="Reviews, itens que você segura e PRs com ajuste pedido"
         />
         <KpiCard
-          label="Padrões vigentes"
-          value={overview.standards.VIGENTE}
-          icon={BookCheck}
-          hint={`${overview.standards.CONFLITO + overview.standards.LACUNA} em conflito ou lacuna`}
+          label="Alertas"
+          value={summary.alerts}
+          icon={BellRing}
+          tone={work.alerts.some((alert) => alert.severity === 'alta') ? 'danger' : 'default'}
+          hint={summary.alerts ? 'Veja a lista abaixo' : 'Nada pedindo atenção'}
         />
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Para eu revisar</CardTitle>
-            <CardDescription>Na ordem da fila: comece pelo primeiro.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {queue.toReview.length ? (
-              <ul className="divide-y">
-                {queue.toReview.map((row) => (
-                  <li key={row.number} className="flex items-start gap-3 py-3">
-                    <span className="w-8 shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
-                      {row.position}º
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-1.5">
-                      <PrLink row={row} />
-                      <p className="text-xs text-muted-foreground">
-                        de {row.author} · {formatBusinessDays(row.ageBusinessDays)} na fila ·{' '}
-                        {row.lines} linhas
-                      </p>
-                    </div>
-                    <ToneBadge tone={LEVEL_TONE[row.level]}>{LEVEL_LABEL[row.level]}</ToneBadge>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState
-                icon={CircleCheckBig}
-                title="Nenhuma review pedida para você"
-                description="Quando alguém pedir sua review, ela aparece aqui na ordem da fila."
-              />
-            )}
-          </CardContent>
-        </Card>
+      <SectionCard
+        title="Minhas tasks"
+        description={`Por situação no Jira, da mais antiga para a mais nova. Parada é a que está sem mudança de status há mais de ${work.staleAfterBusinessDays} dias úteis.`}
+      >
+        <MyTasks work={work} />
+      </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Meus PRs</CardTitle>
-            <CardDescription>A próxima ação de cada PR seu.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {queue.mine.length ? (
-              <ul className="divide-y">
-                {queue.mine.map(({ row, status }) => (
-                  <li key={row.number} className="space-y-1.5 py-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <PrLink row={row} />
-                      <ToneBadge tone={PR_TONE[status.tone]}>{status.label}</ToneBadge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{status.hint}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState
-                icon={GitPullRequest}
-                title="Nenhum PR seu aberto"
-                description="Seus PRs abertos aparecem aqui com o que cada um precisa."
-              />
-            )}
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <SectionCard
+          title="Para eu revisar"
+          description="Na ordem da fila: comece pelo primeiro."
+          icon={Inbox}
+        >
+          <ToReview work={work} />
+        </SectionCard>
+        <SectionCard
+          title="Esperando você"
+          description="Tasks de outras pessoas bloqueadas por uma task sua."
+          icon={Hand}
+        >
+          <WaitingOnMe work={work} />
+        </SectionCard>
+        <SectionCard
+          title="Mudança pedida"
+          description="PRs seus com ajuste pedido pelo bot ou review devolvida."
+          icon={GitPullRequest}
+        >
+          <ChangesRequested work={work} />
+        </SectionCard>
       </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SectionCard
+          title="Alertas"
+          description="O que pede atenção hoje, do mais grave ao mais leve."
+          icon={BellRing}
+        >
+          <Alerts work={work} />
+        </SectionCard>
+        <SectionCard title="Meus PRs" description="A próxima ação de cada PR seu.">
+          <MyPullRequests work={work} />
+        </SectionCard>
+      </div>
+
+      {team ? <TeamSection team={team} dataset={dataset} login={work.login} /> : null}
 
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4">

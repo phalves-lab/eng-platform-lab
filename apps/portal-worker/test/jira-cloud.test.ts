@@ -115,6 +115,12 @@ const route: Route = (call) => {
               resolutiondate: '2026-11-10T15:00:00.000-0300',
               parent: { key: 'LAB-9', fields: { issuetype: { name: 'Epic' } } },
               customfield_10020: [{ id: 31 }, { id: 32 }, { id: 77 }],
+              issuelinks: [
+                { type: { name: 'Blocks' }, outwardIssue: { key: 'LAB-2' } },
+                { type: { name: 'Blocks' }, inwardIssue: { key: 'OPS-4' } },
+                { type: { name: 'Relates' }, outwardIssue: { key: 'LAB-5' } },
+                { type: { name: 'Blocks' } },
+              ],
             },
             { total: 3, histories: [] },
           ),
@@ -135,6 +141,7 @@ const route: Route = (call) => {
               parent: { key: 'LAB-1', fields: { issuetype: { name: 'Story' } } },
               customfield_10020: [{ id: 32 }],
               summary: '',
+              issuelinks: [{ type: { name: 'Blocks' }, inwardIssue: { key: 'LAB-1' } }],
             },
             {
               total: 1,
@@ -270,6 +277,11 @@ describe('Jira Cloud adapter', () => {
       { sprintId: 32, issueKey: 'LAB-1', addedAt: '2026-11-04T12:00:00.000Z' },
       { sprintId: 32, issueKey: 'LAB-2', addedAt: '2026-11-02T12:00:00.000Z' },
     ])
+    expect(batch.links).toEqual([
+      { blockedKey: 'LAB-2', blockerKey: 'LAB-1' },
+      { blockedKey: 'LAB-1', blockerKey: 'OPS-4' },
+      { blockedKey: 'LAB-2', blockerKey: 'LAB-1' },
+    ])
 
     const searches = jira.calls.filter((call) => call.path === SEARCH_PATH)
     expect(searches).toHaveLength(2)
@@ -277,7 +289,7 @@ describe('Jira Cloud adapter', () => {
       jql: buildJql(['LAB'], 90),
       expand: 'changelog',
       maxResults: 100,
-      fields: expect.arrayContaining(['status', 'customfield_10020']),
+      fields: expect.arrayContaining(['status', 'issuelinks', 'customfield_10020']),
     })
     expect(searches[1]?.body).toMatchObject({ nextPageToken: 'page-2' })
     expect(jira.calls.flatMap((call) => call.query.startAt ?? [])).toEqual(['0', '50', '0', '100'])

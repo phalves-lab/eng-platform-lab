@@ -15,6 +15,7 @@ O coletor fala com o Jira só por leitura e grava com upsert idempotente pelo `J
 
 - **Adaptador fixture** (`fixture`): lê `fixtures/jira-board/*.json`, um arquivo por projeto fictício (`LAB` e `OPS`, dois componentes cada, 10 semanas de histórico com bloqueios e itens envelhecendo). As datas andam em semanas inteiras até a semana atual, então o board continua vivo sem editar o arquivo.
 - **Adaptador Jira Cloud** (`cloud`): REST v3 `POST /rest/api/3/search/jql` com `expand=changelog` e paginação por `nextPageToken`, changelog extra por `GET /rest/api/3/issue/{key}/changelog` quando a busca corta o histórico, e sprints pela agile API (`GET /rest/agile/1.0/board/{id}/sprint`). O cliente HTTP só expõe `GET` e a busca, autentica por e-mail e token e respeita `Retry-After` em 429 e 503 (até 3 tentativas, espera máxima de 60 s).
+- **Bloqueios**: o vínculo "is blocked by" do Jira vai para `jira_issue_links` (quem espera e quem bloqueia). No Cloud vem do campo `issuelinks` (tipo `Blocks`); na fixture, do campo `blockedBy` de cada issue. A cada coleta os vínculos das issues coletadas são substituídos, então um bloqueio removido no Jira sai do espelho.
 - **Workflow**: o mapa de status para categoria (a fazer, em andamento, em review, bloqueado, concluído) fica em `catalog/jira/workflow.yaml`, com status extras por projeto. O status cru é gravado como veio; a categoria é aplicada na leitura, então mudar o YAML não exige coletar de novo. Status sem categoria aparece no log como `jira.unmapped_statuses`.
 
 ### Rodar uma vez com o adaptador fixture

@@ -128,6 +128,14 @@ export const JiraSprintIssueSchema = z.object({
 })
 export type JiraSprintIssue = z.infer<typeof JiraSprintIssueSchema>
 
+/** Jira "is blocked by" link: `blockedKey` waits on `blockerKey`. */
+export const JiraIssueLinkSchema = z
+  .object({ blockedKey: issueKey, blockerKey: issueKey })
+  .refine((link) => link.blockedKey !== link.blockerKey, {
+    message: 'an issue cannot block itself',
+  })
+export type JiraIssueLink = z.infer<typeof JiraIssueLinkSchema>
+
 const repoName = z.string().regex(/^[\w.-]+\/[\w.-]+$/)
 const commitSha = z.string().regex(/^[0-9a-f]{7,40}$/)
 
