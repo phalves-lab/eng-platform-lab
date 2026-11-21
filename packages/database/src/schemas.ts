@@ -118,14 +118,24 @@ export const JiraStatusChangeSchema = z.object({
 })
 export type JiraStatusChange = z.infer<typeof JiraStatusChangeSchema>
 
+const repoName = z.string().regex(/^[\w.-]+\/[\w.-]+$/)
+const commitSha = z.string().regex(/^[0-9a-f]{7,40}$/)
+
+/** `commitShas` lists the commits a deploy shipped for the first time, used to match changes. */
 export const DeploySchema = z.object({
-  repo: z.string().regex(/^[\w.-]+\/[\w.-]+$/),
+  repo: repoName,
   environment: z.string().min(1),
-  sha: z.string().regex(/^[0-9a-f]{7,40}$/),
+  sha: commitSha,
   deployedAt: isoDateTime,
   status: z.enum(['success', 'failure', 'rolled_back']),
+  url: z
+    .url({ protocol: /^https?$/ })
+    .nullable()
+    .default(null),
+  commitShas: z.array(commitSha).default([]),
 })
 export type Deploy = z.infer<typeof DeploySchema>
+export type DeployInput = z.input<typeof DeploySchema>
 
 export const IncidentSchema = z.object({
   id: z.string().min(1),
@@ -133,5 +143,20 @@ export const IncidentSchema = z.object({
   severity: z.enum(['sev1', 'sev2', 'sev3', 'sev4']),
   startedAt: isoDateTime,
   endedAt: isoDateTime.nullable(),
+  title: z.string().min(1).nullable().default(null),
+  cause: z.object({ repo: repoName, sha: commitSha }).nullable().default(null),
 })
 export type Incident = z.infer<typeof IncidentSchema>
+export type IncidentInput = z.input<typeof IncidentSchema>
+
+/** A merged pull request: lead time runs from its first commit to the deploy that ships it. */
+export const ChangeSchema = z.object({
+  repo: repoName,
+  pullNumber: z.number().int().positive(),
+  title: z.string().default(''),
+  mergeSha: commitSha,
+  firstCommitAt: isoDateTime,
+  mergedAt: isoDateTime,
+})
+export type Change = z.infer<typeof ChangeSchema>
+export type ChangeInput = z.input<typeof ChangeSchema>

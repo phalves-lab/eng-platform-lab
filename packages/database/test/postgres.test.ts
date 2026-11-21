@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
+  ChangeRepository,
   DeployRepository,
   IncidentRepository,
   JiraRepository,
@@ -36,6 +37,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
       expect(tables.rows.map((row) => row.table_name)).toEqual([
         'chat_conversations',
         'chat_messages',
+        'delivery_changes',
         'deploys',
         'incidents',
         'jira_issues',
@@ -235,7 +237,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
   })
 
   describe('delivery repositories', () => {
-    it('records deploys idempotently and filters them', async () => {
+    it('records deploys idempotently, updates a later rollback and filters them', async () => {
       const repository = new DeployRepository(db.pool)
       const deploy = {
         repo: 'phalves-lab/eng-platform-lab',
@@ -244,6 +246,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         deployedAt: '2026-11-20T12:00:00.000Z',
         status: 'success' as const,
       }
+      const stored = { ...deploy, url: null, commitShas: [] }
       expect(
         await repository.record([
           deploy,
@@ -251,12 +254,22 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         ]),
       ).toBe(2)
       expect(await repository.record([deploy])).toBe(0)
-      expect(await repository.list({ environment: 'production' })).toEqual([deploy])
+      expect(await repository.list({ environment: 'production' })).toEqual([stored])
       expect(await repository.list({ since: '2026-11-21T00:00:00.000Z' })).toEqual([])
       expect(await repository.list({ repo: 'phalves-lab/eng-platform-lab' })).toHaveLength(2)
+
+      const rolledBack = {
+        ...deploy,
+        status: 'rolled_back' as const,
+        url: 'https://example.invalid/runs/1',
+        commitShas: ['abc1234', 'aaa1111'],
+      }
+      expect(await repository.record([rolledBack])).toBe(1)
+      expect(await repository.record([rolledBack])).toBe(0)
+      expect(await repository.list({ environment: 'production' })).toEqual([rolledBack])
     })
 
-    it('upserts incidents and closes them later', async () => {
+    it('upserts incidents with their causing deploy and closes them later', async () => {
       const repository = new IncidentRepository(db.pool)
       const incident = {
         id: 'INC-1',
@@ -266,14 +279,47 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         endedAt: null,
       }
       await repository.upsert([incident])
-      await repository.upsert([{ ...incident, endedAt: '2026-11-20T13:30:00.000Z' }])
-      expect(await repository.list()).toEqual([
-        { ...incident, endedAt: '2026-11-20T13:30:00.000Z' },
-      ])
+      expect(await repository.list()).toEqual([{ ...incident, title: null, cause: null }])
+      const closed = {
+        ...incident,
+        endedAt: '2026-11-20T13:30:00.000Z',
+        title: 'Fila parada',
+        cause: { repo: 'phalves-lab/eng-platform-lab', sha: 'abc1234' },
+      }
+      await repository.upsert([closed])
+      expect(await repository.list()).toEqual([closed])
       expect(await repository.list('2026-11-21T00:00:00.000Z')).toEqual([])
       await expect(
         repository.upsert([{ ...incident, id: 'INC-2', endedAt: '2026-11-19T00:00:00.000Z' }]),
       ).rejects.toThrow(/check constraint/)
+      await expect(
+        db.pool.query(
+          `INSERT INTO incidents (id, system, severity, started_at, cause_repo)
+           VALUES ('INC-3', 'x', 'sev3', now(), 'phalves-lab/eng-platform-lab')`,
+        ),
+      ).rejects.toThrow(/incidents_cause_pair_check/)
+    })
+
+    it('upserts merged changes and lists them by merge time', async () => {
+      const repository = new ChangeRepository(db.pool)
+      const change = {
+        repo: 'lab-demo/campanhas-api',
+        pullNumber: 12,
+        mergeSha: 'abcdef123456',
+        firstCommitAt: '2026-11-18T09:00:00.000Z',
+        mergedAt: '2026-11-19T15:00:00.000Z',
+      }
+      await repository.upsert([
+        change,
+        { ...change, pullNumber: 13, mergedAt: '2026-11-20T10:00:00.000Z' },
+      ])
+      await repository.upsert([{ ...change, title: 'feat: filtro' }])
+      expect(await repository.list()).toEqual([
+        { ...change, pullNumber: 13, title: '', mergedAt: '2026-11-20T10:00:00.000Z' },
+        { ...change, title: 'feat: filtro' },
+      ])
+      expect(await repository.list('2026-11-20T00:00:00.000Z')).toHaveLength(1)
+      await expect(repository.upsert([{ ...change, pullNumber: 0 }])).rejects.toThrow()
     })
   })
 })
