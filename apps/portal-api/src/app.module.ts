@@ -7,6 +7,7 @@ import { MeController } from './auth/me.controller.js'
 import { TOKEN_VERIFIER, type TokenVerifier, createEntraVerifier } from './auth/token-verifier.js'
 import { CatalogModule } from './catalog/catalog.module.js'
 import { CONFIG, type PortalConfig } from './config/config.js'
+import { DoraModule } from './dora/dora.module.js'
 import { HandbookModule } from './handbook/handbook.module.js'
 import { HealthController } from './health/health.controller.js'
 import { MetricsModule } from './metrics/metrics.module.js'
@@ -32,6 +33,7 @@ export class AppModule {
         MetricsModule,
         CatalogModule,
         ReleasesModule,
+        DoraModule,
       ],
       controllers: [HealthController, MeController],
       providers: [

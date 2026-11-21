@@ -60,8 +60,9 @@ describe('utils and navigation', () => {
     expect(activeItem('/padroes/ENG-QA-01')?.title).toBe('Padrões')
     expect(activeItem('/entregas/review')?.title).toBe('Review')
     expect(activeItem('/releases')?.title).toBe('Releases')
+    expect(activeItem('/entregas/dora?time=Campanhas')?.title).toBe('DORA')
     expect(activeItem('/nada')).toBeUndefined()
-    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(11)
+    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(12)
   })
 })
 

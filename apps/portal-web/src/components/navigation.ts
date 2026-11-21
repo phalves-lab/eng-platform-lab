@@ -2,6 +2,7 @@ import {
   BookCheck,
   Boxes,
   ChartNoAxesCombined,
+  Gauge,
   GitPullRequestArrow,
   House,
   Languages,
@@ -41,6 +42,7 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     label: 'Entregas',
     items: [
       { href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined },
+      { href: '/entregas/dora', title: 'DORA', icon: Gauge },
       { href: '/releases', title: 'Releases', icon: Rocket },
     ],
   },

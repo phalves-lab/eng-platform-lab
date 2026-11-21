@@ -3,6 +3,7 @@ import {
   type ChatRequest,
   type DatasetId,
   DecisionSchema,
+  DoraMetricsResponseSchema,
   GlossaryEntrySchema,
   HandbookOverviewSchema,
   ReviewMetricsResponseSchema,
@@ -150,6 +151,8 @@ export const api = {
     request(`/api/me/review${query({ dataset, login })}`, MyReviewSchema),
   reviewMetrics: (dataset: DatasetId) =>
     request(`/api/metrics/review${query({ dataset })}`, ReviewMetricsResponseSchema),
+  doraMetrics: (filter: { team?: string; repo?: string }) =>
+    request(`/api/metrics/dora${query(filter)}`, DoraMetricsResponseSchema),
   plugins: (filter: { term?: string; maturity?: string }) =>
     request(`/api/catalog/plugins${query(filter)}`, z.array(PluginSummarySchema)),
   plugin: (name: string) =>
