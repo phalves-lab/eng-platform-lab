@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { CONFIG, type PortalConfig } from '../config/config.js'
+import { ConversationsModule } from '../conversations/conversations.module.js'
 import { HandbookModule } from '../handbook/handbook.module.js'
 import { AskController } from './ask.controller.js'
 import { AskService } from './ask.service.js'
@@ -9,7 +10,7 @@ import { OpenAICompatibleProvider } from './model/openai-compatible.provider.js'
 import { SYSTEM_PROMPT, loadSystemPrompt } from './system-prompt.js'
 
 @Module({
-  imports: [HandbookModule],
+  imports: [HandbookModule, ConversationsModule],
   controllers: [AskController],
   providers: [
     AskService,

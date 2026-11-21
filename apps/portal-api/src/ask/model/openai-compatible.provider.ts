@@ -5,6 +5,7 @@ import type {
   ModelProvider,
   ModelRequest,
   ModelTurn,
+  TokenUsage,
   ToolCall,
 } from './model-provider.js'
 
@@ -21,6 +22,18 @@ export class ModelHttpError extends Error {
     this.name = 'ModelHttpError'
   }
 }
+
+const UsageSchema = z
+  .object({
+    prompt_tokens: z.number().int().nonnegative(),
+    completion_tokens: z.number().int().nonnegative(),
+  })
+  .nullish()
+
+const toUsage = (usage: z.infer<typeof UsageSchema>): TokenUsage | undefined =>
+  usage
+    ? { promptTokens: usage.prompt_tokens, completionTokens: usage.completion_tokens }
+    : undefined
 
 const ToolCallDeltaSchema = z.object({
   index: z.number().int().default(0),
@@ -41,6 +54,7 @@ const ChunkSchema = z.object({
       }),
     )
     .default([]),
+  usage: UsageSchema,
 })
 
 const CompletionSchema = z.object({
@@ -61,6 +75,7 @@ const CompletionSchema = z.object({
       }),
     )
     .min(1),
+  usage: UsageSchema,
 })
 
 const toWire = (message: ChatMessage) => {
@@ -87,6 +102,7 @@ const toWire = (message: ChatMessage) => {
 
 class StreamedTurn {
   private content = ''
+  private usage: TokenUsage | undefined
   private readonly calls = new Map<number, ToolCall>()
 
   constructor(private readonly onDelta: (text: string) => void) {}
@@ -94,6 +110,7 @@ class StreamedTurn {
   apply(payload: string) {
     const chunk = ChunkSchema.safeParse(JSON.parse(payload))
     if (!chunk.success) return
+    this.usage = toUsage(chunk.data.usage) ?? this.usage
     for (const { delta } of chunk.data.choices) {
       if (delta.content) {
         this.content += delta.content
@@ -114,7 +131,7 @@ class StreamedTurn {
     const toolCalls = [...this.calls.entries()]
       .sort(([a], [b]) => a - b)
       .map(([index, call]) => ({ ...call, id: call.id || `call_${index}` }))
-    return { content: this.content, toolCalls }
+    return { content: this.content, toolCalls, ...(this.usage ? { usage: this.usage } : {}) }
   }
 }
 
@@ -142,6 +159,7 @@ export class OpenAICompatibleProvider implements ModelProvider {
       body: JSON.stringify({
         model: this.model,
         stream: true,
+        stream_options: { include_usage: true },
         temperature: 0.1,
         messages: messages.map(toWire),
         ...(tools.length
@@ -172,10 +190,13 @@ export class OpenAICompatibleProvider implements ModelProvider {
   }
 
   private fromJson(body: unknown, onDelta: (text: string) => void): ModelTurn {
-    const message = CompletionSchema.parse(body).choices[0]?.message
+    const completion = CompletionSchema.parse(body)
+    const message = completion.choices[0]?.message
     const content = message?.content ?? ''
     if (content) onDelta(content)
+    const usage = toUsage(completion.usage)
     return {
+      ...(usage ? { usage } : {}),
       content,
       toolCalls: (message?.tool_calls ?? []).map((call) => ({
         id: call.id,

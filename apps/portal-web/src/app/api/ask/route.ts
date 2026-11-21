@@ -1,4 +1,4 @@
-import { AskRequestSchema } from '@lab/contracts'
+import { ChatRequestSchema } from '@lab/contracts'
 import { NextResponse } from 'next/server'
 import { api, ApiError } from '@/lib/api'
 import { validatedAskStream } from '@/lib/ask-stream'
@@ -8,7 +8,7 @@ import { validatedAskStream } from '@/lib/ask-stream'
  * route; closing the page aborts the upstream request and, with it, the model call.
  */
 export async function POST(request: Request) {
-  const parsed = AskRequestSchema.safeParse(await request.json().catch(() => null))
+  const parsed = ChatRequestSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'A pergunta precisa ter entre 3 e 500 caracteres.' },
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     )
   }
   try {
-    const upstream = await api.askStream(parsed.data.question, request.signal)
+    const upstream = await api.askStream(parsed.data, request.signal)
     return new Response(upstream.pipeThrough(validatedAskStream()), {
       headers: {
         'Content-Type': 'text/event-stream; charset=utf-8',
@@ -25,6 +25,12 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return NextResponse.json(
+        { error: 'Essa conversa não existe mais. Comece uma conversa nova.' },
+        { status: 404 },
+      )
+    }
     if (error instanceof ApiError && error.status === 429) {
       return NextResponse.json(
         { error: 'Muitas perguntas em pouco tempo. Espere um minuto e tente de novo.' },

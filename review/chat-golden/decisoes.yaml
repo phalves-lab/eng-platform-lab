@@ -1,0 +1,36 @@
+category: decisoes
+cases:
+  - id: decisao-prioridade-mais-alta
+    question: Qual decisão pendente tem a prioridade mais alta?
+    expect:
+      tools: [decisoes_pendentes]
+      sources: [ENG-PR-03]
+      include: [aprovações]
+    offline:
+      calls:
+        - tool: decisoes_pendentes
+          args: { prioridade: 1 }
+      answer: A de prioridade 1 é o ENG-PR-03, aprovações humanas, uma lacuna sobre quantas aprovações cada PR precisa quando houver mais de um revisor.
+
+  - id: decisao-lista-completa
+    question: Quais decisões o time ainda precisa tomar?
+    expect:
+      tools: [decisoes_pendentes]
+      sources: [ENG-PR-03, IA-02]
+    offline:
+      calls:
+        - tool: decisoes_pendentes
+          args: {}
+      answer: 'Há duas: ENG-PR-03 (quantas aprovações humanas cada PR precisa, prioridade 1) e IA-02 (usar Gemini ou Claude no bot, prioridade 3).'
+
+  - id: decisao-sobre-ia
+    question: Tem alguma decisão pendente sobre IA?
+    expect:
+      tools: [decisoes_pendentes, buscar_padroes, buscar]
+      sources: [IA-02]
+      include: [[Gemini, Claude, modelo]]
+    offline:
+      calls:
+        - tool: decisoes_pendentes
+          args: { prioridade: 3 }
+      answer: Sim, o IA-02, de prioridade 3, decide se o bot de review usa Gemini ou Claude.

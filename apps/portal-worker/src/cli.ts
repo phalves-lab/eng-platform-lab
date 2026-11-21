@@ -1,6 +1,12 @@
 import { parseArgs } from 'node:util'
-import { MetricSnapshotRepository, createPool, runMigrations } from '@lab/database'
+import {
+  ConversationRepository,
+  MetricSnapshotRepository,
+  createPool,
+  runMigrations,
+} from '@lab/database'
 import { collectPanelData } from '@lab/eng-metrics/collect'
+import { createChatRetentionCollector } from './collectors/chat-retention.js'
 import { createEngMetricsCollector } from './collectors/eng-metrics.js'
 import { loadConfig } from './config.js'
 import { createLogger } from './logger.js'
@@ -25,6 +31,11 @@ const main = async () => {
         collect: (now) => collectPanelData(config.collect, now),
         intervalMs: config.intervalMs,
         timeZone: config.timeZone,
+      }),
+      createChatRetentionCollector({
+        conversations: new ConversationRepository(pool),
+        retentionDays: config.chatRetentionDays,
+        intervalMs: config.intervalMs,
       }),
     ],
   })

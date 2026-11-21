@@ -1,0 +1,64 @@
+name: chat-evals
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'review/chat-golden/**'
+      - 'apps/portal-api/prompts/**'
+      - 'apps/portal-api/src/ask/**'
+      - 'apps/portal-api/src/evals/**'
+      - 'packages/handbook/src/**'
+      - 'handbook/**'
+      - '.github/workflows/chat-evals.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: chat-evals-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  chat-golden-set:
+    name: chat-golden-set
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    env:
+      HAS_GATEWAY: ${{ secrets.GEMINI_API_KEY != '' && vars.GEMINI_MODEL != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Golden set do chat com o modelo
+        if: env.HAS_GATEWAY == 'true'
+        env:
+          PORTAL_LLM_BASE_URL: ${{ vars.PORTAL_LLM_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai' }}
+          PORTAL_LLM_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PORTAL_LLM_MODEL: ${{ vars.GEMINI_MODEL }}
+        run: >-
+          npm run chat-evals --
+          --min 0.8
+          --summary "$RUNNER_TEMP/chat-evals.md"
+          --json "$RUNNER_TEMP/chat-evals.json"
+      - name: Golden set do chat offline
+        if: env.HAS_GATEWAY != 'true'
+        run: |
+          echo "Secret GEMINI_API_KEY ou variável GEMINI_MODEL ausente; rodando só o roteiro offline." >> "$GITHUB_STEP_SUMMARY"
+          npm run chat-evals -- --offline --min 1 --summary "$RUNNER_TEMP/chat-evals.md"
+      - name: Relatório no resumo do job
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/chat-evals.md" ]; then
+            cat "$RUNNER_TEMP/chat-evals.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "O golden set do chat não gerou relatório." >> "$GITHUB_STEP_SUMMARY"
+          fi

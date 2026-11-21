@@ -3,6 +3,7 @@
       - any-glob-to-any-file:
           - 'apps/*/migrations/**'
           - 'apps/*/src/db/**'
+          - 'packages/database/migrations/**'
 'risk:auth':
   - changed-files:
       - any-glob-to-any-file:
@@ -19,3 +20,4 @@
       - any-glob-to-any-file:
           - 'review/**'
           - 'tools/review-bot/src/**'
+          - 'apps/portal-api/prompts/**'

@@ -9,4 +9,12 @@ export { MIGRATIONS_DIR, runMigrations, type MigrationOptions } from './migrate.
 export { MetricSnapshotRepository, type SaveSnapshotInput } from './metric-snapshots.js'
 export { JiraRepository } from './jira.js'
 export { DeployRepository, IncidentRepository, type DeployFilter } from './delivery.js'
+export {
+  ChatModeSchema,
+  ConversationRepository,
+  NewChatTurnSchema,
+  type NewChatTurn,
+  type StoredConversation,
+  type StoredMessage,
+} from './conversations.js'
 export * from './schemas.js'

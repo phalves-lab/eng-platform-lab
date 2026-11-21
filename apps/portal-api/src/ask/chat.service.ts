@@ -17,8 +17,15 @@ import { SYSTEM_PROMPT } from './system-prompt.js'
 
 export type Emit = (event: AskStreamEvent) => void
 
+/** An earlier question and answer of the same conversation, already masked. */
+export interface PastTurn {
+  question: string
+  answer: string
+}
+
 const DEFAULT_TIMEOUT_MS = 30_000
 const DEFAULT_TOOL_ROUNDS = 4
+const MAX_PAST_TURNS = 6
 const MAX_CITATIONS = 8
 const EMPTY_ANSWER =
   'Não consegui montar uma resposta com o handbook. Reformule a pergunta ou cite um ID de padrão.'
@@ -53,6 +60,11 @@ const mentions = (answer: string, citation: Citation) => {
     .some((value) => value.trim().length >= 3 && text.includes(value))
 }
 
+const toMessages = (turn: PastTurn): ChatMessage[] => [
+  { role: 'user', content: maskPersonalData(turn.question) },
+  { role: 'assistant', content: maskPersonalData(turn.answer), toolCalls: [] },
+]
+
 /** Keeps the citations the answer mentions; when it mentions none, keeps everything consulted. */
 const pickCitations = (answer: string, citations: Citation[]) => {
   const unique = uniqueCitations(citations)
@@ -73,12 +85,20 @@ export class ChatService {
     private readonly handbook: HandbookService,
     private readonly retrieval: AskService,
     @Inject(MODEL_PROVIDER) private readonly provider: ModelProvider | null,
-    @Inject(CONFIG) private readonly config: PortalConfig,
+    @Inject(CONFIG) private readonly config: Pick<PortalConfig, 'llm'>,
     @Inject(SYSTEM_PROMPT) private readonly systemPrompt: string,
   ) {}
 
-  /** Returns null when the model failed after part of the answer was already streamed. */
-  async answer(question: string, emit: Emit, signal: AbortSignal): Promise<AskResponse | null> {
+  /**
+   * Returns null when the model failed after part of the answer was already streamed. The last
+   * past turns go to the model as context; the retrieval fallback ignores them.
+   */
+  async answer(
+    question: string,
+    emit: Emit,
+    signal: AbortSignal,
+    history: readonly PastTurn[] = [],
+  ): Promise<AskResponse | null> {
     if (!this.provider) return this.fromRetrieval(question, emit, '')
 
     emit({ type: 'start', mode: 'llm' })
@@ -88,6 +108,7 @@ export class ChatService {
       const response = await this.fromModel(
         this.provider,
         question,
+        history,
         emit,
         () => {
           streamed = true
@@ -116,12 +137,14 @@ export class ChatService {
   private async fromModel(
     provider: ModelProvider,
     question: string,
+    history: readonly PastTurn[],
     emit: Emit,
     onFirstDelta: () => void,
     signal: AbortSignal,
   ): Promise<LlmAskResponse> {
     const messages: ChatMessage[] = [
       { role: 'system', content: this.systemPrompt },
+      ...history.slice(-MAX_PAST_TURNS).flatMap(toMessages),
       { role: 'user', content: maskPersonalData(question) },
     ]
     const consulted: Citation[] = []

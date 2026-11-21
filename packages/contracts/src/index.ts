@@ -270,6 +270,7 @@ export const McpServerSchema = z.object({
 export type McpServer = z.infer<typeof McpServerSchema>
 
 export * from './releases.js'
+export * from './conversations.js'
 
 /** Serializes one server-sent event carrying a JSON payload. */
 export const encodeSseEvent = (data: unknown) => `data: ${JSON.stringify(data)}\n\n`

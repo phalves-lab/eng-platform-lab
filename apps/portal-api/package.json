@@ -7,7 +7,8 @@
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "chat-evals": "tsx --conditions=@lab/source src/evals/run.ts"
   },
   "devDependencies": {
     "@nestjs/testing": "^12.6.0",

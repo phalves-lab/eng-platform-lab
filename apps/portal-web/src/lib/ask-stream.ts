@@ -2,7 +2,8 @@ import {
   type AskMode,
   type AskResponse,
   type AskStreamEvent,
-  AskStreamEventSchema,
+  type ChatStreamEvent,
+  ChatStreamEventSchema,
   createSseParser,
   encodeSseEvent,
 } from '@lab/contracts'
@@ -33,14 +34,14 @@ export const newTurn = (id: number, question: string): Turn => ({
   status: 'streaming',
 })
 
-const parseEvent = (payload: string): AskStreamEvent | null => {
+const parseEvent = (payload: string): ChatStreamEvent | null => {
   let data: unknown
   try {
     data = JSON.parse(payload)
   } catch {
     return null
   }
-  const parsed = AskStreamEventSchema.safeParse(data)
+  const parsed = ChatStreamEventSchema.safeParse(data)
   return parsed.success ? parsed.data : null
 }
 
@@ -75,7 +76,7 @@ export const finishTurn = (turn: Turn): Turn =>
 /** Reads an answer stream and hands every event that matches the contract to `onEvent`. */
 export const readAskStream = async (
   body: ReadableStream<Uint8Array>,
-  onEvent: (event: AskStreamEvent) => void,
+  onEvent: (event: ChatStreamEvent) => void,
 ) => {
   const read = createSseParser()
   const decoder = new TextDecoder()

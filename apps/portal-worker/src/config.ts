@@ -19,6 +19,7 @@ const EnvSchema = z
   .object({
     DATABASE_URL: z.string().regex(/^postgres(ql)?:\/\//, 'DATABASE_URL must be a postgres:// URL'),
     WORKER_INTERVAL_MINUTES: z.coerce.number().int().min(1).max(1440).default(60),
+    WORKER_CHAT_RETENTION_DAYS: z.coerce.number().int().min(1).max(3650).default(90),
     WORKER_TIMEZONE: z
       .string()
       .default('America/Sao_Paulo')
@@ -55,6 +56,7 @@ export interface WorkerConfig {
   databaseUrl: string
   intervalMs: number
   timeZone: string
+  chatRetentionDays: number
   collect: CollectOptions
 }
 
@@ -71,6 +73,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): WorkerConfig => {
     databaseUrl: value.DATABASE_URL,
     intervalMs: value.WORKER_INTERVAL_MINUTES * 60_000,
     timeZone: value.WORKER_TIMEZONE,
+    chatRetentionDays: value.WORKER_CHAT_RETENTION_DAYS,
     collect: {
       demo: value.WORKER_DATASETS.includes('demo'),
       lab: value.WORKER_DATASETS.includes('lab')

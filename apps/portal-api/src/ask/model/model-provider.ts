@@ -25,9 +25,16 @@ export interface ModelRequest {
   onDelta: (text: string) => void
 }
 
+export interface TokenUsage {
+  promptTokens: number
+  completionTokens: number
+}
+
 export interface ModelTurn {
   content: string
   toolCalls: ToolCall[]
+  /** Token counts reported by the gateway, when it reports them. */
+  usage?: TokenUsage
 }
 
 /**

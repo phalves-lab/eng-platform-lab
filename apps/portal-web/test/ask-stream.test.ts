@@ -1,4 +1,4 @@
-import { encodeSseEvent, type AskStreamEvent, type Citation } from '@lab/contracts'
+import { encodeSseEvent, type ChatStreamEvent, type Citation } from '@lab/contracts'
 import { describe, expect, it } from 'vitest'
 import {
   applyEvent,
@@ -32,9 +32,30 @@ describe('resposta em streaming', () => {
       encodeSseEvent({ type: 'delta', text: 'Use ' }),
       encodeSseEvent({ type: 'done', response: answer }),
     ].join('')
-    const events: AskStreamEvent[] = []
+    const events: ChatStreamEvent[] = []
     await readAskStream(bytes(wire.slice(0, 20), wire.slice(20)), (event) => events.push(event))
     expect(events.map((e) => e.type)).toEqual(['start', 'delta', 'done'])
+  })
+
+  it('repassa o aviso de conversa salva junto com os eventos da resposta', async () => {
+    const saved = {
+      type: 'conversation',
+      conversation: {
+        id: '0f8b2c64-8f3e-4b8e-9d5a-2f1e6c7b9a10',
+        title: 'Pergunta',
+        createdAt: '2026-11-21T12:00:00.000Z',
+        updatedAt: '2026-11-21T12:00:00.000Z',
+        messageCount: 2,
+      },
+    }
+    const upstream = bytes(
+      encodeSseEvent({ type: 'done', response: answer }) + encodeSseEvent(saved),
+    )
+    const relayed = upstream.pipeThrough(validatedAskStream())
+    const events: ChatStreamEvent[] = []
+    await readAskStream(relayed, (event) => events.push(event))
+    expect(events.map((e) => e.type)).toEqual(['done', 'conversation'])
+    expect(events[1]).toEqual(saved)
   })
 
   it('revalida o stream da API antes de repassar ao navegador', async () => {

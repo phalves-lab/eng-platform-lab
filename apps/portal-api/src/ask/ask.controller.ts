@@ -10,13 +10,18 @@ import {
 import {
   type AskRequest,
   AskRequestSchema,
-  type AskStreamEvent,
+  type ChatRequest,
+  ChatRequestSchema,
+  type ChatStreamEvent,
+  type User,
   encodeSseEvent,
 } from '@lab/contracts'
 import { Throttle } from '@nestjs/throttler'
 import type { Response } from 'express'
+import { CurrentUser } from '../auth/current-user.decorator.js'
 import { ZodPipe } from '../common/zod.pipe.js'
-import { ChatService } from './chat.service.js'
+import { ConversationsService } from '../conversations/conversations.service.js'
+import { ChatService, type Emit } from './chat.service.js'
 
 const ASK_LIMIT = { default: { limit: 20, ttl: 60_000 } }
 
@@ -24,7 +29,10 @@ const ASK_LIMIT = { default: { limit: 20, ttl: 60_000 } }
 export class AskController {
   private readonly logger = new Logger(AskController.name)
 
-  constructor(private readonly chat: ChatService) {}
+  constructor(
+    private readonly chat: ChatService,
+    private readonly conversations: ConversationsService,
+  ) {}
 
   @Post()
   @HttpCode(200)
@@ -39,10 +47,20 @@ export class AskController {
     return response
   }
 
-  /** Streams the answer as server-sent events and stops the model when the client disconnects. */
+  /**
+   * Streams the answer as server-sent events and stops the model when the client disconnects.
+   * With `conversationId` the earlier turns go along as context; a finished answer is stored in
+   * the person's history and announced with a `conversation` event after `done`.
+   */
   @Post('stream')
   @Throttle(ASK_LIMIT)
-  async stream(@Body(new ZodPipe(AskRequestSchema)) body: AskRequest, @Res() res: Response) {
+  async stream(
+    @Body(new ZodPipe(ChatRequestSchema)) body: ChatRequest,
+    @CurrentUser() user: User | undefined,
+    @Res() res: Response,
+  ) {
+    const owner = user?.login ?? null
+    const history = owner ? await this.conversations.history(owner, body.conversationId) : []
     const client = new AbortController()
     res.on('close', () => {
       if (!res.writableFinished) client.abort()
@@ -54,11 +72,26 @@ export class AskController {
       'X-Accel-Buffering': 'no',
     })
     res.flushHeaders()
-    const send = (event: AskStreamEvent) => {
+    const send = (event: ChatStreamEvent) => {
       if (!res.writableEnded) res.write(encodeSseEvent(event))
     }
+    const tools: string[] = []
+    const relay: Emit = (event) => {
+      if (event.type === 'tool') tools.push(event.name)
+      send(event)
+    }
     try {
-      await this.chat.answer(body.question, send, client.signal)
+      const response = await this.chat.answer(body.question, relay, client.signal, history)
+      if (response && owner && !client.signal.aborted) {
+        const conversation = await this.conversations.record({
+          owner,
+          conversationId: body.conversationId ?? null,
+          question: body.question,
+          response,
+          tools,
+        })
+        if (conversation) send({ type: 'conversation', conversation })
+      }
     } catch (error) {
       if (client.signal.aborted) {
         this.logger.log('client cancelled the answer')

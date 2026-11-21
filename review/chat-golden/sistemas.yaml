@@ -1,0 +1,60 @@
+category: sistemas
+cases:
+  - id: sistema-dono-do-bot
+    question: Quem é o dono do bot de review?
+    expect:
+      tools: [sistema, buscar_sistemas, buscar]
+      sources: [Bot de review]
+      include: [platform]
+    offline:
+      calls:
+        - tool: sistema
+          args: { nome: bot de review }
+      answer: O Bot de review é do time platform, segundo a ficha do sistema.
+
+  - id: sistema-stack-da-api
+    question: Qual a stack da API de solicitações de campanha?
+    expect:
+      tools: [sistema, buscar_sistemas, buscar]
+      sources: [API de solicitações de campanha]
+      include: [Fastify, Postgres]
+    offline:
+      calls:
+        - tool: sistema
+          args: { nome: API de solicitações }
+      answer: A API de solicitações de campanha fica em apps/api e usa Node 22, Fastify e Postgres.
+
+  - id: sistema-status-do-servidor-de-contexto
+    question: O servidor de contexto já está em produção?
+    expect:
+      tools: [sistema, buscar_sistemas, buscar]
+      sources: [Servidor de contexto]
+      include: [piloto]
+    offline:
+      calls:
+        - tool: sistema
+          args: { nome: servidor de contexto }
+      answer: Ainda não. O Servidor de contexto está em piloto, segundo a ficha do sistema.
+
+  - id: sistema-quem-usa-postgres
+    question: Quais sistemas usam Postgres?
+    expect:
+      tools: [buscar_sistemas, buscar, sistema]
+      include: [API de solicitações]
+    offline:
+      calls:
+        - tool: buscar_sistemas
+          args: { termo: Postgres }
+      answer: Pelo handbook, só a API de solicitações de campanha usa Postgres.
+
+  - id: sistema-codigo-do-painel
+    question: Onde fica o código do painel de review?
+    expect:
+      tools: [sistema, buscar_sistemas, buscar]
+      sources: [Painel de review]
+      include: [apps/panel]
+    offline:
+      calls:
+        - tool: sistema
+          args: { nome: painel }
+      answer: O Painel de review fica em apps/panel, feito com Vite, React e shadcn/ui.

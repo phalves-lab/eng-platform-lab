@@ -1,0 +1,152 @@
+category: padroes
+cases:
+  - id: padrao-cobertura-por-id
+    question: O que diz o ENG-QA-01?
+    expect:
+      tools: [padrao, buscar_padroes, buscar]
+      sources: [ENG-QA-01]
+      include: [[70%, 70 %, setenta por cento], [diff, linhas alteradas]]
+    offline:
+      calls:
+        - tool: padrao
+          args: { id: ENG-QA-01 }
+      answer: O ENG-QA-01 exige que pelo menos 70% das linhas alteradas no diff estejam cobertas por teste. Fonte ENG-QA-01, em 01-padroes.md.
+
+  - id: padrao-nome-de-branch
+    question: Qual o padrão de nome de branch?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [ENG-GIT-02]
+      include: [LAB-, slug]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: ENG-GIT }
+        - tool: padrao
+          args: { id: ENG-GIT-02 }
+      answer: Pelo ENG-GIT-02, a branch segue o formato <tipo>/LAB-<n>-slug, com tipo feat, fix, chore, docs ou hotfix e slug de 2 a 4 palavras. O check hygiene reprova branch sem task.
+
+  - id: padrao-commits
+    question: Como devo escrever as mensagens de commit?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [ENG-GIT-03]
+      include: [Conventional Commits, '72']
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { termo: commit }
+      answer: Use Conventional Commits com header de até 72 caracteres, conforme o ENG-GIT-03.
+
+  - id: padrao-base-e-producao
+    question: Qual branch é a base de integração e qual é a de produção?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [ENG-GIT-01]
+      include: [develop, main]
+    offline:
+      calls:
+        - tool: padrao
+          args: { id: ENG-GIT-01 }
+      answer: Segundo o ENG-GIT-01, develop é a base de integração e main é produção. Mudança entra só por PR na fila de merge.
+
+  - id: padrao-template-de-pr
+    question: O que preciso preencher no template de PR?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [ENG-PR-01]
+      include: [contexto de negócio, [como testar, testar]]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { termo: template }
+      answer: O ENG-PR-01 pede task, contexto de negócio, o que mudou, como testar, SQL, ENV e uso de IA.
+
+  - id: padrao-bot-nao-aprova
+    question: O bot de review pode aprovar o meu PR?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, sistema]
+      sources: [ENG-PR-02]
+      include: [[nunca aprova, não aprova, não pode aprovar, só comenta]]
+      exclude: [o bot aprova, pode aprovar o seu PR]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: ENG-PR }
+      answer: Não. Pelo ENG-PR-02, o bot só comenta e dá um sinal; ele nunca aprova nem bloqueia. Quem aprova é uma pessoa.
+
+  - id: padrao-aprovacoes-lacuna
+    question: Quantas aprovações humanas um PR precisa?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, decisoes_pendentes]
+      sources: [ENG-PR-03]
+      include: [[lacuna, não tem regra, sem regra definida, ainda não definiu, ainda não há regra]]
+      exclude: [precisa de duas aprovações, são necessárias duas]
+    offline:
+      calls:
+        - tool: padrao
+          args: { id: ENG-PR-03 }
+      answer: O ENG-PR-03 está como LACUNA, então o handbook ainda não tem regra definida para o número de aprovações. Também é uma decisão pendente de prioridade 1.
+
+  - id: padrao-segredo-no-codigo
+    question: Posso deixar um token no código se o repositório for privado?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [ENG-SEC-01]
+      include: [[secret, variável de ambiente]]
+      exclude: [pode deixar o token]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: segredo token código }
+        - tool: padrao
+          args: { id: ENG-SEC-01 }
+      answer: Não. O ENG-SEC-01 diz que segredo nunca entra em código, página, log ou prompt, só em secret do GitHub ou variável de ambiente local.
+
+  - id: padrao-dado-confidencial-e-ia
+    question: Posso mandar dado confidencial para a chave de IA do laboratório?
+    expect:
+      tools: [padrao, buscar_padroes, buscar]
+      sources: [ENG-SEC-02]
+      include: [[nunca, não]]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: ENG-SEC }
+      answer: Não. Pelo ENG-SEC-02, dado confidencial nunca vai para a chave pessoal de IA do laboratório, que não tem contrato corporativo.
+
+  - id: padrao-nota-minima-golden-set
+    question: Qual a nota mínima no golden set para mudar o prompt do bot?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, glossario]
+      sources: [IA-01]
+      include: [['0,8', '0.8', 80%]]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { termo: golden set }
+      answer: O IA-01 exige que mudança em prompt ou no bot passe pelo golden set com pontuação mínima de 0,8.
+
+  - id: padrao-modelo-proposto
+    question: Já está decidido se o bot usa Gemini ou Claude?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, decisoes_pendentes]
+      sources: [IA-02]
+      include: [[proposta, proposto, ainda não, pendente]]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: IA }
+      answer: Ainda não. O IA-02 é PROPOSTO, então é uma proposta e não vale como regra; o time vai comparar precisão e custo no golden set antes de decidir.
+
+  - id: padrao-lista-review-e-merge
+    question: Quais padrões existem sobre review e merge?
+    expect:
+      tools: [buscar_padroes, buscar]
+      sources: [ENG-PR-01, ENG-PR-02]
+      include: [ENG-PR-01, ENG-PR-02]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: ENG-PR }
+      answer: 'São três: ENG-PR-01 (template de PR), ENG-PR-02 (review por IA) e ENG-PR-03 (aprovações humanas, ainda LACUNA).'

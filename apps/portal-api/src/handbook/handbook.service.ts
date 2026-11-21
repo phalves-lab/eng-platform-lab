@@ -36,7 +36,7 @@ const toSystemSummary = (system: SystemCard): SystemSummary => ({
 export class HandbookService implements OnModuleInit {
   private handbook: Handbook | null = null
 
-  constructor(@Inject(CONFIG) private readonly config: PortalConfig) {}
+  constructor(@Inject(CONFIG) private readonly config: Pick<PortalConfig, 'handbookDir'>) {}
 
   async onModuleInit() {
     this.handbook = await loadHandbook(this.config.handbookDir)

@@ -21,6 +21,7 @@ export default defineConfig({
         'src/lib/releases.ts',
         'src/lib/ask-stream.ts',
         'src/lib/citations.ts',
+        'src/lib/conversations.ts',
         'src/components/navigation.ts',
       ],
       reporter: ['text-summary', 'lcov'],

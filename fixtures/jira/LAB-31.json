@@ -1,0 +1,29 @@
+{
+  "key": "LAB-31",
+  "title": "Portal: histórico de conversas do Pergunte",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Cada pergunta no Pergunte some ao recarregar a página e não dá para continuar uma conversa. O portal passa a guardar as conversas de cada pessoa, já com dado pessoal mascarado, por um tempo limitado, e a tela mostra as conversas anteriores para abrir, continuar ou apagar.",
+  "acceptanceCriteria": [
+    "Migration nova cria conversas e mensagens com autor, horário, ferramentas usadas, fontes e modo llm ou retrieval, sempre com o texto já mascarado pelo filtro de dado pessoal",
+    "Retenção configurável, padrão de 90 dias, com limpeza feita pelo worker",
+    "Endpoints para listar e abrir as conversas da própria pessoa e apagar uma conversa; ninguém vê a conversa de outra pessoa",
+    "A tela do Pergunte lista as conversas anteriores e permite continuar uma conversa com o contexto das perguntas anteriores",
+    "O filtro de dado pessoal mascara e-mail, CPF, telefone, cartão e RA de aluno no formato do laboratório, com testes",
+    "Testes de integração com Postgres real"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "ia", "dados"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T11:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T15:00:00Z"
+    }
+  ]
+}
