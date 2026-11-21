@@ -9,11 +9,13 @@ import {
 import {
   type AskResponse,
   AskResponseSchema,
+  type ChatModeId,
+  ChatModeIdSchema,
   type Conversation,
   type ConversationMessage,
   type ConversationSummary,
 } from '@lab/contracts'
-import type { StoredMessage } from '@lab/database'
+import type { StoredConversation, StoredMessage } from '@lab/database'
 import type { PastTurn } from '../ask/chat.service.js'
 import { maskPersonalData } from '../ask/model/personal-data.js'
 import { CONVERSATION_BACKEND, type ConversationBackend } from './conversation-backend.js'
@@ -28,6 +30,13 @@ export interface TurnToRecord {
   question: string
   response: AskResponse
   tools: string[]
+  chatMode: ChatModeId
+}
+
+/** What a new turn needs from the conversation it continues. */
+export interface Continuation {
+  chatMode: ChatModeId
+  turns: PastTurn[]
 }
 
 const unavailable = () => new ServiceUnavailableException('Chat history is not available')
@@ -41,6 +50,12 @@ const titleOf = (question: string) => {
   const line = question.replace(/\s+/g, ' ').trim()
   return line.length > MAX_TITLE ? `${line.slice(0, MAX_TITLE - 1).trimEnd()}…` : line
 }
+
+/** A mode this version does not know, written by a newer one, reads as the ask mode. */
+const toSummary = (stored: StoredConversation): ConversationSummary => ({
+  ...stored,
+  chatMode: ChatModeIdSchema.catch('ask').parse(stored.chatMode),
+})
 
 const toMessage = (message: StoredMessage): ConversationMessage => {
   if (message.author === 'user') {
@@ -91,23 +106,31 @@ export class ConversationsService implements OnModuleDestroy {
   }
 
   list(owner: string): Promise<ConversationSummary[]> {
-    return this.run((backend) => backend.store.list(owner))
+    return this.run(async (backend) => (await backend.store.list(owner)).map(toSummary))
   }
 
   async get(owner: string, id: string): Promise<Conversation> {
     const found = await this.run((backend) => backend.store.find(owner, id))
     if (!found) throw notFound()
-    return { ...found, messages: found.messages.map(toMessage) }
+    return { ...toSummary(found), messages: found.messages.map(toMessage) }
   }
 
   async remove(owner: string, id: string): Promise<void> {
     if (!(await this.run((backend) => backend.store.remove(owner, id)))) throw notFound()
   }
 
-  /** Earlier turns to continue a conversation; empty when there is none or no history store. */
-  async history(owner: string, id: string | undefined): Promise<PastTurn[]> {
-    if (!id || !this.backend) return []
-    return toPastTurns((await this.get(owner, id)).messages)
+  /**
+   * Mode and earlier turns of the conversation being continued. A new conversation, or one
+   * without a history store, keeps the requested mode and starts with no turns.
+   */
+  async continuation(
+    owner: string,
+    id: string | undefined,
+    requested: ChatModeId,
+  ): Promise<Continuation> {
+    if (!id || !this.backend) return { chatMode: requested, turns: [] }
+    const conversation = await this.get(owner, id)
+    return { chatMode: conversation.chatMode, turns: toPastTurns(conversation.messages) }
   }
 
   async record(turn: TurnToRecord): Promise<ConversationSummary | null> {
@@ -115,10 +138,11 @@ export class ConversationsService implements OnModuleDestroy {
     const question = maskPersonalData(turn.question)
     const { response } = turn
     try {
-      return await this.backend.store.appendTurn({
+      const stored = await this.backend.store.appendTurn({
         owner: turn.owner,
         conversationId: turn.conversationId,
         title: titleOf(question),
+        chatMode: turn.chatMode,
         question,
         answer: {
           content: maskPersonalData(response.answer).slice(0, MAX_TEXT),
@@ -127,6 +151,7 @@ export class ConversationsService implements OnModuleDestroy {
           sources: response.mode === 'llm' ? response.citations : response.sources,
         },
       })
+      return stored ? toSummary(stored) : null
     } catch (error) {
       this.logger.error(
         `could not store the chat turn: ${error instanceof Error ? error.message : String(error)}`,

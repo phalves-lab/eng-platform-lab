@@ -65,6 +65,10 @@ const EnvSchema = z
     ),
     PORTAL_PROJECTS_DIR: z.preprocess(emptyAsUnset, z.string().min(1).optional()),
     PORTAL_MODULES_DIR: z.preprocess(emptyAsUnset, z.string().min(1).optional()),
+    PORTAL_TASKS_DIR: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('fixtures/jira')),
+    ),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -132,6 +136,7 @@ export type PortalConfig = {
   staleAfterBusinessDays: number
   projectsDir: string
   modulesDir: string
+  tasksDir: string
 }
 
 type LlmConfig = {
@@ -211,5 +216,6 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     modulesDir: value.PORTAL_MODULES_DIR
       ? resolve(value.PORTAL_MODULES_DIR)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../catalog/modules'),
+    tasksDir: resolve(value.PORTAL_TASKS_DIR),
   }
 }

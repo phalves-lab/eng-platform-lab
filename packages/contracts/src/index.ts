@@ -271,6 +271,7 @@ export type McpServer = z.infer<typeof McpServerSchema>
 
 export * from './releases.js'
 export * from './conversations.js'
+export * from './chat-modes.js'
 export * from './release-write.js'
 export * from './dora.js'
 export * from './flow.js'

@@ -6,7 +6,7 @@ import type {
 } from '@lab/contracts'
 import type { Citation } from '@lab/handbook'
 import { z } from 'zod'
-import type { ChatTool } from '../ask/chat-tools.js'
+import { type ChatTool, defineTool } from '../ask/tools/chat-tool.js'
 import type { ProjectsService } from './projects.service.js'
 
 export const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
@@ -96,21 +96,21 @@ const citations = (project: ProjectDetail, source: string): Citation[] => [
 ]
 
 /** Chat tool that answers how a project is going, crossing the catalog with the portal data. */
-export const createProjectTool = (projects: ProjectsService): ChatTool => ({
-  name: 'projeto',
-  description:
-    'Situação de um projeto do catálogo: objetivo, status, dono, progresso do épico no Jira, PRs abertos e mergeados, deploys, sistemas, decisões e riscos ligados.',
-  input: Input,
-  execute: async (args) => {
-    const { projeto } = Input.parse(args)
-    const found = projects.find(projeto)
-    if (!found) {
-      return {
-        text: `Projeto "${projeto}" não encontrado. Projetos do catálogo: ${projects.names().join(', ') || 'nenhum'}.`,
-        citations: [],
+export const createProjectTool = (projects: ProjectsService): ChatTool =>
+  defineTool({
+    name: 'projeto',
+    description:
+      'Situação de um projeto do catálogo: objetivo, status, dono, progresso do épico no Jira, PRs abertos e mergeados, deploys, sistemas, decisões e riscos ligados.',
+    input: Input,
+    run: async ({ projeto }) => {
+      const found = projects.find(projeto)
+      if (!found) {
+        return {
+          text: `Projeto "${projeto}" não encontrado. Projetos do catálogo: ${projects.names().join(', ') || 'nenhum'}.`,
+          citations: [],
+        }
       }
-    }
-    const detail = await projects.detail(found.entry.id)
-    return { text: describe(detail, found.source), citations: citations(detail, found.source) }
-  },
-})
+      const detail = await projects.detail(found.entry.id)
+      return { text: describe(detail, found.source), citations: citations(detail, found.source) }
+    },
+  })

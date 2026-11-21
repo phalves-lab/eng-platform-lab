@@ -1,0 +1,29 @@
+{
+  "key": "LAB-32",
+  "title": "Portal: rascunhos pelo chat",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Refinar task, escrever descrição de PR, nota de release, ADR e resumo da semana tomam tempo e saem cada vez num formato. O chat do portal ganha modos de rascunho, cada um com prompt versionado, que devolvem o texto no formato do time para a pessoa revisar e copiar. Nada é gravado no Jira, no GitHub ou no handbook.",
+  "acceptanceCriteria": [
+    "Modos do chat com prompt versionado próprio em apps/portal-api/prompts/modes e seleção na tela: Perguntar, Refinar task, Descrição de PR, Nota de release, ADR e Resumo da semana",
+    "Refinar task devolve critérios de aceite, perguntas em aberto e riscos, uma pergunta por vez e sempre com recomendação, a partir do texto colado ou de uma task de exemplo em fixtures/jira",
+    "Descrição de PR segue o template .github/PULL_REQUEST_TEMPLATE.md a partir de título, task e resumo do diff",
+    "Nota de release com uma parte técnica e uma de negócio a partir da lista de PRs",
+    "ADR no formato do modelo de ADR do handbook, criado nesta entrega",
+    "Resumo da semana do time com as métricas de review, de fluxo e DORA já calculadas pelo portal, sem ranking de pessoas",
+    "Ferramentas novas só leitura para o modelo: métricas de review, de fluxo e DORA, reaproveitando os serviços da API",
+    "Tudo é rascunho: a tela mostra o aviso e o botão de copiar, e nenhuma rota escreve em Jira, GitHub ou handbook",
+    "Pelo menos 3 casos no golden set do chat para cada modo, rodando no modo offline do verify",
+    "Mudança em apps/portal-api/prompts recebe o rótulo risk:ai-behavior"
+  ],
+  "status": "Em andamento",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T16:40:00Z"
+    }
+  ]
+}

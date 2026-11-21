@@ -1,17 +1,20 @@
-import { ChatRequestSchema } from '@lab/contracts'
+import { ModeChatRequestSchema } from '@lab/contracts'
 import { NextResponse } from 'next/server'
 import { api, ApiError } from '@/lib/api'
 import { validatedAskStream } from '@/lib/ask-stream'
 
 /**
- * Relays the streamed answer from portal-api to the browser. The browser only talks to this
- * route; closing the page aborts the upstream request and, with it, the model call.
+ * Relays the streamed answer from portal-api to the browser, in the chosen chat mode. The browser
+ * only talks to this route; closing the page aborts the upstream request and the model call.
  */
 export async function POST(request: Request) {
-  const parsed = ChatRequestSchema.safeParse(await request.json().catch(() => null))
+  const parsed = ModeChatRequestSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'A pergunta precisa ter entre 3 e 500 caracteres.' },
+      {
+        error:
+          'O texto precisa ter entre 3 e 500 caracteres no modo Perguntar e até 8.000 nos rascunhos.',
+      },
       { status: 400 },
     )
   }

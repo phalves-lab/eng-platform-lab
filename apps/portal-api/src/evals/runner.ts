@@ -36,6 +36,8 @@ export const runGoldenSet = async ({
           if (event.type === 'tool') tools.push(event.name)
         },
         new AbortController().signal,
+        [],
+        golden.mode,
       )
     } catch (failure) {
       error = failure instanceof Error ? failure.message : String(failure)

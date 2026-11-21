@@ -26,6 +26,7 @@ export default defineConfig({
         'src/lib/ask-stream.ts',
         'src/lib/citations.ts',
         'src/lib/conversations.ts',
+        'src/lib/chat-modes.ts',
         'src/lib/quality.ts',
         'src/lib/work.ts',
         'src/lib/projects.ts',

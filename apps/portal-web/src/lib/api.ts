@@ -1,8 +1,9 @@
 import 'server-only'
 import {
-  type ChatRequest,
   type DatasetId,
+  type ModeChatRequest,
   BoardResponseSchema,
+  ChatModesResponseSchema,
   BoardSummarySchema,
   DecisionSchema,
   DoraMetricsResponseSchema,
@@ -126,7 +127,8 @@ export const api = {
     request(`/api/handbook/decisions${query({ priority })}`, z.array(DecisionSchema)),
   search: (q: string, limit = 6) =>
     request(`/api/handbook/search${query({ q, limit })}`, z.array(SearchHitSchema)),
-  askStream: async (body: ChatRequest, signal: AbortSignal) => {
+  chatModes: async () => (await request('/api/ask/modes', ChatModesResponseSchema)).modes,
+  askStream: async (body: ModeChatRequest, signal: AbortSignal) => {
     const response = await fetch(`${baseUrl()}/api/ask/stream`, {
       method: 'POST',
       headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json' },
