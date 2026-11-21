@@ -1,10 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common'
 import type { AskResponse, AskStreamEvent, Citation, LlmAskResponse } from '@lab/contracts'
 import { findTool, handbookTools, normalize, uniqueCitations } from '@lab/handbook'
 import { z } from 'zod'
 import { CONFIG, type PortalConfig } from '../config/config.js'
 import { HandbookService } from '../handbook/handbook.service.js'
 import { AskService } from './ask.service.js'
+import { CHAT_TOOLS, type ChatTool } from './chat-tools.js'
 import {
   type ChatMessage,
   MODEL_PROVIDER,
@@ -37,11 +38,15 @@ const toParameters = (input: z.ZodObject): Record<string, unknown> => {
   return schema
 }
 
-const TOOL_SPECS: ToolSpec[] = handbookTools.map((tool) => ({
+const toSpec = (tool: Pick<ChatTool, 'name' | 'description' | 'input'>): ToolSpec => ({
   name: tool.name,
   description: tool.description,
   parameters: toParameters(tool.input),
-}))
+})
+
+const TOOL_SPECS: ToolSpec[] = handbookTools.map(toSpec)
+
+type ToolOutput = { text: string; citations: Citation[] }
 
 const failureReason = (error: unknown, timedOut: boolean) => {
   if (timedOut) return 'timeout'
@@ -87,7 +92,12 @@ export class ChatService {
     @Inject(MODEL_PROVIDER) private readonly provider: ModelProvider | null,
     @Inject(CONFIG) private readonly config: Pick<PortalConfig, 'llm'>,
     @Inject(SYSTEM_PROMPT) private readonly systemPrompt: string,
+    @Optional() @Inject(CHAT_TOOLS) private readonly portalTools: readonly ChatTool[] = [],
   ) {}
+
+  private get toolSpecs(): ToolSpec[] {
+    return [...TOOL_SPECS, ...this.portalTools.map(toSpec)]
+  }
 
   /**
    * Returns null when the model failed after part of the answer was already streamed. The last
@@ -160,7 +170,7 @@ export class ChatService {
       const allowTools = round < rounds
       const turn = await provider.complete({
         messages,
-        tools: allowTools ? TOOL_SPECS : [],
+        tools: allowTools ? this.toolSpecs : [],
         signal,
         onDelta,
       })
@@ -168,7 +178,7 @@ export class ChatService {
       messages.push({ role: 'assistant', content: turn.content, toolCalls: turn.toolCalls })
       for (const call of turn.toolCalls) {
         emit({ type: 'tool', name: call.name })
-        const output = this.runTool(call)
+        const output = await this.runTool(call)
         consulted.push(...output.citations)
         messages.push({ role: 'tool', toolCallId: call.id, content: output.text })
       }
@@ -182,8 +192,23 @@ export class ChatService {
     }
   }
 
-  private runTool(call: ToolCall): { text: string; citations: Citation[] } {
-    const tool = findTool(call.name)
+  private resolveTool(name: string) {
+    const handbookTool = findTool(name)
+    if (handbookTool) {
+      return {
+        input: handbookTool.input,
+        run: (args: unknown) =>
+          Promise.resolve(handbookTool.execute(this.handbook.snapshot(), args)),
+      }
+    }
+    const portalTool = this.portalTools.find((tool) => tool.name === name)
+    return portalTool
+      ? { input: portalTool.input, run: (args: unknown) => portalTool.execute(args) }
+      : null
+  }
+
+  private async runTool(call: ToolCall): Promise<ToolOutput> {
+    const tool = this.resolveTool(call.name)
     if (!tool) return { text: `A ferramenta ${call.name} não existe.`, citations: [] }
     let args: unknown
     try {
@@ -198,6 +223,14 @@ export class ChatService {
         citations: [],
       }
     }
-    return tool.execute(this.handbook.snapshot(), parsed.data)
+    try {
+      return await tool.run(parsed.data)
+    } catch (error) {
+      this.logger.warn(`tool ${call.name} failed: ${failureReason(error, false)}`)
+      return {
+        text: `A ferramenta ${call.name} falhou agora. Tente de novo mais tarde.`,
+        citations: [],
+      }
+    }
   }
 }

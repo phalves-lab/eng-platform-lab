@@ -1,0 +1,22 @@
+{
+  "key": "LAB-34",
+  "title": "Projetos no portal com épico, PRs, deploys, sistemas, decisões e riscos",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Liderança e time perguntam o tempo todo como está cada projeto e a resposta vive espalhada entre Jira, GitHub e handbook. O portal passa a ter um cadastro versionado de projetos e uma ficha que cruza o épico do Jira, os PRs, os deploys e o DORA dos repositórios com os sistemas, decisões e riscos ligados.",
+  "acceptanceCriteria": [
+    "Projetos ficam em YAML versionado em catalog/projects com id, nome, objetivo, status, épico do Jira, repositórios, sistemas do handbook, decisões e riscos ligados e dono, com 3 projetos fictícios",
+    "GET /api/projects e GET /api/projects/:id cruzam o espelho do Jira (progresso do épico, itens abertos e bloqueados), os PRs abertos e mergeados dos repositórios e o DORA, e cada fonte sem dados aparece como indisponível sem derrubar a resposta",
+    "A tela /projetos lista os projetos com status e progresso e /projetos/[id] mostra objetivo, épico e tasks, PRs, deploys, sistemas, decisões e riscos",
+    "Projetos entram no menu e na busca do Ctrl K",
+    "O chat do portal tem a ferramenta projeto, só de leitura"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "projetos"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T14:20:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T17:30:00Z" }
+  ]
+}

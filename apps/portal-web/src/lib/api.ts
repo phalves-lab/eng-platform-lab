@@ -12,12 +12,15 @@ import {
   ReviewMetricsResponseSchema,
   McpServerSchema,
   MyWorkResponseSchema,
+  ProjectDetailSchema,
+  ProjectSummarySchema,
   PluginSchema,
   PluginSummarySchema,
   SearchHitSchema,
   StandardSchema,
   StandardSummarySchema,
   SystemSchema,
+  SystemRelationsSchema,
   SystemSummarySchema,
   TeamWorkResponseSchema,
   UserSchema,
@@ -115,6 +118,8 @@ export const api = {
     request(`/api/handbook/systems${query({ term })}`, z.array(SystemSummarySchema)),
   system: (slug: string) =>
     request(`/api/handbook/systems/${encodeURIComponent(slug)}`, SystemSchema),
+  systemRelations: (slug: string) =>
+    request(`/api/handbook/systems/${encodeURIComponent(slug)}/relations`, SystemRelationsSchema),
   glossary: (term?: string) =>
     request(`/api/handbook/glossary${query({ term })}`, z.array(GlossaryEntrySchema)),
   decisions: (priority?: number) =>
@@ -153,4 +158,7 @@ export const api = {
   plugin: (name: string) =>
     request(`/api/catalog/plugins/${encodeURIComponent(name)}`, PluginSchema),
   mcps: () => request('/api/catalog/mcps', z.array(McpServerSchema)),
+  projects: (term?: string) =>
+    request(`/api/projects${query({ term })}`, z.array(ProjectSummarySchema)),
+  project: (id: string) => request(`/api/projects/${encodeURIComponent(id)}`, ProjectDetailSchema),
 }

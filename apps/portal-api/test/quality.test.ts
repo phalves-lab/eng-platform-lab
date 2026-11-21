@@ -208,7 +208,7 @@ describe('validade da documentação na portal-api', () => {
     expect(body).toMatchObject({
       generatedAt: NOW.toISOString(),
       maxAgeMonths: 6,
-      counts: { ok: 4, expiring: 1, stale: 2, missing: 1 },
+      counts: { ok: 5, expiring: 1, stale: 2, missing: 1 },
     })
     expect(body.owners.map((group) => group.owner)).toEqual([
       '@phalves-lab/arquitetura',
@@ -236,7 +236,7 @@ describe('validade da documentação na portal-api', () => {
   it('aceita outro prazo pela query ou pela configuração e recusa prazo fora da faixa', async () => {
     const server = app.getHttpServer()
     const short = await request(server).get('/api/quality/docs?months=3').expect(200)
-    expect(short.body.counts).toEqual({ ok: 3, expiring: 0, stale: 4, missing: 1 })
+    expect(short.body.counts).toEqual({ ok: 4, expiring: 0, stale: 4, missing: 1 })
     await request(server).get('/api/quality/docs?months=0').expect(400)
     await request(server).get('/api/quality/docs?months=abc').expect(400)
 
