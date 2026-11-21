@@ -1,7 +1,9 @@
+import { shutdownTelemetry } from '@lab/telemetry'
+import { startTestTelemetry } from '@lab/telemetry/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Collector } from '../src/collector.js'
 import { createLogger } from '../src/logger.js'
-import { Scheduler } from '../src/scheduler.js'
+import { type RunResult, Scheduler } from '../src/scheduler.js'
 
 const capture = () => {
   const lines: Record<string, unknown>[] = []
@@ -99,5 +101,61 @@ describe('Scheduler', () => {
         error: { name: 'Error', message: 'x' },
       }),
     )
+  })
+
+  it('records every run, skipped ones included, in the collector metrics', async () => {
+    const { logger } = capture()
+    const recorded: RunResult[] = []
+    const gate = deferred()
+    const slow: Collector = {
+      name: 'slow',
+      schedule: { intervalMs: 1_000 },
+      run: () => gate.promise,
+    }
+    const scheduler = new Scheduler({
+      logger,
+      collectors: [slow],
+      metrics: { record: (result) => recorded.push(result) },
+    })
+    const first = scheduler.run(slow)
+    await scheduler.run(slow)
+    gate.resolve()
+    await first
+
+    expect(recorded.map((result) => result.status)).toEqual(['skipped', 'ok'])
+  })
+})
+
+describe('Scheduler tracing', () => {
+  afterEach(() => shutdownTelemetry())
+
+  it('runs each collector inside a span and logs with its trace id', async () => {
+    const telemetry = startTestTelemetry()
+    const { logger, lines } = capture()
+    const scheduler = new Scheduler({
+      logger,
+      collectors: [
+        { name: 'jira', schedule: { intervalMs: 1_000 }, run: () => Promise.resolve() },
+        {
+          name: 'dora',
+          schedule: { intervalMs: 1_000 },
+          run: () => Promise.reject(new Error('x')),
+        },
+      ],
+    })
+    await scheduler.runAll()
+    await shutdownTelemetry()
+
+    const finished = telemetry.spans()
+    expect(finished.map((span) => [span.name, span.attributes['collector.name']])).toEqual([
+      ['collector.run', 'jira'],
+      ['collector.run', 'dora'],
+    ])
+    const jiraTrace = finished[0]?.spanContext().traceId
+    expect(lines.filter((line) => line.collector === 'jira').map((line) => line.traceId)).toEqual([
+      jiraTrace,
+      jiraTrace,
+    ])
+    expect(finished[1]?.status.code).toBe(0)
   })
 })

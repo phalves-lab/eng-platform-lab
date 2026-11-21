@@ -1,0 +1,21 @@
+{
+  "key": "LAB-43",
+  "title": "Testes de ponta a ponta do portal com Playwright e acessibilidade",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "Os testes unitários não pegam uma tela que deixou de carregar ou um componente que ficou inacessível. Os fluxos críticos do portal passam a rodar no navegador contra a stack local com fixtures, com verificação de acessibilidade em cada página.",
+  "acceptanceCriteria": [
+    "Playwright cobre Minha página, busca com Ctrl K, Pergunte em modo busca, Entregas (Review, Fluxo e DORA), Releases (prévia) e Qualidade",
+    "Os testes rodam contra a stack local com fixtures sintéticas, inclusive o GitHub da prévia de release",
+    "No CI os testes rodam em job próprio, não bloqueante na primeira versão",
+    "Verificação de acessibilidade com axe nas mesmas páginas, falhando em violação séria ou crítica, nos temas claro e escuro"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "qualidade"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T16:50:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T19:30:00Z" }
+  ]
+}

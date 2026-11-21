@@ -1,0 +1,21 @@
+{
+  "key": "LAB-42",
+  "title": "Empacotamento do portal em imagens Docker e guia de deploy",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "O portal só roda a partir do código-fonte na máquina de quem desenvolve. Cada serviço ganha uma imagem enxuta, sem root e com healthcheck, um compose sobe a stack inteira com Postgres para o desenvolvimento integrado e o CI passa a construir e escanear as imagens a cada PR, sem publicar nada. O guia de deploy em Cloud Run com Workload Identity Federation fica documentado para quando houver ambiente.",
+  "acceptanceCriteria": [
+    "Dockerfile multi-stage para portal-api, portal-web (standalone do Next) e portal-worker, com usuário não root, imagem enxuta e healthcheck",
+    "docker-compose.portal.yml sobe os três serviços com Postgres para o desenvolvimento integrado",
+    "Workflow de CI constrói as imagens e roda scan de vulnerabilidades, sem push para registry",
+    "docs/deploy.md descreve o deploy em Cloud Run com Workload Identity Federation, sem executar nada em nuvem"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "infra"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T16:50:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T19:30:00Z" }
+  ]
+}

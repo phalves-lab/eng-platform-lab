@@ -1,6 +1,12 @@
+import { resolve } from 'node:path'
 import type { NextConfig } from 'next'
 
+const standalone = process.env.PORTAL_WEB_STANDALONE === 'true'
+
 const config: NextConfig = {
+  ...(standalone
+    ? { output: 'standalone', outputFileTracingRoot: resolve(process.cwd(), '../..') }
+    : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   devIndicators: false,

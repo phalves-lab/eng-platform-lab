@@ -33,8 +33,13 @@ export function SignalDistribution({ total, slices }: SignalDistributionProps) {
       <dl className="grid gap-3">
         {slices.map((slice) => (
           <div key={slice.key} className="flex items-center gap-3 text-sm">
-            <span className={cn('size-2.5 shrink-0 rounded-[3px]', SIGNAL_COLOR[slice.key])} />
-            <dt className="flex-1 text-muted-foreground">{slice.label}</dt>
+            <dt className="flex flex-1 items-center gap-3 text-muted-foreground">
+              <span
+                className={cn('size-2.5 shrink-0 rounded-[3px]', SIGNAL_COLOR[slice.key])}
+                aria-hidden
+              />
+              {slice.label}
+            </dt>
             <dd className="font-medium tabular-nums">{slice.count}</dd>
             <dd className="w-11 text-right text-xs tabular-nums text-muted-foreground">
               {formatShare(slice.share)}

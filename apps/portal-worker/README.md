@@ -2,6 +2,10 @@
 
 Worker de coleta do portal de engenharia. Cada coletor implementa `Collector` (`name`, `schedule`, `run(ctx)`) e o `Scheduler` roda todos no boot e a cada intervalo, sem sobrepor execuções do mesmo coletor. O log sai em JSON, uma linha por evento. As migrations de `packages/database` são aplicadas no boot.
 
+## Observabilidade e imagem
+
+Cada execução de coletor roda dentro de um span `collector.run` e alimenta as métricas `portal_worker.collector.runs` e `portal_worker.collector.duration` (por coletor e status). A exportação OTLP só liga com `OTEL_ENABLED=true` e `OTEL_EXPORTER_OTLP_ENDPOINT`. Compilado (`npm run build -w @lab/portal-worker`), o worker sobe com `npm start -w @lab/portal-worker`. Com `WORKER_HEARTBEAT_FILE`, o worker reescreve o arquivo a cada 30 s e `node dist/healthcheck.js` sai com 0 enquanto ele tiver menos de 90 s, que é o healthcheck da imagem (`apps/portal-worker/Dockerfile`).
+
 ## Coletores
 
 | Coletor       | O que faz                                                                               | Liga com                                     |
