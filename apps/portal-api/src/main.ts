@@ -8,6 +8,7 @@ import { loadConfig } from './config/config.js'
 const bootstrap = async () => {
   const config = loadConfig(process.env)
   const app = await NestFactory.create(AppModule.register(config), { bufferLogs: false })
+  app.getHttpAdapter().getInstance().set('trust proxy', config.trustProxy)
   app.use(helmet())
   app.enableShutdownHooks()
   await app.listen(config.port)

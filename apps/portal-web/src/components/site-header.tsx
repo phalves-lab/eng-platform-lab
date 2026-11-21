@@ -1,12 +1,13 @@
 'use client'
 
+import type { User } from '@lab/contracts'
 import { usePathname } from 'next/navigation'
 import { CommandMenu } from '@/components/command-menu'
 import { activeItem } from '@/components/navigation'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
-export function SiteHeader() {
+export function SiteHeader({ role }: { readonly role: User['role'] }) {
   const pathname = usePathname()
   const title = activeItem(pathname)?.title ?? 'Portal de engenharia'
   return (
@@ -16,7 +17,7 @@ export function SiteHeader() {
         <Separator orientation="vertical" className="mx-1 data-[orientation=vertical]:h-4" />
         <h1 className="truncate text-base font-medium">{title}</h1>
         <div className="ml-auto flex items-center gap-2">
-          <CommandMenu />
+          <CommandMenu role={role} />
         </div>
       </div>
     </header>

@@ -161,6 +161,7 @@ const EnvSchema = z
     DATABASE_URL: DatabaseUrlSchema,
     WORKER_INTERVAL_MINUTES: z.coerce.number().int().min(1).max(1440).default(60),
     WORKER_CHAT_RETENTION_DAYS: z.coerce.number().int().min(1).max(3650).default(90),
+    WORKER_AUDIT_RETENTION_DAYS: z.coerce.number().int().min(30).max(3650).default(365),
     WORKER_TIMEZONE: z
       .string()
       .default('America/Sao_Paulo')
@@ -202,6 +203,7 @@ export interface WorkerConfig {
   intervalMs: number
   timeZone: string
   chatRetentionDays: number
+  auditRetentionDays: number
   collect: CollectOptions
   dora: {
     catalogFile: string
@@ -227,6 +229,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): WorkerConfig => {
     intervalMs: value.WORKER_INTERVAL_MINUTES * 60_000,
     timeZone: value.WORKER_TIMEZONE,
     chatRetentionDays: value.WORKER_CHAT_RETENTION_DAYS,
+    auditRetentionDays: value.WORKER_AUDIT_RETENTION_DAYS,
     collect: {
       demo: value.WORKER_DATASETS.includes('demo'),
       lab: value.WORKER_DATASETS.includes('lab')
