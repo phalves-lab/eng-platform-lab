@@ -15,6 +15,7 @@ const TONE_TEXT = {
   success: 'text-success',
   warning: 'text-warning',
   danger: 'text-destructive',
+  muted: 'text-muted-foreground',
 } as const
 
 interface KpiCardProps {

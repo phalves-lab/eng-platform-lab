@@ -1,5 +1,5 @@
 name: portal
-description: Portal de engenharia (front Next.js, API NestJS e pacotes compartilhados) com Minha página, review, padrões, sistemas, glossário, decisões e pergunte ao handbook
+description: Portal de engenharia (front Next.js, API NestJS e pacotes compartilhados) com Minha página, review, padrões, sistemas, glossário, decisões, pergunte ao handbook e métricas de entrega
 owner: '@phalves-lab/platform'
 tier: tier-2
 businessUnits:

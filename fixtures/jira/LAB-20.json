@@ -1,0 +1,24 @@
+{
+  "key": "LAB-20",
+  "title": "Portal: tela Entregas > Review com as métricas de review do time",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "As métricas de review do coletor (mergeados, tempos medianos, sinais do bot, carga por pessoa e pares) só apareciam no painel estático. O portal precisa mostrá-las em uma tela própria, lida pela API e com o mesmo contrato para front e back.",
+  "acceptanceCriteria": [
+    "Endpoint GET /api/metrics/review?dataset=lab|demo devolve métricas, tendência e alertas no contrato Zod compartilhado, com 503 quando o arquivo não existe",
+    "Menu ganha o grupo Entregas com o item Review em /entregas/review e troca de conjunto de dados",
+    "KPIs de mergeados, mediana até a primeira review, mediana até o merge, tamanho mediano e mergeados com check falhando; valor nulo aparece como sem dado",
+    "Gráfico da tendência de 8 semanas com cores do design system e tooltip em português",
+    "Carga de review por pessoa em ordem alfabética, sem ranking, pódio ou nota",
+    "Distribuição dos sinais do bot, pares autor e revisor e alertas com link",
+    "Estados vazio, carregando e erro, legíveis em desktop, 375 px e tema escuro"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T07:00:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T08:00:00Z" }
+  ]
+}

@@ -1,9 +1,11 @@
 import 'server-only'
 import {
   AskResponseSchema,
+  type DatasetId,
   DecisionSchema,
   GlossaryEntrySchema,
   HandbookOverviewSchema,
+  ReviewMetricsResponseSchema,
   SearchHitSchema,
   StandardSchema,
   StandardSummarySchema,
@@ -132,4 +134,6 @@ export const api = {
   dataset: (id: string) => request(`/api/review/datasets/${encodeURIComponent(id)}`, DatasetSchema),
   myReview: (dataset: string, login?: string) =>
     request(`/api/me/review${query({ dataset, login })}`, MyReviewSchema),
+  reviewMetrics: (dataset: DatasetId) =>
+    request(`/api/metrics/review${query({ dataset })}`, ReviewMetricsResponseSchema),
 }
