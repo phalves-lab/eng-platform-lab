@@ -43,6 +43,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         'jira_status_changes',
         'metric_snapshots',
         'portal_schema_migrations',
+        'release_runs',
       ])
     })
 

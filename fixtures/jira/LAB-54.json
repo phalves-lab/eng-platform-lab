@@ -1,0 +1,26 @@
+{
+  "key": "LAB-54",
+  "title": "Acompanhamento da release no portal",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Depois que o portal abre a PR de release, quem conduz o deploy ainda precisa olhar o GitHub para saber se o resumo por IA rodou, se o CI passou, quem aprovou e se já mergeou, e depois criar a tag e a release à mão. Esta task traz esse acompanhamento e a publicação para a tela de releases.",
+  "acceptanceCriteria": [
+    "Status do workflow de resumo por IA, CI, aprovações e merge das PRs de release abertas pelo portal",
+    "Depois do merge, criação de tag e GitHub Release com a nota, pela mesma porta de escrita e com as mesmas travas",
+    "Histórico de releases por projeto na tela"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T15:10:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:30:00Z"
+    }
+  ]
+}

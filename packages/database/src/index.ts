@@ -17,4 +17,11 @@ export {
   type StoredConversation,
   type StoredMessage,
 } from './conversations.js'
+export {
+  ReleaseRunRepository,
+  ReleaseRunInputSchema,
+  type ReleaseRunFilter,
+  type ReleaseRunInput,
+  type StoredReleaseRun,
+} from './release-runs.js'
 export * from './schemas.js'
