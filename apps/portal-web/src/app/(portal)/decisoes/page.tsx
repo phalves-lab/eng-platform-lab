@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/empty-state'
 import { PageHeader } from '@/components/page-header'
 import { ToneBadge } from '@/components/status-badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { InlineText } from '@/components/inline-text'
 import { api } from '@/lib/api'
 import { groupBy } from '@/lib/utils'
 
@@ -54,8 +55,12 @@ export default async function DecisionsPage() {
                         {decision.id}
                       </Link>
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{decision.topic}</p>
-                        <p className="text-sm text-muted-foreground">{decision.question}</p>
+                        <p className="text-sm font-medium">
+                          <InlineText text={decision.topic} />
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          <InlineText text={decision.question} />
+                        </p>
                       </div>
                       <ToneBadge tone={decision.kind === 'Conflito' ? 'warning' : 'danger'}>
                         {decision.kind}

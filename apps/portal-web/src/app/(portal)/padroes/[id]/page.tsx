@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { ToneBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { InlineText } from '@/components/inline-text'
 import { api, ApiError } from '@/lib/api'
 import { STATUS_LABEL, STATUS_TONE } from '@/lib/labels'
 
@@ -15,7 +16,9 @@ interface StandardProps {
 const FIELD_ORDER = ['Regra', 'Por quê', 'Na prática hoje', 'Fonte']
 
 export async function generateMetadata({ params }: StandardProps): Promise<Metadata> {
-  return { title: (await params).id }
+  const { id } = await params
+  const standard = await api.standard(id).catch(() => null)
+  return { title: standard ? `${standard.id} · ${standard.title}` : id }
 }
 
 export default async function StandardPage({ params }: StandardProps) {
@@ -51,7 +54,9 @@ export default async function StandardPage({ params }: StandardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-base leading-relaxed">{standard.fields['Regra'] ?? standard.title}</p>
+          <p className="text-base leading-relaxed">
+            <InlineText text={standard.fields['Regra'] ?? standard.title} />
+          </p>
         </CardContent>
       </Card>
       <dl className="grid gap-4 md:grid-cols-2">
@@ -62,7 +67,9 @@ export default async function StandardPage({ params }: StandardProps) {
               <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {key}
               </dt>
-              <dd className="mt-2 text-sm leading-relaxed">{standard.fields[key]}</dd>
+              <dd className="mt-2 text-sm leading-relaxed break-words">
+                <InlineText text={standard.fields[key] ?? ''} />
+              </dd>
             </div>
           ))}
       </dl>

@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { activeItem, NAV_GROUPS } from '../src/components/navigation'
 import {
   areaOf,
+  capitalize,
   cleanSnippet,
   formatBusinessDays,
   formatDateTime,
   shortSource,
+  splitSource,
+  splitSystemName,
   STATUS_LABEL,
   STATUS_TONE,
+  systemStatus,
 } from '../src/lib/labels'
 import { cn, groupBy } from '../src/lib/utils'
 
@@ -49,5 +53,44 @@ describe('utils and navigation', () => {
     expect(activeItem('/padroes/ENG-QA-01')?.title).toBe('Padrões')
     expect(activeItem('/nada')).toBeUndefined()
     expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(7)
+  })
+})
+
+describe('handbook text helpers', () => {
+  it('splits the repository out of a system name only when it looks like one', () => {
+    expect(splitSystemName('MMS API (martech-mms-api)')).toEqual({
+      title: 'MMS API',
+      repo: 'martech-mms-api',
+    })
+    expect(splitSystemName('Front de templates (martech-template-web, Template PRO)').repo).toBe(
+      'martech-template-web',
+    )
+    expect(splitSystemName('Insider (CDP)')).toEqual({ title: 'Insider (CDP)', repo: null })
+    expect(splitSystemName('Módulos do MMS (catálogo)').repo).toBeNull()
+  })
+
+  it('maps a free-text system status to a label, tone and detail', () => {
+    expect(systemStatus('produção.')).toEqual({ label: 'Produção', tone: 'success', detail: null })
+    expect(systemStatus('produção (fase 1).')).toMatchObject({
+      label: 'Produção',
+      detail: 'Fase 1',
+    })
+    expect(systemStatus('legado (proposta de troca)')?.tone).toBe('warning')
+    expect(systemStatus('incerto.')?.label).toBe('Incerto')
+    expect(systemStatus('em avaliação.')).toEqual({
+      label: 'Em avaliação',
+      tone: 'secondary',
+      detail: null,
+    })
+    expect(systemStatus(null)).toBeNull()
+  })
+
+  it('separates the glossary source and capitalizes text', () => {
+    expect(splitSource('métrica de conversão. (Fonte: MC, 123)')).toEqual({
+      body: 'métrica de conversão.',
+      source: 'MC, 123',
+    })
+    expect(splitSource('sem fonte')).toEqual({ body: 'sem fonte', source: null })
+    expect(capitalize('régua de comunicação')).toBe('Régua de comunicação')
   })
 })

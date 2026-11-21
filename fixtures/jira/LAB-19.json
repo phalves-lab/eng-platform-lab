@@ -1,0 +1,22 @@
+{
+  "key": "LAB-19",
+  "title": "Portal: polimento visual das telas de conhecimento",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "As telas de padrões, sistemas, glossário e decisões mostravam markdown cru, textos em minúscula, nomes de sistema cortados e status como texto solto. O portal precisa ler bem em desktop, mobile e nos dois temas.",
+  "acceptanceCriteria": [
+    "Código entre crases do handbook aparece formatado e o texto começa com letra maiúscula",
+    "Ficha de sistema separa nome e repositório, mostra o status como selo e destaca os riscos conhecidos",
+    "Glossário mostra a fonte em linha própria e tem navegação por letra",
+    "Endereço inexistente mostra uma página 404 no visual do portal",
+    "Botão de busca do cabeçalho não corta o atalho em nenhuma largura"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T06:00:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T06:20:00Z" }
+  ]
+}
