@@ -30,7 +30,7 @@ describe('resumo diário', () => {
     const text = buildDigest(dataset, URL)
     const first = dataset.queue[0] as QueueRow
     expect(text).toMatch(
-      /^Resumo da esteira, sexta-feira, 20\/11 \(Exemplo: time fictício de 8 pessoas\)/,
+      /^Resumo da esteira, sexta-feira, 20\/11 · Exemplo: time fictício de 8 pessoas\n/,
     )
     expect(text).toContain(`Fila de review: ${dataset.queue.length} PRs`)
     expect(text).toContain(`Primeiro da fila: #${first.number}`)
@@ -45,6 +45,15 @@ describe('resumo diário', () => {
     expect(text).toContain('Fila de review vazia.')
     expect(text).toContain('Nenhum alerta.')
     expect(text).toContain('1 PR mergeado, sem review humana na janela.')
+  })
+
+  it('usa dia útil no singular abaixo de 2 e plural a partir de 2', () => {
+    const base = demo().queue[0] as QueueRow
+    const withAge = (ageBusinessDays: number) =>
+      buildDigest({ ...empty(), queue: [{ ...base, ageBusinessDays }] }, URL)
+    expect(withAge(0.4)).toContain('há 0,4 dia útil.')
+    expect(withAge(1.9)).toContain('há 1,9 dia útil.')
+    expect(withAge(2)).toContain('há 2,0 dias úteis.')
   })
 
   it('conta revisores pedidos, inclusive quem foi pedido de novo depois de revisar', () => {
