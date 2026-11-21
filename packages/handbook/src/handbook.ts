@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { type EventContract, readEvents } from './events.js'
 import {
   type Section,
   normalize,
@@ -67,6 +68,7 @@ export interface Handbook {
   systems: SystemCard[]
   glossary: GlossaryEntry[]
   decisions: PendingDecision[]
+  events: EventContract[]
   rulesForAi: string | null
 }
 
@@ -158,7 +160,7 @@ const readDecisions = (sections: Section[]): PendingDecision[] =>
       })
   })
 
-/** Loads every `.md` file in the handbook folder and indexes standards, systems, glossary and decisions. */
+/** Loads every `.md` file in the handbook folder and indexes standards, systems, glossary, decisions and events. */
 export const loadHandbook = async (directory: string): Promise<Handbook> => {
   const files = (await readdir(directory)).filter((file) => file.endsWith('.md')).sort()
   const contents = await Promise.all(
@@ -183,6 +185,7 @@ export const loadHandbook = async (directory: string): Promise<Handbook> => {
     systems: readSystems(sections),
     glossary: readGlossary(sections),
     decisions: readDecisions(sections),
+    events: readEvents(sections),
     rulesForAi: rules ? rules.body : null,
   }
 }

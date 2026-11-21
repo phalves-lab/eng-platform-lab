@@ -35,6 +35,7 @@ describe('servidor MCP', async () => {
       'decisoes_pendentes',
       'glossario',
       'padrao',
+      'quem_consome',
       'regras_para_ia',
       'sistema',
     ])
@@ -73,6 +74,21 @@ describe('servidor MCP', async () => {
     expect(await call('buscar', { consulta: 'xyzxyz' })).toBe(
       'Nada encontrado no handbook para essa consulta.',
     )
+  })
+})
+
+describe('ferramenta quem_consome no servidor MCP', async () => {
+  const { call } = await connect(await loadHandbook(LAB))
+
+  it('responde produtor e consumidores de um tópico com a fonte', async () => {
+    const topic = await call('quem_consome', { topico: 'campanhas.solicitacoes' })
+    expect(topic).toContain('campanhas.solicitacoes · solicitacao.criada')
+    expect(topic).toContain('Consomem: Worker de notificações, Worker do portal')
+    expect(topic).toMatch(/Fonte: 04-eventos\.md › Tópicos e eventos$/)
+    expect(await call('quem_consome', { topico: 'envio.falhou' })).toContain(
+      'Produz: Worker de notificações',
+    )
+    expect(await call('quem_consome', { topico: 'pagamentos' })).toContain('não encontrado')
   })
 })
 

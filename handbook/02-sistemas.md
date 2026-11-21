@@ -55,3 +55,33 @@ API de solicitações de campanha, esteira de review com IA e painel de métrica
 - **Integra com:** Claude Code, Cursor e qualquer cliente MCP.
 - **Status:** piloto.
 - **Fontes:** catalog/modules/mcp-context.yaml
+
+### 2.3 Serviços de apoio
+
+### Worker de notificações
+
+- **O que é:** worker fictício que avisa quem pediu a campanha quando a solicitação muda de situação.
+- **Dono:** time mensageria.
+- **Stack e repositórios:** `lab-demo/notificacoes-worker`, Node 22, fila sintética.
+- **Integra com:** API de solicitações de campanha, pelos eventos de `04-eventos.md`.
+- **Status:** produção do laboratório.
+- **Riscos conhecidos:** aviso duplicado quando o mesmo evento chega duas vezes; o consumo precisa ser idempotente.
+- **Fontes:** catalog/dora/repos.yaml
+
+### Worker do portal
+
+- **O que é:** worker de coleta que grava métricas, espelho do Jira, deploys e incidentes no banco do portal.
+- **Dono:** time platform.
+- **Stack e repositórios:** `apps/portal-worker`, Node 22.
+- **Integra com:** GitHub, Jira e os eventos de `04-eventos.md`.
+- **Status:** piloto.
+- **Fontes:** catalog/modules/portal-worker.yaml
+
+### Portal de engenharia
+
+- **O que é:** portal com Minha página, review, handbook, entregas, projetos e qualidade.
+- **Dono:** time platform.
+- **Stack e repositórios:** `apps/portal-api`, `apps/portal-web`, NestJS, Next.js.
+- **Integra com:** Worker do portal, servidor de contexto e os eventos de `04-eventos.md`.
+- **Status:** piloto.
+- **Fontes:** catalog/modules/portal.yaml

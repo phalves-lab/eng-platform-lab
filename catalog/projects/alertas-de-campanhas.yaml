@@ -1,0 +1,22 @@
+id: alertas-de-campanhas
+name: Alertas da plataforma de campanhas
+objective: Avisar o time de campanhas antes de o cliente perceber falha na API, na tela de solicitação ou no envio de avisos.
+status: at_risk
+owner: '@lab-demo/campanhas'
+epic: OPS-2
+repos:
+  - lab-demo/campanhas-api
+  - lab-demo/campanhas-web
+systems:
+  - API de solicitações de campanha
+  - Worker de notificações
+decisions:
+  - ENG-PR-03
+  - ENG-QA-01
+risks:
+  - title: Limites de alerta ainda sem validação com dados de produção
+    severity: high
+    mitigation: Revisar os limites depois de duas semanas de alerta só em observação.
+  - title: Alerta duplicado entre a API e o worker
+    severity: medium
+    mitigation: null

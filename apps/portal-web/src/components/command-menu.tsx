@@ -1,7 +1,7 @@
 'use client'
 
 import type { PluginMaturity } from '@lab/contracts'
-import { BookCheck, Boxes, Languages, Puzzle, Search } from 'lucide-react'
+import { BookCheck, Boxes, FolderKanban, Languages, Puzzle, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { NAV_GROUPS } from '@/components/navigation'
@@ -21,9 +21,10 @@ interface SearchResult {
   systems: { slug: string; name: string; layer: string }[]
   terms: { term: string; definition: string }[]
   plugins: { name: string; displayName: string; maturity: PluginMaturity }[]
+  projects: { id: string; name: string; status: string }[]
 }
 
-const EMPTY: SearchResult = { standards: [], systems: [], terms: [], plugins: [] }
+const EMPTY: SearchResult = { standards: [], systems: [], terms: [], plugins: [], projects: [] }
 
 export function CommandMenu() {
   const router = useRouter()
@@ -78,7 +79,7 @@ export function CommandMenu() {
       >
         <Search className="size-4 shrink-0" aria-hidden />
         <span className="hidden min-w-0 truncate font-normal sm:inline">
-          Buscar padrão, sistema ou termo
+          Buscar padrão, sistema, projeto ou termo
         </span>
         <kbd className="pointer-events-none ml-auto hidden h-5 shrink-0 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium sm:inline-flex">
           Ctrl K
@@ -91,7 +92,7 @@ export function CommandMenu() {
         shouldFilter={false}
       >
         <CommandInput
-          placeholder="Digite um ID, sistema, termo ou página"
+          placeholder="Digite um ID, sistema, projeto, termo ou página"
           value={term}
           onValueChange={setTerm}
         />
@@ -147,6 +148,21 @@ export function CommandMenu() {
                 >
                   <Languages aria-hidden />
                   <span className="truncate">{entry.term}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
+          {visible.projects.length ? (
+            <CommandGroup heading="Projetos">
+              {visible.projects.map((project) => (
+                <CommandItem
+                  key={project.id}
+                  value={`projeto:${project.id}`}
+                  onSelect={() => go(`/projetos/${project.id}`)}
+                >
+                  <FolderKanban aria-hidden />
+                  <span className="truncate">{project.name}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{project.status}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -12,6 +12,7 @@ import { FlowModule } from './flow/flow.module.js'
 import { HandbookModule } from './handbook/handbook.module.js'
 import { HealthController } from './health/health.controller.js'
 import { MetricsModule } from './metrics/metrics.module.js'
+import { ProjectsModule } from './projects/projects.module.js'
 import { QualityModule } from './quality/quality.module.js'
 import { ReleasesModule } from './releases/releases.module.js'
 import { ReviewModule } from './review/review.module.js'
@@ -38,6 +39,7 @@ export class AppModule {
         DoraModule,
         FlowModule,
         QualityModule,
+        ProjectsModule,
       ],
       controllers: [HealthController, MeController],
       providers: [

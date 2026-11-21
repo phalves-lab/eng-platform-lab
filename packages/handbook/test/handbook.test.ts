@@ -31,6 +31,9 @@ describe('handbook do laboratório', async () => {
       'Painel de review',
       'Bot de review',
       'Servidor de contexto',
+      'Worker de notificações',
+      'Worker do portal',
+      'Portal de engenharia',
     ])
     expect(handbook.systems[2]?.layer).toBe('Ferramentas')
     expect(handbook.glossary.map((g) => g.term)).toContain('Golden set')
@@ -63,7 +66,7 @@ describe('handbook do laboratório', async () => {
     expect(filterSystems(handbook, 'postgres').map((s) => s.name)).toEqual([
       'API de solicitações de campanha',
     ])
-    expect(filterSystems(handbook)).toHaveLength(4)
+    expect(filterSystems(handbook)).toHaveLength(7)
   })
 
   it('acha termos exatos, por sinônimo e por trecho', () => {
