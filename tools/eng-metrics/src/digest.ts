@@ -5,6 +5,9 @@ const TOP_ALERTS = 3
 const decimal = (value: number) =>
   value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
+/** Mesma regra do painel: abaixo de 2, singular ("1,5 dia útil"). */
+const businessDays = (days: number) => `${decimal(days)} ${days >= 2 ? 'dias úteis' : 'dia útil'}`
+
 const dateLabel = (iso: string) =>
   new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
@@ -42,7 +45,7 @@ const queueLines = (dataset: PanelDataset): string[] => {
   const first = queue[0]
   if (first)
     lines.push(
-      `Primeiro da fila: #${first.number} ${first.title}, de ${first.author}, há ${decimal(first.ageBusinessDays)} dias úteis.`,
+      `Primeiro da fila: #${first.number} ${first.title}, de ${first.author}, há ${businessDays(first.ageBusinessDays)}.`,
     )
   const pending = pendingReviews(dataset)
   if (pending.length)
@@ -74,7 +77,7 @@ const metricLine = (dataset: PanelDataset): string => {
 /** Texto curto para canal do time, montado só com o que o painel já calculou. */
 export const buildDigest = (dataset: PanelDataset, panelUrl: string): string =>
   [
-    `Resumo da esteira, ${dateLabel(dataset.generatedAt)} (${dataset.label})`,
+    `Resumo da esteira, ${dateLabel(dataset.generatedAt)} · ${dataset.label}`,
     '',
     ...queueLines(dataset),
     '',

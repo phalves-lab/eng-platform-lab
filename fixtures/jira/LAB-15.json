@@ -11,7 +11,7 @@
     "Um resumo diário com fila, primeiro da fila, reviews pendentes por pessoa, alertas altos e métricas sai às 9h em dia útil",
     "O resumo só é enviado a um canal quando o secret do webhook está cadastrado; sem ele, fica no log do workflow"
   ],
-  "status": "Code Review",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
   "url": null,
@@ -23,6 +23,10 @@
     {
       "status": "Code Review",
       "at": "2026-11-21T00:20:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-21T03:12:00Z"
     }
   ]
 }

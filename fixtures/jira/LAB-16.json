@@ -1,0 +1,25 @@
+{
+  "key": "LAB-16",
+  "title": "Texto do resumo diário: dia útil no singular e nome do conjunto",
+  "area": "Plataforma",
+  "demandType": "Correção",
+  "description": "O resumo diário real saiu com \"0,4 dias úteis\" e com parênteses duplicados no nome do conjunto.",
+  "acceptanceCriteria": [
+    "Abaixo de 2, o resumo usa \"dia útil\" no singular, como o painel",
+    "O cabeçalho do resumo mostra o nome do conjunto sem parênteses duplicados"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T03:05:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T03:15:00Z"
+    }
+  ]
+}
