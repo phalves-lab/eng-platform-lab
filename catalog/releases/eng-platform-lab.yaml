@@ -1,0 +1,16 @@
+id: eng-platform-lab
+name: Laboratório da esteira
+description: Monorepo do laboratório; front (portal-web) e back (portal-api) saem do mesmo repositório
+repos:
+  front: phalves-lab/eng-platform-lab
+  back: phalves-lab/eng-platform-lab
+source: develop
+target: main
+mode: pr
+releaseBranch: release/{yyyy}-{mm}-{dd}
+labels:
+  release: release
+  notes: pre-release-notes
+deploy:
+  order: [back, front]
+  backFirstOnMigration: true

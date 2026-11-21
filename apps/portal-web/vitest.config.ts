@@ -18,6 +18,7 @@ export default defineConfig({
         'src/lib/labels.ts',
         'src/lib/utils.ts',
         'src/lib/delivery.ts',
+        'src/lib/releases.ts',
         'src/components/navigation.ts',
       ],
       reporter: ['text-summary', 'lcov'],

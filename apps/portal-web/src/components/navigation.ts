@@ -10,6 +10,7 @@ import {
   MessagesSquare,
   Plug,
   Puzzle,
+  Rocket,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -38,7 +39,10 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   },
   {
     label: 'Entregas',
-    items: [{ href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined }],
+    items: [
+      { href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined },
+      { href: '/releases', title: 'Releases', icon: Rocket },
+    ],
   },
   {
     label: 'Catálogo',
