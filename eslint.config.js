@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import sonarjs from 'eslint-plugin-sonarjs'
 import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 
 const SONAR_BUG_RULES = [
@@ -26,7 +27,7 @@ const sonarAsWarnings = Object.fromEntries(
 )
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**'] },
+  { ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', 'site/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -48,6 +49,16 @@ export default tseslint.config(
       'sonarjs/no-duplicate-string': 'off',
       'sonarjs/no-nested-functions': 'off',
     },
+  },
+  {
+    files: ['apps/panel/src/**/*.{ts,tsx}'],
+    languageOptions: { globals: globals.browser },
+    plugins: { 'react-hooks': reactHooks },
+    rules: reactHooks.configs.recommended.rules,
+  },
+  {
+    files: ['apps/panel/src/components/ui/**'],
+    rules: { 'sonarjs/function-return-type': 'off', 'sonarjs/table-header': 'off' },
   },
   {
     files: ['scripts/**', 'tools/*/src/cli.ts'],

@@ -5,7 +5,7 @@ import { join, relative, resolve } from 'node:path'
 const base = process.argv[2] ?? process.env.DIFF_BASE ?? 'origin/main'
 const minimum = Number(process.env.DIFF_COVERAGE_MIN ?? 70)
 const root = process.cwd()
-const workspaces = ['apps/api', 'tools/review-bot']
+const workspaces = ['apps/api', 'apps/panel', 'tools/eng-metrics', 'tools/review-bot']
 
 const covered = new Map()
 for (const workspace of workspaces) {

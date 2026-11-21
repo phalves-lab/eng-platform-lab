@@ -1,5 +1,6 @@
-export type ChecksState = 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR' | 'EXPECTED' | null
-export type BotSignal = 'ajustes' | 'gate' | 'pronto' | null
+import type { BotSignal, ChecksState } from './contract.js'
+
+export type { BotSignal, ChecksState }
 
 export interface Review {
   author: string

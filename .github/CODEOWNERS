@@ -5,6 +5,8 @@
 /apps/api/src/db/ @phalves-lab/api-owners @phalves-lab/platform
 
 /tools/review-bot/ @phalves-lab/platform
+/tools/eng-metrics/ @phalves-lab/platform
+/apps/panel/ @phalves-lab/platform
 /review/ @phalves-lab/platform
 /policy/ @phalves-lab/platform
 /catalog/ @phalves-lab/platform

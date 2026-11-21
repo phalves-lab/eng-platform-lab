@@ -11,3 +11,4 @@ review-output/
 review/evals/private/
 
 site/
+apps/panel/public/data.json

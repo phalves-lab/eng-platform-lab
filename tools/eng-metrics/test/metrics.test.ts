@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { demoDataset } from '../src/demo.js'
 import { buildAlerts, buildMetrics, buildQueue } from '../src/metrics.js'
-import { renderPage } from '../src/render.js'
 import { businessDaysBetween, daysAgo, hoursBetween, median } from '../src/time.js'
 import type { PullRequest, TaskStatus } from '../src/types.js'
 
@@ -207,47 +205,5 @@ describe('métricas', () => {
       comments: 4,
     })
     expect(metrics.pairs[0]).toEqual({ author: 'ana', reviewer: 'bruno', count: 2 })
-  })
-})
-
-describe('página', () => {
-  it('renderiza as quatro partes e escapa texto vindo do GitHub', () => {
-    const html = renderPage([
-      {
-        id: 'lab',
-        title: 'Laboratório',
-        dataset: {
-          label: 'Lab',
-          generatedAt: NOW,
-          pullRequests: [pr({ title: '<script>alert(1)</script>' })],
-          tasks: [],
-        },
-      },
-      { id: 'demo', title: 'Exemplo', dataset: demoDataset(NOW) },
-    ])
-    expect(html).toContain('Fila de code review')
-    expect(html).toContain('Alertas')
-    expect(html).toContain('Métricas dos últimos 30 dias')
-    expect(html).toContain('Reviews e reconhecimento')
-    expect(html).toContain('&lt;script&gt;')
-    expect(html).not.toContain('<script>alert(1)</script>')
-  })
-
-  it('mostra estados vazios', () => {
-    const html = renderPage([
-      {
-        id: 'x',
-        title: 'X',
-        dataset: { label: 'Vazio', generatedAt: NOW, pullRequests: [], tasks: [] },
-      },
-    ])
-    expect(html).toContain('Nenhum PR aguardando review.')
-    expect(html).toContain('Nenhum alerta.')
-    expect(html).toContain('Nenhuma review humana na janela')
-  })
-
-  it('gera o mesmo exemplo a cada execução', () => {
-    expect(demoDataset(NOW)).toEqual(demoDataset(NOW))
-    expect(demoDataset(NOW).pullRequests.length).toBeGreaterThan(40)
   })
 })

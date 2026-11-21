@@ -25,7 +25,7 @@
     "panel": "npm run panel --workspace @lab/eng-metrics --"
   },
   "lint-staged": {
-    "*.{ts,js,mjs}": [
+    "*.{ts,tsx,js,mjs}": [
       "eslint --fix",
       "prettier --write"
     ],
@@ -40,6 +40,7 @@
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.1.1",
     "eslint": "^10.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-sonarjs": "^4.2.2",
     "globals": "^17.14.0",
     "husky": "^9.1.7",

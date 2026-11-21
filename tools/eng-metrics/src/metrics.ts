@@ -1,6 +1,7 @@
 import { isBot } from './github.js'
 import { businessDaysBetween, daysAgo, hoursBetween, median } from './time.js'
-import type { BotSignal, PullRequest, TaskStatus } from './types.js'
+import type { Alert, QueueLevel, ReviewerLoad, TeamMetrics } from './contract.js'
+import type { PullRequest, TaskStatus } from './types.js'
 
 export const REVIEW_STATUSES = ['code review', 'em code review', 'revisão', 'em revisão', 'review']
 const DONE_STATUSES = ['concluída', 'concluido', 'concluído', 'done', 'fechada', 'homologação']
@@ -15,8 +16,6 @@ const decimal = (value: number) => value.toFixed(1).replace('.', ',')
 const isOneOf = (status: string, list: string[]) => list.includes(normalize(status))
 
 const humanReviews = (pr: PullRequest) => pr.reviews.filter((r) => !isBot(r.author))
-
-export type QueueLevel = 'ok' | 'atencao' | 'atrasado'
 
 export interface QueueItem {
   pr: PullRequest
@@ -63,13 +62,6 @@ export const buildQueue = (prs: PullRequest[], tasks: TaskStatus[], now: string)
     })
     .sort((a, b) => a.enteredAt.localeCompare(b.enteredAt))
 
-export interface Alert {
-  kind: string
-  severity: 'alta' | 'media'
-  message: string
-  url: string | null
-}
-
 const isDependencyBot = (pr: PullRequest) =>
   isBot(pr.author) || pr.headRef.startsWith('dependabot/')
 
@@ -83,6 +75,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'Review parado',
         severity: 'alta',
+        subject: `#${pr.number}`,
         message: `PR #${pr.number} aguarda a primeira review há ${decimal(item.ageBusinessDays)} dias úteis.`,
         url: pr.url,
       })
@@ -91,6 +84,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'Check vermelho',
         severity: 'media',
+        subject: `#${pr.number}`,
         message: `PR #${pr.number} está com check falhando.`,
         url: pr.url,
       })
@@ -99,6 +93,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'PR sem task',
         severity: 'media',
+        subject: `#${pr.number}`,
         message: `PR #${pr.number} não tem chave de task na branch nem no título.`,
         url: pr.url,
       })
@@ -107,6 +102,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'PR grande',
         severity: 'media',
+        subject: `#${pr.number}`,
         message: `PR #${pr.number} altera ${pr.additions + pr.deletions} linhas (inclui lockfile, se houver).`,
         url: pr.url,
       })
@@ -115,6 +111,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'Bot pediu ajustes',
         severity: 'media',
+        subject: `#${pr.number}`,
         message: `PR #${pr.number}: o review de IA recomenda ajustes antes da revisão humana.`,
         url: pr.url,
       })
@@ -129,6 +126,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'Task sem critério de aceite',
         severity: 'alta',
+        subject: task.key,
         message: `${task.key} está em "${task.status}" sem critério de aceite (RN-05).`,
         url: null,
       })
@@ -142,6 +140,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
         alerts.push({
           kind: 'Task sem PR',
           severity: 'media',
+          subject: task.key,
           message: `${task.key} está em andamento há ${decimal(age)} dias úteis sem PR vinculado.`,
           url: null,
         })
@@ -153,6 +152,7 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
       alerts.push({
         kind: 'PR mergeado com task parada',
         severity: 'media',
+        subject: task.key,
         message: `${task.key} teve PR mergeado e continua em "${task.status}" no board.`,
         url: merged.at(-1)?.url ?? null,
       })
@@ -163,23 +163,12 @@ export const buildAlerts = (prs: PullRequest[], tasks: TaskStatus[], now: string
   return alerts.sort((a, b) => order[a.severity] - order[b.severity])
 }
 
-export interface ReviewerLoad {
-  reviewer: string
-  reviews: number
-  pullRequests: number
-  comments: number
-}
-
-export interface TeamMetrics {
-  windowDays: number
-  merged: number
-  medianHoursToFirstReview: number | null
-  medianBusinessDaysToMerge: number | null
-  medianSize: number | null
-  mergedWithFailingChecks: number
-  signals: Record<Exclude<BotSignal, null> | 'sem_comentario', number>
-  reviewers: ReviewerLoad[]
-  pairs: { author: string; reviewer: string; count: number }[]
+/** Horas entre o PR ficar pronto e a primeira review de uma pessoa (bots não contam). */
+export const hoursToFirstReview = (pr: PullRequest): number | null => {
+  const first = humanReviews(pr)
+    .map((r) => r.submittedAt)
+    .sort()[0]
+  return first ? hoursBetween(pr.readyAt, first) : null
 }
 
 export const buildMetrics = (prs: PullRequest[], now: string, windowDays = 30): TeamMetrics => {
@@ -188,10 +177,8 @@ export const buildMetrics = (prs: PullRequest[], now: string, windowDays = 30): 
   const recent = prs.filter((pr) => pr.readyAt >= since)
 
   const firstReviewHours = merged.flatMap((pr) => {
-    const first = humanReviews(pr)
-      .map((r) => r.submittedAt)
-      .sort()[0]
-    return first ? [hoursBetween(pr.readyAt, first)] : []
+    const hours = hoursToFirstReview(pr)
+    return hours === null ? [] : [hours]
   })
 
   const signals = { ajustes: 0, gate: 0, pronto: 0, sem_comentario: 0 }
