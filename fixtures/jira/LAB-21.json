@@ -1,0 +1,29 @@
+{
+  "key": "LAB-21",
+  "title": "Base de dados do portal e worker de coleta",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "O portal lê as métricas de um arquivo gerado a cada publicação e não guarda histórico. A onda 2 (coletor do Jira, métricas de fluxo e DORA) precisa de uma base com histórico diário e de um processo que colete por agendamento.",
+  "acceptanceCriteria": [
+    "Pacote de banco com pool, runner de migrations versionadas e idempotente, e repositórios tipados",
+    "Tabelas de snapshots de métricas, issues, transições e sprints do Jira, deploys e incidentes, só com migrations compatíveis com a versão anterior",
+    "Worker com interface de coletor, agendador sem sobreposição de execuções e log estruturado, com modo de execução única",
+    "Primeiro coletor grava o snapshot do dia com a mesma lógica do eng-metrics",
+    "API do portal lê o snapshot mais recente quando DATABASE_URL existe e o arquivo quando não existe",
+    "Testes de integração com Postgres real no CI e contra o container local"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T07:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T07:40:00Z"
+    }
+  ]
+}

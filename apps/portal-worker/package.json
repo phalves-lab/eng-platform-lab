@@ -1,0 +1,16 @@
+{
+  "name": "@lab/portal-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "worker": "tsx --conditions=@lab/source src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@lab/database": "*",
+    "@lab/eng-metrics": "*",
+    "zod": "^4.6.7"
+  }
+}

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@lab/contracts": "*",
+    "@lab/database": "*",
     "@lab/eng-metrics": "*",
     "@lab/handbook": "*",
     "@nestjs/common": "^12.6.0",

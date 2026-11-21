@@ -14,7 +14,7 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "tools/eng-metrics": {
-      "entry": ["src/cli.ts", "src/digest-cli.ts", "src/contract.ts"],
+      "entry": ["src/cli.ts", "src/digest-cli.ts", "src/contract.ts", "src/collect.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "apps/panel": {
@@ -29,12 +29,16 @@
       "entry": ["src/main.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
+    "apps/portal-worker": {
+      "entry": ["src/cli.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "apps/portal-web": {
       "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
       "ignore": ["src/components/ui/**", "src/hooks/use-mobile.ts"]
     },
     "packages/*": {
-      "entry": ["src/index.ts"],
+      "entry": ["src/index.ts", "src/testing.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   },
