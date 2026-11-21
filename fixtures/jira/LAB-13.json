@@ -10,7 +10,7 @@
     "Cadastro inválido no PR não derruba o review e aparece como pendência no comentário",
     "O comentário avisa quando há módulo cadastrado no PR, para o revisor conferir"
   ],
-  "status": "Code Review",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
   "url": null,
@@ -22,6 +22,10 @@
     {
       "status": "Code Review",
       "at": "2026-11-20T22:50:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-20T23:08:00Z"
     }
   ]
 }

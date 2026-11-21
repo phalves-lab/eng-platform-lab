@@ -1,5 +1,5 @@
 name: eng-metrics
-description: Coletor e painel da esteira (fila de review, alertas, métricas e carga de review)
+description: Coletor de dados e app do painel da esteira (fila de review, alertas, métricas e carga de review)
 owner: '@phalves-lab/platform'
 tier: tier-3
 businessUnits:
@@ -8,3 +8,4 @@ users: Time de engenharia e liderança técnica
 confluencePageId: null
 paths:
   - tools/eng-metrics/
+  - apps/panel/

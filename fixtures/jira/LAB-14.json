@@ -1,0 +1,28 @@
+{
+  "key": "LAB-14",
+  "title": "Painel de review como app com shadcn/ui e menu lateral",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "A página do painel era um HTML simples, sem navegação, filtro ou gráfico. O time precisa achar rápido o próximo review, filtrar a fila e ler as métricas sem esforço, em qualquer tamanho de tela.",
+  "acceptanceCriteria": [
+    "O painel tem menu lateral recolhível com visão geral, fila, alertas, métricas e reviews, e troca entre o laboratório e o exemplo",
+    "A fila tem busca e filtros por prazo, autor e sinal do bot, e ordena pela fila, pelo tempo ou pelo tamanho",
+    "Métricas e reviews têm gráficos semanais e por pessoa",
+    "Funciona em tema claro e escuro e no celular",
+    "O coletor publica só os dados calculados; a página não chama API externa e usa os mesmos componentes do MMS (shadcn/ui, lucide, recharts)"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-20T22:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-20T23:10:00Z"
+    }
+  ]
+}

@@ -14,8 +14,13 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "tools/eng-metrics": {
-      "entry": ["src/cli.ts"],
+      "entry": ["src/cli.ts", "src/contract.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "apps/panel": {
+      "entry": ["src/main.tsx"],
+      "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
+      "ignore": ["src/components/ui/**"]
     }
   },
   "ignoreDependencies": ["jscpd"]
