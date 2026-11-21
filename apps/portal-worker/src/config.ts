@@ -156,6 +156,81 @@ export const loadJiraCommandConfig = (env: NodeJS.ProcessEnv) => {
   return { databaseUrl: database.data, jira }
 }
 
+const REPOSITORY = /^[\w.-]+\/[\w.-]+$/
+
+const AiQualityEnvSchema = z
+  .object({
+    WORKER_AI_EVALS_SOURCE: z.enum(['off', 'fixture', 'github']).optional(),
+    WORKER_AI_EVALS_DIR: z.string().min(1).default(fromRepo('fixtures/ai-evals')),
+    WORKER_AI_PRICING: z.string().min(1).default(fromRepo('catalog/ai/pricing.yaml')),
+    WORKER_AI_EVALS_REPOSITORY: z.string().default(''),
+    WORKER_AI_EVALS_MAX_ARTIFACTS: z.coerce.number().int().min(1).max(100).default(30),
+    GITHUB_API_URL: z.url().default('https://api.github.com'),
+    GITHUB_TOKEN: z.string().default(''),
+    GITHUB_REPOSITORY: z.string().default(''),
+  })
+  .superRefine((env, ctx) => {
+    if (env.WORKER_AI_EVALS_SOURCE !== 'github') return
+    const repository = env.WORKER_AI_EVALS_REPOSITORY || env.GITHUB_REPOSITORY
+    if (!env.GITHUB_TOKEN || !REPOSITORY.test(repository)) {
+      ctx.addIssue({
+        code: 'custom',
+        message:
+          'the github AI evals source requires GITHUB_TOKEN and WORKER_AI_EVALS_REPOSITORY (or GITHUB_REPOSITORY) as owner/name',
+      })
+    }
+  })
+
+export type AiQualityConfig = {
+  pricingFile: string
+  source:
+    | { kind: 'fixture'; dir: string }
+    | {
+        kind: 'github'
+        token: string
+        repository: string
+        apiUrl: string
+        maxArtifacts: number
+      }
+}
+
+/**
+ * AI quality collector settings, or null when it is off. The scheduled worker keeps it off
+ * unless `WORKER_AI_EVALS_SOURCE` is set; the one-shot command defaults to the fixtures.
+ */
+export const loadAiQualityConfig = (
+  env: NodeJS.ProcessEnv,
+  defaultSource: 'off' | 'fixture' = 'off',
+): AiQualityConfig | null => {
+  const parsed = AiQualityEnvSchema.safeParse(env)
+  if (!parsed.success) return fail(messagesOf(parsed.error))
+  const value = parsed.data
+  const source = value.WORKER_AI_EVALS_SOURCE ?? defaultSource
+  if (source === 'off') return null
+  return {
+    pricingFile: resolve(value.WORKER_AI_PRICING),
+    source:
+      source === 'fixture'
+        ? { kind: 'fixture', dir: resolve(value.WORKER_AI_EVALS_DIR) }
+        : {
+            kind: 'github',
+            token: value.GITHUB_TOKEN,
+            repository: value.WORKER_AI_EVALS_REPOSITORY || value.GITHUB_REPOSITORY,
+            apiUrl: value.GITHUB_API_URL.replace(/\/$/, ''),
+            maxArtifacts: value.WORKER_AI_EVALS_MAX_ARTIFACTS,
+          },
+  }
+}
+
+/** Settings of `npm run collect:ai`: the database and the artifact source, fixtures by default. */
+export const loadAiCommandConfig = (env: NodeJS.ProcessEnv) => {
+  const database = DatabaseUrlSchema.safeParse(env.DATABASE_URL)
+  if (!database.success) return fail(messagesOf(database.error))
+  const ai = loadAiQualityConfig(env, 'fixture')
+  if (!ai) return fail(['WORKER_AI_EVALS_SOURCE=off leaves nothing to collect'])
+  return { databaseUrl: database.data, ai }
+}
+
 const EnvSchema = z
   .object({
     DATABASE_URL: DatabaseUrlSchema,
@@ -210,6 +285,7 @@ export interface WorkerConfig {
     github: { token: string; apiUrl: string } | null
   }
   jira: JiraConfig | null
+  ai: AiQualityConfig | null
 }
 
 /** Parses the worker environment once at boot and fails fast on anything missing. */
@@ -224,6 +300,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): WorkerConfig => {
   return {
     databaseUrl: value.DATABASE_URL,
     jira: loadJiraConfig(env),
+    ai: loadAiQualityConfig(env),
     intervalMs: value.WORKER_INTERVAL_MINUTES * 60_000,
     timeZone: value.WORKER_TIMEZONE,
     chatRetentionDays: value.WORKER_CHAT_RETENTION_DAYS,

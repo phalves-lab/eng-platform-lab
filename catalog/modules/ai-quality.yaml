@@ -1,0 +1,17 @@
+name: ai-quality
+description: Precisão dos golden sets do bot e do chat e custo estimado de IA por origem, time e PR, com tabela de preço versionada e leitura do gasto do gateway atrás de porta
+owner: '@phalves-lab/platform'
+tier: tier-3
+businessUnits:
+  - plataforma
+users: Líderes técnicos e o time de plataforma que acompanham a qualidade e o custo da IA
+confluencePageId: null
+paths:
+  - packages/llm-usage/
+  - catalog/ai/pricing.yaml
+  - catalog/ai/quality.yaml
+  - fixtures/ai-evals/
+  - fixtures/litellm/
+  - apps/portal-api/src/ai-usage/
+  - apps/portal-worker/src/collectors/ai-quality/
+  - apps/portal-web/src/app/(portal)/qualidade/ia/

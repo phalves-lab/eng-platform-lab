@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "eval-run",
+  "run": {
+    "id": "bot-2026-11-13-45471d4",
+    "suite": "bot",
+    "runAt": "2026-11-13T10:00:00.000Z",
+    "commit": "45471d4",
+    "model": "gemini-2.5-pro",
+    "promptVersion": "1.1.0",
+    "offline": false,
+    "total": 10,
+    "passed": 9,
+    "inputTokens": 125385,
+    "outputTokens": 11888,
+    "latencyMs": {
+      "p50": 23674,
+      "max": 41160
+    },
+    "cases": [
+      {
+        "id": "001-autoaprovacao-removida",
+        "passed": false,
+        "latencyMs": 24577,
+        "inputTokens": 12027,
+        "outputTokens": 760
+      },
+      {
+        "id": "002-aprovador-conta-duas-vezes",
+        "passed": true,
+        "latencyMs": 30339,
+        "inputTokens": 13638,
+        "outputTokens": 687
+      },
+      {
+        "id": "003-antecedencia-fora-por-um",
+        "passed": true,
+        "latencyMs": 22562,
+        "inputTokens": 11177,
+        "outputTokens": 1621
+      },
+      {
+        "id": "004-migracao-destrutiva",
+        "passed": true,
+        "latencyMs": 41160,
+        "inputTokens": 13445,
+        "outputTokens": 1281
+      },
+      {
+        "id": "005-cancela-aprovada",
+        "passed": true,
+        "latencyMs": 22771,
+        "inputTokens": 10696,
+        "outputTokens": 1622
+      },
+      {
+        "id": "006-refatoracao-sem-efeito",
+        "passed": true,
+        "latencyMs": 21431,
+        "inputTokens": 14317,
+        "outputTokens": 1686
+      },
+      {
+        "id": "007-fp-dependency-review-sem-checkout",
+        "passed": true,
+        "latencyMs": 27765,
+        "inputTokens": 9306,
+        "outputTokens": 1057
+      },
+      {
+        "id": "008-fp-higiene-local-mantem-rn22",
+        "passed": true,
+        "latencyMs": 33778,
+        "inputTokens": 15374,
+        "outputTokens": 1068
+      },
+      {
+        "id": "009-fp-knip-chave-issues",
+        "passed": true,
+        "latencyMs": 20747,
+        "inputTokens": 11053,
+        "outputTokens": 897
+      },
+      {
+        "id": "010-jscpd-caminho-nao-casa",
+        "passed": true,
+        "latencyMs": 20152,
+        "inputTokens": 14352,
+        "outputTokens": 1209
+      }
+    ]
+  }
+}

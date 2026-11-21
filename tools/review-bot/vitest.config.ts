@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  resolve: { conditions: ['@lab/source'] },
+  ssr: { resolve: { conditions: ['@lab/source'] } },
   test: {
     include: ['test/**/*.test.ts'],
     coverage: {

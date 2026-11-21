@@ -12,6 +12,7 @@ const workspaces = [
   'packages/database',
   'packages/dora',
   'packages/flow',
+  'packages/llm-usage',
   'tools/eng-metrics',
   'tools/mcp-context',
   'tools/review-bot',

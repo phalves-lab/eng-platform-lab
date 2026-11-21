@@ -1,6 +1,7 @@
 import { type DynamicModule, Module } from '@nestjs/common'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { AiUsageModule } from './ai-usage/ai-usage.module.js'
 import { AskModule } from './ask/ask.module.js'
 import { AuthGuard } from './auth/auth.guard.js'
 import { MeController } from './auth/me.controller.js'
@@ -29,6 +30,7 @@ export class AppModule {
       global: true,
       imports: [
         ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
+        AiUsageModule,
         HandbookModule,
         ReviewModule,
         AskModule,
