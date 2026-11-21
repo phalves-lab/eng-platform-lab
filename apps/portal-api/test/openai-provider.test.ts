@@ -121,6 +121,26 @@ describe('provider compatível com OpenAI', () => {
     expect(await empty.provider.complete(baseRequest([]))).toEqual({ content: '', toolCalls: [] })
   })
 
+  it('pede e devolve a contagem de tokens quando o gateway informa', async () => {
+    const usage = { prompt_tokens: 120, completion_tokens: 30 }
+    const wire = [event({ content: 'ok' }), `data: ${JSON.stringify({ choices: [], usage })}\n\n`]
+    const streamed = capture(sse([wire.join('')]))
+    expect(await streamed.provider.complete(baseRequest([]))).toEqual({
+      content: 'ok',
+      toolCalls: [],
+      usage: { promptTokens: 120, completionTokens: 30 },
+    })
+    expect(JSON.parse(String(streamed.calls[0]?.init.body)).stream_options).toEqual({
+      include_usage: true,
+    })
+
+    const json = capture(Response.json({ choices: [{ message: { content: 'ok' } }], usage }))
+    expect((await json.provider.complete(baseRequest([]))).usage).toEqual({
+      promptTokens: 120,
+      completionTokens: 30,
+    })
+  })
+
   it('falha com o status quando o gateway recusa, sem expor a chave', async () => {
     const { provider } = capture(new Response('chave inválida', { status: 401 }))
     const error = await provider.complete(baseRequest([])).catch((e: unknown) => e)

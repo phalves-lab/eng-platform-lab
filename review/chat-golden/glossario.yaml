@@ -1,0 +1,37 @@
+category: glossario
+cases:
+  - id: glossario-golden-set
+    question: O que é golden set?
+    expect:
+      tools: [glossario, buscar]
+      sources: [Golden set]
+      include: [[resposta conhecida, respostas conhecidas]]
+    offline:
+      calls:
+        - tool: glossario
+          args: { termo: golden set }
+      answer: Golden set são casos com resposta conhecida que medem a precisão do bot de review.
+
+  - id: glossario-fila-de-merge
+    question: O que é a fila de merge?
+    expect:
+      tools: [glossario, buscar]
+      sources: [['Merge queue, fila de merge', ENG-GIT-01]]
+      include: [[base atualizada, antes do merge]]
+    offline:
+      calls:
+        - tool: glossario
+          args: { termo: fila de merge }
+      answer: A merge queue, fila de merge, é a fila do GitHub que testa o PR junto com a base atualizada antes do merge.
+
+  - id: glossario-sinal-do-bot
+    question: Quais sinais o bot de review pode dar?
+    expect:
+      tools: [glossario, buscar, padrao, buscar_padroes, sistema]
+      sources: [[Sinal do bot, ENG-PR-02]]
+      include: [pronto, ajustes, pendências]
+    offline:
+      calls:
+        - tool: glossario
+          args: { termo: sinal }
+      answer: 'O sinal do bot pode ser pronto, pendências ou ajustes.'

@@ -1,0 +1,28 @@
+{
+  "key": "LAB-30",
+  "title": "Portal: golden set do chat do Pergunte",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "O chat do Pergunte responde com modelo, mas ninguém sabe se ele acerta. Um conjunto de perguntas com resposta conhecida sobre o handbook do laboratório mede acerto, fonte citada, ferramenta chamada, latência e tokens, roda sem modelo no verify e com modelo real no CI quando o gateway está configurado.",
+  "acceptanceCriteria": [
+    "Ao menos 25 perguntas em review/chat-golden sobre padrão por ID, sistema, glossário, decisões, onboarding e perguntas sem resposta, cada uma com ferramentas esperadas, fontes a citar e frases que devem ou não aparecer",
+    "npm run chat-evals roda o ChatService contra o provedor configurado e gera relatório com acerto por pergunta, fonte citada, ferramenta chamada, latência e tokens",
+    "O modo offline usa um provedor falso roteirizado, roda no verify e falha se o runner deixar de detectar resposta errada",
+    "Job de CI não bloqueante roda com modelo real só se o secret do gateway existir e publica o relatório no resumo do job",
+    "Mudança em apps/portal-api/prompts recebe o rótulo risk:ai-behavior"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "ia"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T11:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T13:30:00Z"
+    }
+  ]
+}

@@ -73,7 +73,7 @@ export class ChatService {
     private readonly handbook: HandbookService,
     private readonly retrieval: AskService,
     @Inject(MODEL_PROVIDER) private readonly provider: ModelProvider | null,
-    @Inject(CONFIG) private readonly config: PortalConfig,
+    @Inject(CONFIG) private readonly config: Pick<PortalConfig, 'llm'>,
     @Inject(SYSTEM_PROMPT) private readonly systemPrompt: string,
   ) {}
 

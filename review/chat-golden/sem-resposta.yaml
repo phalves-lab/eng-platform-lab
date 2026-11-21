@@ -1,0 +1,47 @@
+category: sem-resposta
+cases:
+  - id: sem-resposta-sla-de-incidente
+    question: Qual o SLA de resposta para incidentes em produção?
+    expect:
+      tools: [buscar, buscar_padroes, buscar_sistemas]
+      include: [[não encontrei, não sei, não há, não tem, não consta, não cobre, não define]]
+      exclude: [o SLA é]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: SLA incidentes produção }
+      answer: Não encontrei isso no handbook. Ele não define SLA de incidente; vale perguntar ao time platform.
+
+  - id: sem-resposta-ferias
+    question: Como faço para pedir férias?
+    expect:
+      include: [[não encontrei, não sei, não há, não tem, não consta, não cobre, só responde]]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: férias }
+      answer: Não encontrei isso no handbook. O portal só responde sobre o handbook de engenharia.
+
+  - id: sem-resposta-sistema-inexistente
+    question: Quem é o dono do sistema de pagamentos?
+    expect:
+      tools: [sistema, buscar_sistemas, buscar]
+      include: [[não encontrei, não sei, não há, não tem, não consta, não existe]]
+      exclude: [api-owners]
+    offline:
+      calls:
+        - tool: sistema
+          args: { nome: pagamentos }
+      answer: Não encontrei um sistema de pagamentos no handbook, então não sei dizer quem é o dono.
+
+  - id: sem-resposta-numero-inventado
+    question: Qual é o limite máximo de linhas por PR no laboratório?
+    expect:
+      tools: [buscar, buscar_padroes]
+      include: [[não encontrei, não sei, não há, não tem, não consta, não define]]
+      exclude: [o limite é]
+    offline:
+      calls:
+        - tool: buscar
+          args: { consulta: limite linhas por PR }
+      answer: Não encontrei um limite de linhas por PR no handbook.

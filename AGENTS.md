@@ -41,6 +41,7 @@ Laboratório da esteira de engenharia: gates, segurança, review de IA com conte
 - Gate completo (mesmo do CI): `npm run verify`
 - Testes: `npm test`; cobertura do diff: `npm run diff-coverage -- origin/develop`
 - Prompt do bot sem chamar modelo: `npm run review -- review --repo-dir "$PWD" --config-dir "$PWD" --base origin/develop --dry-run`
+- Golden set do chat (`review/chat-golden/`): `npm run chat-evals -- --offline` roda o `ChatService` com o provedor roteirizado; com `PORTAL_LLM_*` no ambiente e sem `--offline`, roda com o modelo e mostra acerto, fonte citada, ferramenta, latência e tokens por pergunta.
 
 ## Fluxo de trabalho (comum ao time)
 
@@ -60,6 +61,7 @@ Laboratório da esteira de engenharia: gates, segurança, review de IA com conte
 - Fontes do Atlassian só usam `ReadOnlyHttp`; escrita só via `propose`, com confirmação.
 - O bot só comenta; nenhum caminho de código aprova, pede mudanças ou mergeia.
 - Mudança em `review/` ou em `tools/review-bot/src/` recebe `risk:ai-behavior` e passa pelo golden set.
+- Mudança em `apps/portal-api/prompts/` recebe `risk:ai-behavior` e passa pelo golden set do chat (`npm run chat-evals`).
 
 ## Regras de código (comum ao time)
 

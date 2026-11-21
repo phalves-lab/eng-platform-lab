@@ -3,6 +3,7 @@
   paths:
     - apps/*/migrations/**
     - apps/*/src/db/**
+    - packages/database/migrations/**
 - label: 'risk:auth'
   description: Mexe em autenticação ou autorização
   paths:
@@ -15,7 +16,8 @@
     - policy/**
     - Dockerfile
 - label: 'risk:ai-behavior'
-  description: Muda prompt, rubrica ou lógica do bot; exige eval no golden set
+  description: Muda prompt, rubrica ou lógica do bot ou do chat; exige eval no golden set
   paths:
     - review/**
     - tools/review-bot/src/**
+    - apps/portal-api/prompts/**

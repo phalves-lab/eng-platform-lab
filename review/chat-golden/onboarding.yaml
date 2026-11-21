@@ -1,0 +1,36 @@
+category: onboarding
+cases:
+  - id: onboarding-primeiro-pr
+    question: Entrei no time agora. Quais regras sigo no meu primeiro PR?
+    expect:
+      tools: [regras_para_ia, buscar_padroes, padrao, buscar]
+      sources: [[Para IA, ENG-PR-01, ENG-GIT-02]]
+      include: [Conventional Commits, template]
+    offline:
+      calls:
+        - tool: regras_para_ia
+          args: {}
+      answer: 'Pelas regras da seção Para IA: branch <tipo>/LAB-<n>-slug sem push direto em main ou develop, Conventional Commits, template de PR com contexto de negócio, 70% das linhas alteradas cobertas por teste e nunca escrever segredo.'
+
+  - id: onboarding-conhecer-os-sistemas
+    question: Sou nova no laboratório. Quais sistemas devo conhecer primeiro?
+    expect:
+      tools: [buscar_sistemas, sistema, buscar]
+      include: [Bot de review, Painel de review]
+    offline:
+      calls:
+        - tool: buscar_sistemas
+          args: {}
+      answer: 'O handbook lista quatro: API de solicitações de campanha, Painel de review, Bot de review e Servidor de contexto, este ainda em piloto.'
+
+  - id: onboarding-testes-antes-do-pr
+    question: O que preciso garantir de testes antes de abrir um PR?
+    expect:
+      tools: [padrao, buscar_padroes, buscar, regras_para_ia]
+      sources: [[ENG-QA-01, Para IA]]
+      include: [[70%, 70 %]]
+    offline:
+      calls:
+        - tool: buscar_padroes
+          args: { area: ENG-QA }
+      answer: O ENG-QA-01 pede pelo menos 70% das linhas alteradas cobertas por teste.
