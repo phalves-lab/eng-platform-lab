@@ -42,6 +42,10 @@ export class HandbookService implements OnModuleInit {
     this.handbook = await loadHandbook(this.config.handbookDir)
   }
 
+  isLoaded(): boolean {
+    return this.handbook !== null
+  }
+
   private get data(): Handbook {
     if (!this.handbook) throw new Error('Handbook not loaded')
     return this.handbook
