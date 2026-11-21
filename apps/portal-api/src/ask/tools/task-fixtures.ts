@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 export const TaskKeySchema = z.string().regex(/^[A-Z][A-Z0-9]+-\d{1,6}$/)
 
-export const TaskFixtureSchema = z.object({
+const TaskFixtureSchema = z.object({
   key: TaskKeySchema,
   title: z.string(),
   area: z.string().optional(),
