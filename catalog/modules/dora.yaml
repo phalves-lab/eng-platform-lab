@@ -1,0 +1,19 @@
+name: dora
+description: Métricas DORA do portal (cadastro de repositórios, incidentes versionados, cálculo, coletor e tela Entregas > DORA)
+owner: '@phalves-lab/platform'
+tier: tier-2
+businessUnits:
+  - plataforma
+users: Liderança técnica e times que acompanham frequência de deploy, lead time, falha e restauração
+confluencePageId: null
+paths:
+  - packages/dora/
+  - catalog/dora/
+  - catalog/incidents/
+  - fixtures/dora/
+  - apps/portal-api/src/dora/
+  - apps/portal-worker/src/collectors/dora/
+  - apps/portal-web/src/app/(portal)/entregas/dora/
+  - tools/eng-metrics/src/deploy-event.ts
+  - tools/eng-metrics/src/deploy-event-cli.ts
+  - .github/workflows/deploy-event.yml

@@ -1,0 +1,29 @@
+{
+  "key": "LAB-27",
+  "title": "Métricas DORA por repositório e por time",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "A liderança acompanha entrega só pela fila de review e não sabe com que frequência cada repositório vai para produção, quanto tempo uma mudança leva do primeiro commit ao deploy, quantos deploys falham e quanto tempo leva para restaurar um incidente. A task registra deploys e incidentes e calcula as 4 métricas DORA com a faixa do relatório.",
+  "acceptanceCriteria": [
+    "Deploy registrado por um passo de Actions reutilizável que chama um script do tools/eng-metrics (repositório, ambiente, sha, horário e status) e lido pelo worker da API do GitHub, só leitura, para os repositórios de um YAML versionado",
+    "Incidentes versionados em catalog/incidents/*.yaml com id, sistema, severidade, início, fim e deploy causador opcional, lidos pelo worker",
+    "As 4 métricas DORA por repositório e por time, com faixa elite, alta, média ou baixa conforme o relatório DORA, em funções puras com teste",
+    "Lead time de mudança do primeiro commit do PR ao deploy em produção que contém o sha",
+    "GET /api/metrics/dora e tela Entregas > DORA com as 4 métricas, tendência de 12 semanas e a lista de deploys e incidentes",
+    "Fixtures sintéticas e adaptador fixture para o laboratório, sem chamada real ao GitHub nos testes"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T14:20:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:30:00Z"
+    }
+  ]
+}
