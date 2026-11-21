@@ -8,6 +8,8 @@ const root = process.cwd()
 const workspaces = [
   'apps/api',
   'apps/panel',
+  'apps/portal-worker',
+  'packages/database',
   'tools/eng-metrics',
   'tools/mcp-context',
   'tools/review-bot',

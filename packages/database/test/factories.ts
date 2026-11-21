@@ -1,0 +1,57 @@
+import type { JiraIssue, SnapshotPayload } from '../src/index.js'
+
+export const payload = (id: string, generatedAt = '2026-11-20T12:00:00.000Z'): SnapshotPayload => ({
+  id,
+  title: 'Laboratório',
+  label: 'Lab',
+  generatedAt,
+  queue: [
+    {
+      position: 1,
+      number: 1,
+      title: 'feat: LAB-1',
+      url: 'https://example.invalid/pr/1',
+      author: 'ana',
+      taskKey: 'LAB-1',
+      taskStatus: 'Code Review',
+      requestedReviewers: ['bruno'],
+      reviewedBy: [],
+      enteredAt: '2026-11-20T10:00:00.000Z',
+      enteredFrom: 'pr',
+      ageBusinessDays: 0.5,
+      level: 'ok',
+      hasHumanReview: false,
+      checks: 'SUCCESS',
+      botSignal: 'pronto',
+      risks: [],
+      lines: 10,
+    },
+  ],
+  alerts: [],
+  metrics: {
+    windowDays: 30,
+    merged: 0,
+    medianHoursToFirstReview: null,
+    medianBusinessDaysToMerge: null,
+    medianSize: null,
+    mergedWithFailingChecks: 0,
+    signals: { ajustes: 0, gate: 0, pronto: 0, sem_comentario: 0 },
+    reviewers: [],
+    pairs: [],
+  },
+  trend: [],
+})
+
+export const issue = (key: string, overrides: Partial<JiraIssue> = {}): JiraIssue => ({
+  key,
+  project: key.split('-')[0] as string,
+  component: 'Plataforma',
+  issueType: 'Story',
+  status: 'Em andamento',
+  epicKey: 'LAB-0',
+  sprintId: null,
+  assignee: 'ana',
+  createdAt: '2026-11-10T12:00:00.000Z',
+  resolvedAt: null,
+  ...overrides,
+})

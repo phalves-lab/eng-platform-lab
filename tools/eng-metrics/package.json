@@ -11,6 +11,7 @@
     "digest": "tsx src/digest-cli.ts"
   },
   "exports": {
-    "./contract": "./src/contract.ts"
+    "./contract": "./src/contract.ts",
+    "./collect": "./src/collect.ts"
   }
 }

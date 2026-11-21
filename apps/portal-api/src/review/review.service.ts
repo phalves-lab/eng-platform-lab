@@ -1,31 +1,15 @@
-import { readFile, stat } from 'node:fs/promises'
-import { Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common'
-import type { PanelData, PanelDataset } from '@lab/eng-metrics/contract'
-import { CONFIG, type PortalConfig } from '../config/config.js'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import type { PanelDataset } from '@lab/eng-metrics/contract'
 import { buildMyQueue, type MyQueue } from './my-queue.js'
+import { PANEL_SOURCE, type PanelSource } from './panel-source.js'
 
-/** Serves the collector output (`data.json`), reloading it only when the file changes. */
+/** Review data for the portal, from whichever source the configuration selected. */
 @Injectable()
 export class ReviewService {
-  private cache: { mtime: number; data: PanelData } | null = null
-
-  constructor(@Inject(CONFIG) private readonly config: PortalConfig) {}
-
-  private async load(): Promise<PanelData> {
-    let mtime: number
-    try {
-      mtime = (await stat(this.config.panelDataPath)).mtimeMs
-    } catch {
-      throw new ServiceUnavailableException('Delivery data is not available yet')
-    }
-    if (this.cache?.mtime === mtime) return this.cache.data
-    const data = JSON.parse(await readFile(this.config.panelDataPath, 'utf8')) as PanelData
-    this.cache = { mtime, data }
-    return data
-  }
+  constructor(@Inject(PANEL_SOURCE) private readonly source: PanelSource) {}
 
   async datasets(): Promise<{ id: string; title: string; label: string; generatedAt: string }[]> {
-    const data = await this.load()
+    const data = await this.source.load()
     return data.datasets.map(({ id, title, label, generatedAt }) => ({
       id,
       title,
@@ -35,7 +19,7 @@ export class ReviewService {
   }
 
   async dataset(id: string): Promise<PanelDataset> {
-    const data = await this.load()
+    const data = await this.source.load()
     const found = data.datasets.find((dataset) => dataset.id === id)
     if (!found) throw new NotFoundException(`Dataset ${id} not found`)
     return found

@@ -1,0 +1,12 @@
+name: portal-worker
+description: Worker de coleta do portal e base de dados da esteira (snapshots de métricas, espelho do Jira, deploys e incidentes)
+owner: '@phalves-lab/platform'
+tier: tier-2
+businessUnits:
+  - plataforma
+users: Portal de engenharia, liderança técnica e as métricas de fluxo e DORA da onda 2
+confluencePageId: null
+paths:
+  - apps/portal-worker/
+  - packages/database/
+  - docker-compose.yml

@@ -1,0 +1,43 @@
+import { describe, expect, it } from 'vitest'
+import { loadConfig } from '../src/config.js'
+
+const DATABASE_URL = 'postgres://lab:lab@localhost:5433/lab'
+
+describe('worker configuration', () => {
+  it('collects only the lab every hour by default, with fixture tasks', () => {
+    const config = loadConfig({
+      DATABASE_URL,
+      GITHUB_TOKEN: 'token',
+      GITHUB_REPOSITORY: 'phalves-lab/eng-platform-lab',
+    })
+    expect(config).toMatchObject({
+      databaseUrl: DATABASE_URL,
+      intervalMs: 3_600_000,
+      timeZone: 'America/Sao_Paulo',
+      collect: { demo: false, lab: { taskSource: 'fixtures', ci: false } },
+    })
+    expect(config.collect.lab?.fixturesDir).toMatch(/fixtures\/jira$/)
+  })
+
+  it('accepts the demo dataset alone without GitHub credentials', () => {
+    const config = loadConfig({
+      DATABASE_URL,
+      WORKER_DATASETS: 'demo',
+      WORKER_INTERVAL_MINUTES: '15',
+      WORKER_TIMEZONE: 'UTC',
+    })
+    expect(config).toMatchObject({ intervalMs: 900_000, timeZone: 'UTC' })
+    expect(config.collect).toEqual({ demo: true, lab: null })
+  })
+
+  it('fails fast on missing or invalid settings', () => {
+    expect(() => loadConfig({})).toThrow('Invalid worker configuration')
+    expect(() => loadConfig({ DATABASE_URL: 'mysql://x' })).toThrow('postgres:// URL')
+    expect(() => loadConfig({ DATABASE_URL })).toThrow('requires GITHUB_TOKEN')
+    const demo = { DATABASE_URL, WORKER_DATASETS: 'demo' }
+    expect(() => loadConfig({ ...demo, WORKER_INTERVAL_MINUTES: '0' })).toThrow()
+    expect(() => loadConfig({ ...demo, WORKER_TIMEZONE: 'Mars/Base' })).toThrow('IANA')
+    expect(() => loadConfig({ ...demo, WORKER_DATASETS: 'lab,prod' })).toThrow()
+    expect(() => loadConfig({ ...demo, WORKER_DATASETS: ' , ' })).toThrow('at least one')
+  })
+})

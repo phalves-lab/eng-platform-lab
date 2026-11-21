@@ -8,7 +8,11 @@ const EnvSchema = z
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PORT: z.coerce.number().int().positive().default(4100),
     PORTAL_HANDBOOK_DIR: z.string().min(1),
-    PORTAL_PANEL_DATA: z.string().min(1),
+    PORTAL_PANEL_DATA: z.string().min(1).optional(),
+    DATABASE_URL: z
+      .string()
+      .regex(/^postgres(ql)?:\/\//, 'DATABASE_URL must be a postgres:// URL')
+      .optional(),
     PORTAL_AUTH_MODE: z.enum(['dev', 'entra']).default('dev'),
     PORTAL_DEV_USER: z.string().default('dev.local'),
     PORTAL_JWKS_URL: z.url().optional(),
@@ -17,6 +21,9 @@ const EnvSchema = z
     PORTAL_LEAD_LOGINS: z.string().default(''),
   })
   .superRefine((env, ctx) => {
+    if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
+      ctx.addIssue({ code: 'custom', message: 'set DATABASE_URL or PORTAL_PANEL_DATA' })
+    }
     if (env.NODE_ENV === 'production' && env.PORTAL_AUTH_MODE === 'dev') {
       ctx.addIssue({ code: 'custom', message: 'PORTAL_AUTH_MODE=dev is not allowed in production' })
     }
@@ -35,7 +42,7 @@ export type PortalConfig = {
   env: 'development' | 'test' | 'production'
   port: number
   handbookDir: string
-  panelDataPath: string
+  panelSource: { kind: 'database'; url: string } | { kind: 'file'; path: string }
   auth:
     | { mode: 'dev'; devUser: string }
     | { mode: 'entra'; jwksUrl: string; issuer: string; audience: string }
@@ -55,7 +62,9 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     env: value.NODE_ENV,
     port: value.PORT,
     handbookDir: resolve(value.PORTAL_HANDBOOK_DIR),
-    panelDataPath: resolve(value.PORTAL_PANEL_DATA),
+    panelSource: value.DATABASE_URL
+      ? { kind: 'database', url: value.DATABASE_URL }
+      : { kind: 'file', path: resolve(value.PORTAL_PANEL_DATA ?? '') },
     auth:
       value.PORTAL_AUTH_MODE === 'entra'
         ? {

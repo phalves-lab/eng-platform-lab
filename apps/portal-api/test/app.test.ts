@@ -238,4 +238,20 @@ describe('configuration', () => {
     expect(() => loadConfig({})).toThrow('Invalid portal configuration')
     expect(loadConfig({ ...base, PORTAL_LEAD_LOGINS: 'a, b ,' }).leadLogins).toEqual(['a', 'b'])
   })
+
+  it('reads review data from the database when DATABASE_URL is set, else from the file', () => {
+    const handbook = { PORTAL_HANDBOOK_DIR: HANDBOOK }
+    expect(loadConfig({ ...handbook, PORTAL_PANEL_DATA: 'x.json' }).panelSource).toMatchObject({
+      kind: 'file',
+    })
+    expect(
+      loadConfig({
+        ...handbook,
+        PORTAL_PANEL_DATA: 'x.json',
+        DATABASE_URL: 'postgres://lab:lab@localhost:5433/lab',
+      }).panelSource,
+    ).toEqual({ kind: 'database', url: 'postgres://lab:lab@localhost:5433/lab' })
+    expect(() => loadConfig(handbook)).toThrow('set DATABASE_URL or PORTAL_PANEL_DATA')
+    expect(() => loadConfig({ ...handbook, DATABASE_URL: 'mysql://x' })).toThrow('postgres:// URL')
+  })
 })
