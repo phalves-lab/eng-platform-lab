@@ -1,5 +1,7 @@
 import 'server-only'
 import {
+  AuditPageSchema,
+  type AuditQuery,
   type ChatRequest,
   type DatasetId,
   BoardResponseSchema,
@@ -21,27 +23,18 @@ import {
   UserSchema,
 } from '@lab/contracts'
 import { z, type ZodType } from 'zod'
+import { ApiError } from '@/lib/api-error'
+import { portalFetch } from '@/lib/portal-fetch'
 
-export class ApiError extends Error {
-  constructor(
-    readonly status: number,
-    message: string,
-  ) {
-    super(message)
-  }
-}
-
-const baseUrl = () => process.env.PORTAL_API_URL ?? 'http://localhost:4100'
+export { ApiError }
 
 /**
  * Server-side client for portal-api. The browser never calls the API or any external service
  * directly; pages and route handlers go through this module.
  */
-const request = async <T>(path: string, schema: ZodType<T>, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${baseUrl()}${path}`, {
-    ...init,
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...init?.headers },
-    cache: 'no-store',
+const request = async <T>(path: string, schema: ZodType<T>): Promise<T> => {
+  const response = await portalFetch(path, {
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
   })
   if (!response.ok) throw new ApiError(response.status, `portal-api ${response.status} on ${path}`)
   return schema.parse(await response.json())
@@ -136,11 +129,10 @@ export const api = {
   search: (q: string, limit = 6) =>
     request(`/api/handbook/search${query({ q, limit })}`, z.array(SearchHitSchema)),
   askStream: async (body: ChatRequest, signal: AbortSignal) => {
-    const response = await fetch(`${baseUrl()}/api/ask/stream`, {
+    const response = await portalFetch('/api/ask/stream', {
       method: 'POST',
       headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      cache: 'no-store',
       signal,
     })
     if (!response.ok || !response.body) {
@@ -166,4 +158,5 @@ export const api = {
   plugin: (name: string) =>
     request(`/api/catalog/plugins/${encodeURIComponent(name)}`, PluginSchema),
   mcps: () => request('/api/catalog/mcps', z.array(McpServerSchema)),
+  audit: (filter: Partial<AuditQuery>) => request(`/api/audit${query(filter)}`, AuditPageSchema),
 }

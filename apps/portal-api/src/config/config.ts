@@ -1,5 +1,6 @@
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import type { User } from '@lab/contracts'
 import { z } from 'zod'
 
 export const CONFIG = Symbol('CONFIG')
@@ -10,7 +11,29 @@ const fromRepo = (path: string) => fileURLToPath(new URL(`../../../../${path}`, 
 const emptyAsUnset = (value: unknown) =>
   typeof value === 'string' && value.trim() === '' ? undefined : value
 
+/** Express `trust proxy` value: booleans and hop counts are typed, anything else is a subnet list. */
+const trustProxyOf = (value: string): boolean | number | string => {
+  if (value === 'true') return true
+  if (value === 'false') return false
+  return /^\d+$/.test(value) ? Number(value) : value
+}
+
 const withoutTrailingSlash = (url: string) => (url.endsWith('/') ? url.slice(0, -1) : url)
+
+/** Auth settings that are fine locally and unsafe in production. */
+const productionAuthIssues = (env: {
+  NODE_ENV: string
+  PORTAL_AUTH_MODE: string
+  PORTAL_JWKS_URL?: string | undefined
+}) => {
+  if (env.NODE_ENV !== 'production') return []
+  return [
+    env.PORTAL_AUTH_MODE === 'dev' ? 'PORTAL_AUTH_MODE=dev is not allowed in production' : null,
+    env.PORTAL_JWKS_URL?.startsWith('http://')
+      ? 'PORTAL_JWKS_URL must use https in production'
+      : null,
+  ].filter((message): message is string => message !== null)
+}
 
 const EnvSchema = z
   .object({
@@ -24,10 +47,16 @@ const EnvSchema = z
       .optional(),
     PORTAL_AUTH_MODE: z.enum(['dev', 'entra']).default('dev'),
     PORTAL_DEV_USER: z.string().default('dev.local'),
+    PORTAL_DEV_ROLE: z.preprocess(emptyAsUnset, z.enum(['dev', 'lead', 'admin']).optional()),
     PORTAL_JWKS_URL: z.url().optional(),
     PORTAL_JWT_ISSUER: z.string().optional(),
     PORTAL_JWT_AUDIENCE: z.string().optional(),
     PORTAL_LEAD_LOGINS: z.string().default(''),
+    PORTAL_ROLES_FILE: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('catalog/auth/roles.yaml')),
+    ),
+    PORTAL_TRUST_PROXY: z.preprocess(emptyAsUnset, z.string().trim().min(1).default('loopback')),
     PORTAL_MARKETPLACE_DIR: z.string().min(1).default(fromRepo('fixtures/marketplace')),
     PORTAL_AI_CATALOG_DIR: z.string().min(1).default(fromRepo('catalog/ai')),
     PORTAL_GITHUB_TOKEN: z
@@ -60,9 +89,7 @@ const EnvSchema = z
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
       ctx.addIssue({ code: 'custom', message: 'set DATABASE_URL or PORTAL_PANEL_DATA' })
     }
-    if (env.NODE_ENV === 'production' && env.PORTAL_AUTH_MODE === 'dev') {
-      ctx.addIssue({ code: 'custom', message: 'PORTAL_AUTH_MODE=dev is not allowed in production' })
-    }
+    for (const message of productionAuthIssues(env)) ctx.addIssue({ code: 'custom', message })
     if (
       env.PORTAL_AUTH_MODE === 'entra' &&
       (!env.PORTAL_JWKS_URL || !env.PORTAL_JWT_ISSUER || !env.PORTAL_JWT_AUDIENCE)
@@ -105,9 +132,10 @@ export type PortalConfig = {
   handbookDir: string
   panelSource: { kind: 'database'; url: string } | { kind: 'file'; path: string }
   auth:
-    | { mode: 'dev'; devUser: string }
-    | { mode: 'entra'; jwksUrl: string; issuer: string; audience: string }
+    | { mode: 'dev'; devUser: string; devRole: User['role'] | null }
+    | { mode: 'entra'; jwksUrl: string; issuer: string; audience: string; rolesFile: string }
   leadLogins: string[]
+  trustProxy: boolean | number | string
   marketplaceDir: string
   aiCatalogDir: string
   github: { token: string | null; apiUrl: string }
@@ -151,11 +179,13 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
             jwksUrl: value.PORTAL_JWKS_URL ?? '',
             issuer: value.PORTAL_JWT_ISSUER ?? '',
             audience: value.PORTAL_JWT_AUDIENCE ?? '',
+            rolesFile: resolve(value.PORTAL_ROLES_FILE),
           }
-        : { mode: 'dev', devUser: value.PORTAL_DEV_USER },
+        : { mode: 'dev', devUser: value.PORTAL_DEV_USER, devRole: value.PORTAL_DEV_ROLE ?? null },
     leadLogins: value.PORTAL_LEAD_LOGINS.split(',')
       .map((login) => login.trim())
       .filter(Boolean),
+    trustProxy: trustProxyOf(value.PORTAL_TRUST_PROXY),
     marketplaceDir: resolve(value.PORTAL_MARKETPLACE_DIR),
     aiCatalogDir: resolve(value.PORTAL_AI_CATALOG_DIR),
     github: {

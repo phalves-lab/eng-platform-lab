@@ -30,3 +30,10 @@ export {
   type StoredReleaseRun,
 } from './release-runs.js'
 export * from './schemas.js'
+export {
+  AuditEventInputSchema,
+  AuditEventRepository,
+  type AuditEventFilter,
+  type AuditEventInput,
+  type StoredAuditEvent,
+} from './audit-events.js'

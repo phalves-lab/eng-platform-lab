@@ -1,6 +1,7 @@
 import {
   type CanActivate,
   type ExecutionContext,
+  ForbiddenException,
   Inject,
   Injectable,
   UnauthorizedException,
@@ -9,7 +10,7 @@ import { Reflector } from '@nestjs/core'
 import { CONFIG, type PortalConfig } from '../config/config.js'
 import type { AuthenticatedRequest } from './current-user.decorator.js'
 import { IS_PUBLIC } from './public.decorator.js'
-import { TOKEN_VERIFIER, type TokenVerifier } from './token-verifier.js'
+import { AccessDeniedError, TOKEN_VERIFIER, type TokenVerifier } from './token-verifier.js'
 
 /** Global guard: every route needs a user unless marked with `@Public()`. */
 @Injectable()
@@ -33,7 +34,7 @@ export class AuthGuard implements CanActivate {
       request.user = {
         login,
         name: login,
-        role: this.config.leadLogins.includes(login) ? 'lead' : 'dev',
+        role: this.config.auth.devRole ?? (this.config.leadLogins.includes(login) ? 'lead' : 'dev'),
       }
       return true
     }
@@ -45,7 +46,8 @@ export class AuthGuard implements CanActivate {
     try {
       request.user = await this.verifier.verify(token)
       return true
-    } catch {
+    } catch (error) {
+      if (error instanceof AccessDeniedError) throw new ForbiddenException(error.message)
       throw new UnauthorizedException('Invalid token')
     }
   }

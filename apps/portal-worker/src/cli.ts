@@ -1,5 +1,6 @@
 import { parseArgs } from 'node:util'
 import {
+  AuditEventRepository,
   ChangeRepository,
   ConversationRepository,
   DeployRepository,
@@ -12,6 +13,7 @@ import {
 import { collectPanelData } from '@lab/eng-metrics/collect'
 import { loadWorkflow } from '@lab/flow'
 import type { Collector } from './collector.js'
+import { createAuditRetentionCollector } from './collectors/audit-retention.js'
 import { createChatRetentionCollector } from './collectors/chat-retention.js'
 import { createDoraCollector } from './collectors/dora/collector.js'
 import { createFixtureSource } from './collectors/dora/fixture-source.js'
@@ -45,6 +47,11 @@ const main = async () => {
     createChatRetentionCollector({
       conversations: new ConversationRepository(pool),
       retentionDays: config.chatRetentionDays,
+      intervalMs: config.intervalMs,
+    }),
+    createAuditRetentionCollector({
+      events: new AuditEventRepository(pool),
+      retentionDays: config.auditRetentionDays,
       intervalMs: config.intervalMs,
     }),
     createDoraCollector({

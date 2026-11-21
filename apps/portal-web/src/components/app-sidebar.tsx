@@ -4,7 +4,7 @@ import type { User } from '@lab/contracts'
 import { Command } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { activeItem, NAV_GROUPS } from '@/components/navigation'
+import { activeItem, navGroupsFor } from '@/components/navigation'
 import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
@@ -22,8 +22,9 @@ import {
 
 export function AppSidebar({
   user,
+  canSignOut,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { readonly user: User }) {
+}: React.ComponentProps<typeof Sidebar> & { readonly user: User; readonly canSignOut: boolean }) {
   const pathname = usePathname()
   const active = activeItem(pathname)
 
@@ -47,7 +48,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {NAV_GROUPS.map((group) => (
+        {navGroupsFor(user.role).map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -72,7 +73,7 @@ export function AppSidebar({
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={user} canSignOut={canSignOut} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

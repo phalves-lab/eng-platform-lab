@@ -35,6 +35,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         [db.schema],
       )
       expect(tables.rows.map((row) => row.table_name)).toEqual([
+        'audit_events',
         'chat_conversations',
         'chat_messages',
         'delivery_changes',

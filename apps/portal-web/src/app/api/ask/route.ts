@@ -25,6 +25,9 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      return NextResponse.json({ error: 'Sua sessão expirou. Entre de novo.' }, { status: 401 })
+    }
     if (error instanceof ApiError && error.status === 404) {
       return NextResponse.json(
         { error: 'Essa conversa não existe mais. Comece uma conversa nova.' },

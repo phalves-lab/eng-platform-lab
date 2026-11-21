@@ -15,13 +15,16 @@ import {
   Rocket,
   SquareKanban,
   Workflow,
+  ScrollText,
   ShieldCheck,
 } from 'lucide-react'
+import type { User } from '@lab/contracts'
 
 export interface NavItem {
   href: string
   title: string
   icon: LucideIcon
+  roles?: readonly User['role'][]
 }
 
 export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
@@ -66,7 +69,18 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { href: '/catalogo/mcps', title: 'MCPs', icon: Plug },
     ],
   },
+  {
+    label: 'Administração',
+    items: [{ href: '/admin/auditoria', title: 'Auditoria', icon: ScrollText, roles: ['admin'] }],
+  },
 ]
+
+/** Menu groups and items the role can open; items without `roles` are open to everyone. */
+export const navGroupsFor = (role: User['role']) =>
+  NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.roles || item.roles.includes(role)),
+  })).filter((group) => group.items.length > 0)
 
 /** Navigation entry that owns the current path, used for highlighting and breadcrumbs. */
 export const activeItem = (pathname: string): NavItem | undefined =>
