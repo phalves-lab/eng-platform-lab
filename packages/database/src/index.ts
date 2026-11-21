@@ -30,3 +30,9 @@ export {
   type StoredReleaseRun,
 } from './release-runs.js'
 export * from './schemas.js'
+export {
+  AiUsageRepository,
+  EvalRunRepository,
+  EvalRunSourceSchema,
+  type EvalRunSource,
+} from './ai-quality.js'

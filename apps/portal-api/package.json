@@ -26,6 +26,7 @@
     "@lab/eng-metrics": "*",
     "@lab/flow": "*",
     "@lab/handbook": "*",
+    "@lab/llm-usage": "*",
     "@nestjs/common": "^12.6.0",
     "@nestjs/core": "^12.6.0",
     "@nestjs/platform-express": "^12.6.0",

@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  BrainCircuit,
   Boxes,
   ChartNoAxesCombined,
   Gauge,
@@ -59,6 +60,7 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { href: '/qualidade/scorecard', title: 'Scorecard', icon: ShieldCheck },
       { href: '/qualidade/documentacao', title: 'Documentação', icon: FileClock },
+      { href: '/qualidade/ia', title: 'IA', icon: BrainCircuit },
     ],
   },
   {

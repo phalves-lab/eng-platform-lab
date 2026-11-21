@@ -49,6 +49,8 @@ jobs:
           --min 0.8
           --summary "$RUNNER_TEMP/chat-evals.md"
           --json "$RUNNER_TEMP/chat-evals.json"
+          --artifact "$RUNNER_TEMP/ai-quality/chat-eval.json"
+          --usage "$RUNNER_TEMP/ai-quality/chat-eval-usage.json"
       - name: Golden set do chat offline
         if: env.HAS_GATEWAY != 'true'
         run: |
@@ -62,3 +64,11 @@ jobs:
           else
             echo "O golden set do chat não gerou relatório." >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Artefato de qualidade de IA
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ai-quality
+          path: ${{ runner.temp }}/ai-quality/
+          if-no-files-found: ignore
+          retention-days: 30

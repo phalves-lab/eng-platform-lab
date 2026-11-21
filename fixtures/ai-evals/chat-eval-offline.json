@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "eval-run",
+  "run": {
+    "id": "chat-offline-2026-11-21",
+    "suite": "chat",
+    "runAt": "2026-11-21T09:00:00.000Z",
+    "commit": "166f5d4",
+    "model": "roteiro-offline",
+    "promptVersion": "chat-2",
+    "offline": true,
+    "total": 10,
+    "passed": 10,
+    "inputTokens": null,
+    "outputTokens": null,
+    "latencyMs": {
+      "p50": 3,
+      "max": 9
+    },
+    "cases": [
+      {
+        "id": "padrao-commits",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "padrao-branch",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "sistema-campanhas",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "glossario-sla",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "decisao-pendente",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "fora-do-escopo",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "sem-resposta",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "onboarding-primeiro-pr",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "dado-pessoal-mascarado",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      },
+      {
+        "id": "padrao-migracao",
+        "passed": true,
+        "latencyMs": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    ]
+  }
+}

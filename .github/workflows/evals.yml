@@ -45,4 +45,15 @@ jobs:
             | jq -r '.models[] | select(.supportedGenerationMethods | index("generateContent")) | "\(.name)  \(.displayName)"'
           exit 1
       - name: Golden set
-        run: npm run review -- eval --config-dir "$GITHUB_WORKSPACE" --min 0.8
+        run: >-
+          npm run review -- eval --config-dir "$GITHUB_WORKSPACE" --min 0.8
+          --json "$RUNNER_TEMP/ai-quality/bot-eval.json"
+          --usage "$RUNNER_TEMP/ai-quality/bot-eval-usage.json"
+      - name: Artefato de qualidade de IA
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ai-quality
+          path: ${{ runner.temp }}/ai-quality/
+          if-no-files-found: ignore
+          retention-days: 30

@@ -2,25 +2,29 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
+import { evalRunArtifact, loadPricing, usageArtifact } from '@lab/llm-usage'
 import { z } from 'zod'
 import { AskService } from '../ask/ask.service.js'
 import { ChatService } from '../ask/chat.service.js'
 import type { ModelProvider } from '../ask/model/model-provider.js'
 import { OpenAICompatibleProvider } from '../ask/model/openai-compatible.provider.js'
+import { MemoryUsageSink, RecordingProvider } from '../ask/model/recording-provider.js'
 import { loadSystemPrompt } from '../ask/system-prompt.js'
 import type { PortalConfig } from '../config/config.js'
 import { HandbookService } from '../handbook/handbook.service.js'
 import { createEvalModes } from './eval-modes.js'
 import { GOLDEN_SET_DIR, loadGoldenSet } from './golden-set.js'
 import { MeteredProvider } from './metered-provider.js'
+import { chatRunId, commitOf, promptVersionOf, saveToDatabase, toEvalRun } from './record.js'
 import { summarize, toMarkdown } from './report.js'
 import { runGoldenSet } from './runner.js'
 import { ScriptedProvider } from './scripted-provider.js'
 
 const HANDBOOK_DIR = fileURLToPath(new URL('../../../../handbook', import.meta.url))
+const PRICING_FILE = fileURLToPath(new URL('../../../../catalog/ai/pricing.yaml', import.meta.url))
 
 const USAGE =
-  'Uso: npm run chat-evals -- [--offline] [--cases <pasta>] [--handbook <pasta>] [--only <id,id>] [--min <0-1>] [--json <arquivo>] [--summary <arquivo>]\n'
+  'Uso: npm run chat-evals -- [--offline] [--cases <pasta>] [--handbook <pasta>] [--only <id,id>] [--min <0-1>] [--json <arquivo>] [--summary <arquivo>] [--artifact <arquivo>] [--usage <arquivo>]\n'
 
 const ModelEnvSchema = z.object({
   PORTAL_LLM_BASE_URL: z.url(),
@@ -81,6 +85,8 @@ export const runChatEvals = async (argv: string[], io: CliIo): Promise<number> =
       min: { type: 'string', default: '0' },
       json: { type: 'string' },
       summary: { type: 'string' },
+      artifact: { type: 'string' },
+      usage: { type: 'string' },
     },
   })
   const minimum = MinimumSchema.safeParse(values.min)
@@ -106,13 +112,23 @@ export const runChatEvals = async (argv: string[], io: CliIo): Promise<number> =
   )
   const handbook = new HandbookService({ handbookDir: resolve(cwd, values.handbook) })
   await handbook.onModuleInit()
-  const metered = new MeteredProvider(setup.provider)
+  const runAt = new Date()
+  const systemPrompt = await loadSystemPrompt()
+  const commit = commitOf(io.env, cwd)
+  const runId = chatRunId(runAt, commit)
+  const sink = new MemoryUsageSink()
+  const recorded = new RecordingProvider(setup.provider, sink, {
+    origin: 'golden-set',
+    pricing: await loadPricing(PRICING_FILE),
+    runId,
+  })
+  const metered = new MeteredProvider(recorded)
   const chat = new ChatService(
     handbook,
     new AskService(handbook),
     metered,
     { llm: setup.llm },
-    await loadSystemPrompt(),
+    systemPrompt,
     await createEvalModes(handbook),
   )
 
@@ -127,10 +143,22 @@ export const runChatEvals = async (argv: string[], io: CliIo): Promise<number> =
     offline: values.offline,
     minimum: minimum.data,
     results,
+    now: runAt,
   })
   const markdown = toMarkdown(report)
   io.stdout(markdown)
   if (values.json) await write(resolve(cwd, values.json), `${JSON.stringify(report, null, 2)}\n`)
   if (values.summary) await write(resolve(cwd, values.summary), markdown)
+  const run = toEvalRun(report, { id: runId, commit, promptVersion: promptVersionOf(systemPrompt) })
+  if (values.artifact) {
+    await write(resolve(cwd, values.artifact), `${JSON.stringify(evalRunArtifact(run), null, 2)}\n`)
+  }
+  if (values.usage) {
+    const artifact = usageArtifact(sink.records)
+    await write(resolve(cwd, values.usage), `${JSON.stringify(artifact, null, 2)}\n`)
+  }
+  if (io.env.DATABASE_URL && report.total > 0) {
+    await saveToDatabase(io.env.DATABASE_URL, run, sink.records)
+  }
   return report.rate >= report.minimum && report.total > 0 ? 0 : 1
 }

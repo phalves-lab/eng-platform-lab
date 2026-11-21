@@ -69,6 +69,23 @@ const EnvSchema = z
       emptyAsUnset,
       z.string().min(1).default(fromRepo('fixtures/jira')),
     ),
+    PORTAL_AI_PRICING: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('catalog/ai/pricing.yaml')),
+    ),
+    PORTAL_AI_QUALITY: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('catalog/ai/quality.yaml')),
+    ),
+    PORTAL_AI_EVALS_DIR: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('fixtures/ai-evals')),
+    ),
+    PORTAL_LITELLM_SPEND: z.preprocess(emptyAsUnset, z.enum(['off', 'fake']).default('off')),
+    PORTAL_LITELLM_FAKE_FILE: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('fixtures/litellm/key-info.json')),
+    ),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -137,6 +154,12 @@ export type PortalConfig = {
   projectsDir: string
   modulesDir: string
   tasksDir: string
+  ai: {
+    pricingFile: string
+    qualityFile: string
+    evalsDir: string
+    gatewaySpend: { kind: 'off' } | { kind: 'fake'; file: string }
+  }
 }
 
 type LlmConfig = {
@@ -217,5 +240,14 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
       ? resolve(value.PORTAL_MODULES_DIR)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../catalog/modules'),
     tasksDir: resolve(value.PORTAL_TASKS_DIR),
+    ai: {
+      pricingFile: resolve(value.PORTAL_AI_PRICING),
+      qualityFile: resolve(value.PORTAL_AI_QUALITY),
+      evalsDir: resolve(value.PORTAL_AI_EVALS_DIR),
+      gatewaySpend:
+        value.PORTAL_LITELLM_SPEND === 'fake'
+          ? { kind: 'fake', file: resolve(value.PORTAL_LITELLM_FAKE_FILE) }
+          : { kind: 'off' },
+    },
   }
 }

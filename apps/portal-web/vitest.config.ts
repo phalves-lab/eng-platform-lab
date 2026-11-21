@@ -30,6 +30,7 @@ export default defineConfig({
         'src/lib/quality.ts',
         'src/lib/work.ts',
         'src/lib/projects.ts',
+        'src/lib/ai-quality.ts',
         'src/components/navigation.ts',
       ],
       reporter: ['text-summary', 'lcov'],

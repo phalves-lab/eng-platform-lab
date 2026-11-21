@@ -1,5 +1,6 @@
 import 'server-only'
 import {
+  AiQualityResponseSchema,
   DocsReportSchema,
   RepoScorecardViewSchema,
   type ScorecardFilter,
@@ -34,4 +35,5 @@ export const qualityApi = {
   scorecardRepo: (id: string) =>
     get(`/api/quality/scorecard/${encodeURIComponent(id)}`, RepoScorecardViewSchema),
   docs: (months?: number) => get(`/api/quality/docs${query({ months })}`, DocsReportSchema),
+  ai: (days?: number) => get(`/api/quality/ai${query({ days })}`, AiQualityResponseSchema),
 }
