@@ -1,0 +1,30 @@
+{
+  "key": "LAB-26",
+  "title": "Minha página completa com tasks, dependências e visão do líder",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Cada pessoa quer abrir o portal e ver o próprio dia sem montar o quadro na cabeça: as tasks em andamento, em review, bloqueadas e paradas, o que depende dela (reviews pedidas, tasks de outras pessoas bloqueadas pelas suas, PRs com mudança pedida) e os alertas do dia. O líder quer ver a carga do time para equilibrar o trabalho, sem ranking nem nota. O vínculo entre login do portal, Jira e GitHub fica num catálogo versionado de pessoas fictícias.",
+  "acceptanceCriteria": [
+    "Catálogo versionado em catalog/people/*.yaml com login, nome, conta do Jira, login do GitHub, time e papel",
+    "GET /api/me/work com minhas tasks por situação, paradas há mais de N dias úteis (configurável) e link para o Jira",
+    "GET /api/me/work lista o que depende de mim: reviews pedidas, tasks bloqueadas por mim e PRs meus com mudança pedida",
+    "GET /api/team/work?team= só para papel líder ou admin, com a carga de cada pessoa, sem ranking, sem nota e sem ordenação por produtividade",
+    "Tela Minha página com resumo do dia, tasks por situação, o que depende de mim, alertas e seção Meu time só para líder",
+    "Testes da regra de parado em dias úteis, do 403 para dev no endpoint do time e da ausência de ranking",
+    "Sem banco ou sem coleta, a tela segue mostrando reviews e PRs e explica como ligar o Jira"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T12:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T18:00:00Z"
+    }
+  ]
+}

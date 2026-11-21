@@ -11,3 +11,4 @@ paths:
   - apps/portal-web/
   - packages/
   - catalog/releases/
+  - catalog/people/

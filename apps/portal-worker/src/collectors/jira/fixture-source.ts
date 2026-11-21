@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { JiraIssue, JiraSprintIssue, JiraStatusChange } from '@lab/database'
+import type { JiraIssue, JiraIssueLink, JiraSprintIssue, JiraStatusChange } from '@lab/database'
 import { z } from 'zod'
 import type { JiraBatch, JiraSource } from './source.js'
 
@@ -36,6 +36,7 @@ const BoardFileSchema = z.object({
       resolvedAt: isoDateTime.nullable(),
       history: z.array(z.object({ to: z.string().min(1), at: isoDateTime })),
       sprints: z.array(z.object({ id: z.number().int().positive(), addedAt: isoDateTime })),
+      blockedBy: z.array(z.string().regex(/^[A-Z][A-Z0-9]+-\d+$/)).default([]),
     }),
   ),
 })
@@ -60,7 +61,9 @@ const toBatch = (board: BoardFile, now: Date, rebase: boolean): JiraBatch => {
   const issues: JiraIssue[] = []
   const changes: JiraStatusChange[] = []
   const sprintIssues: JiraSprintIssue[] = []
+  const links: JiraIssueLink[] = []
   for (const item of board.issues) {
+    for (const blockerKey of item.blockedBy) links.push({ blockedKey: item.key, blockerKey })
     let status = board.initialStatus
     for (const step of item.history) {
       changes.push({
@@ -100,6 +103,7 @@ const toBatch = (board: BoardFile, now: Date, rebase: boolean): JiraBatch => {
     issues,
     changes,
     sprintIssues,
+    links,
   }
 }
 
@@ -129,6 +133,7 @@ export const createFixtureJiraSource = (options: FixtureJiraSourceOptions): Jira
       issues: batches.flatMap((batch) => batch.issues),
       changes: batches.flatMap((batch) => batch.changes),
       sprintIssues: batches.flatMap((batch) => batch.sprintIssues),
+      links: batches.flatMap((batch) => batch.links),
     }
   },
 })

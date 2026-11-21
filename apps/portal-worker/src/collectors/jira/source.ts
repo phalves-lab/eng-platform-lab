@@ -1,4 +1,10 @@
-import type { JiraIssue, JiraSprint, JiraSprintIssue, JiraStatusChange } from '@lab/database'
+import type {
+  JiraIssue,
+  JiraIssueLink,
+  JiraSprint,
+  JiraSprintIssue,
+  JiraStatusChange,
+} from '@lab/database'
 
 /** Everything one Jira sync brings back, ready to be upserted into the mirror tables. */
 export interface JiraBatch {
@@ -6,6 +12,7 @@ export interface JiraBatch {
   issues: JiraIssue[]
   changes: JiraStatusChange[]
   sprintIssues: JiraSprintIssue[]
+  links: JiraIssueLink[]
 }
 
 /** Read-only port over a Jira board: the fixture adapter in the lab, Jira Cloud in production. */

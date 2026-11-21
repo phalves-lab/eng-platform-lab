@@ -3,6 +3,8 @@ import { withTransaction } from './client.js'
 import { toIso, toIsoOrNull } from './rows.js'
 import {
   type JiraIssue,
+  type JiraIssueLink,
+  JiraIssueLinkSchema,
   JiraIssueSchema,
   type JiraSprint,
   type JiraSprintIssue,
@@ -48,6 +50,11 @@ interface SprintIssueRow {
   sprint_id: string
   issue_key: string
   added_at: Date | null
+}
+
+interface IssueLinkRow {
+  blocked_key: string
+  blocker_key: string
 }
 
 /** Narrows every read to one Jira project when set. */
@@ -255,5 +262,34 @@ export class JiraRepository {
       issueKey: row.issue_key,
       addedAt: toIsoOrNull(row.added_at),
     }))
+  }
+
+  /**
+   * Replaces the blocking links that touch the given issues, so a link removed in Jira also
+   * leaves the mirror. Issues outside `keys` keep their links.
+   */
+  async replaceIssueLinks(keys: string[], input: JiraIssueLink[]): Promise<void> {
+    const links = input.map((link) => JiraIssueLinkSchema.parse(link))
+    await withTransaction(this.pool, async (client) => {
+      await client.query(
+        `DELETE FROM jira_issue_links
+         WHERE blocked_key = ANY($1::text[]) OR blocker_key = ANY($1::text[])`,
+        [keys],
+      )
+      for (const link of links) {
+        await client.query(
+          `INSERT INTO jira_issue_links (blocked_key, blocker_key) VALUES ($1, $2)
+           ON CONFLICT (blocked_key, blocker_key) DO UPDATE SET synced_at = now()`,
+          [link.blockedKey, link.blockerKey],
+        )
+      }
+    })
+  }
+
+  async listIssueLinks(): Promise<JiraIssueLink[]> {
+    const result = await this.pool.query<IssueLinkRow>(
+      'SELECT blocked_key, blocker_key FROM jira_issue_links ORDER BY blocked_key, blocker_key',
+    )
+    return result.rows.map((row) => ({ blockedKey: row.blocked_key, blockerKey: row.blocker_key }))
   }
 }

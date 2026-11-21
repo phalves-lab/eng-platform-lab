@@ -55,6 +55,14 @@ const EnvSchema = z
     PORTAL_LLM_MAX_TOOL_ROUNDS: z.coerce.number().int().min(1).max(8).default(4),
     PORTAL_SCORECARD_DATA: z.preprocess(emptyAsUnset, z.string().min(1).optional()),
     PORTAL_DOCS_MAX_AGE_MONTHS: z.coerce.number().int().min(1).max(36).default(6),
+    PORTAL_PEOPLE_DIR: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('catalog/people')),
+    ),
+    PORTAL_WORK_STALE_BUSINESS_DAYS: z.preprocess(
+      emptyAsUnset,
+      z.coerce.number().int().min(1).max(30).default(3),
+    ),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -118,6 +126,8 @@ export type PortalConfig = {
   llm: LlmConfig | null
   scorecardData: string
   docsMaxAgeMonths: number
+  peopleDir: string
+  staleAfterBusinessDays: number
 }
 
 type LlmConfig = {
@@ -189,5 +199,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
       ? resolve(value.PORTAL_SCORECARD_DATA)
       : resolve(value.PORTAL_HANDBOOK_DIR, '../.portal-data/scorecard.json'),
     docsMaxAgeMonths: value.PORTAL_DOCS_MAX_AGE_MONTHS,
+    peopleDir: resolve(value.PORTAL_PEOPLE_DIR),
+    staleAfterBusinessDays: value.PORTAL_WORK_STALE_BUSINESS_DAYS,
   }
 }

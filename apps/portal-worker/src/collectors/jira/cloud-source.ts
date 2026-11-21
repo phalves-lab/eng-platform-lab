@@ -1,4 +1,10 @@
-import type { JiraIssue, JiraSprint, JiraSprintIssue, JiraStatusChange } from '@lab/database'
+import type {
+  JiraIssue,
+  JiraIssueLink,
+  JiraSprint,
+  JiraSprintIssue,
+  JiraStatusChange,
+} from '@lab/database'
 import { z } from 'zod'
 import type { JiraHttp } from './http.js'
 import { type JiraSource, toIsoInstant, withoutTrailingSlashes } from './source.js'
@@ -7,6 +13,13 @@ const PAGE_SIZE = 100
 const SPRINT_PAGE_SIZE = 50
 
 const NamedSchema = z.object({ name: z.string() })
+const BLOCKS_LINK = 'Blocks'
+
+const IssueLinkSchema = z.object({
+  type: NamedSchema,
+  inwardIssue: z.object({ key: z.string() }).optional(),
+  outwardIssue: z.object({ key: z.string() }).optional(),
+})
 
 const own = (raw: object, key: string): unknown =>
   Object.hasOwn(raw, key) ? Reflect.get(raw, key) : null
@@ -59,6 +72,7 @@ const CloudIssueSchema = z.object({
         .nullable()
         .optional(),
       assignee: z.object({ displayName: z.string() }).nullable().optional(),
+      issuelinks: z.array(IssueLinkSchema).nullable().optional(),
       created: z.string(),
       resolutiondate: z.string().nullable().optional(),
     })
@@ -208,6 +222,18 @@ const sprintMembership = (
     }
   })
 
+/**
+ * Blocking links seen from one issue: an `inwardIssue` on a Blocks link blocks this issue and an
+ * `outwardIssue` is blocked by it.
+ */
+const blockingLinks = (issue: CloudIssue): JiraIssueLink[] =>
+  (issue.fields.issuelinks ?? []).flatMap((link) => {
+    if (link.type.name !== BLOCKS_LINK) return []
+    if (link.inwardIssue) return [{ blockedKey: issue.key, blockerKey: link.inwardIssue.key }]
+    if (link.outwardIssue) return [{ blockedKey: link.outwardIssue.key, blockerKey: issue.key }]
+    return []
+  })
+
 /** Jira Cloud adapter: REST v3 JQL search with changelog and the agile API for sprints. */
 export const createCloudJiraSource = (options: CloudJiraSourceOptions): JiraSource => ({
   kind: 'cloud',
@@ -222,6 +248,7 @@ export const createCloudJiraSource = (options: CloudJiraSourceOptions): JiraSour
     const issues: JiraIssue[] = []
     const changes: JiraStatusChange[] = []
     const sprintIssues: JiraSprintIssue[] = []
+    const links: JiraIssueLink[] = []
     let nextPageToken: string | null | undefined
     do {
       const page = await options.http.search(
@@ -234,6 +261,7 @@ export const createCloudJiraSource = (options: CloudJiraSourceOptions): JiraSour
             'components',
             'parent',
             'assignee',
+            'issuelinks',
             'created',
             'resolutiondate',
             options.sprintField,
@@ -271,10 +299,11 @@ export const createCloudJiraSource = (options: CloudJiraSourceOptions): JiraSour
         })
         changes.push(...statusChanges(issue.key, histories))
         sprintIssues.push(...membership)
+        links.push(...blockingLinks(issue))
       }
       nextPageToken = page.isLast === true ? null : page.nextPageToken
     } while (nextPageToken)
 
-    return { sprints, issues, changes, sprintIssues }
+    return { sprints, issues, changes, sprintIssues, links }
   },
 })

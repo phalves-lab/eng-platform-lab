@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common'
 import { CONFIG, type PortalConfig } from '../config/config.js'
+import { PeopleModule } from '../people/people.module.js'
 import { PANEL_SOURCE, createPanelSource } from './panel-source.js'
 import { ReviewController } from './review.controller.js'
 import { ReviewService } from './review.service.js'
 
 @Module({
+  imports: [PeopleModule],
   controllers: [ReviewController],
   providers: [
     {

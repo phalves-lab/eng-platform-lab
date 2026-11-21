@@ -11,6 +11,7 @@ import {
   HandbookOverviewSchema,
   ReviewMetricsResponseSchema,
   McpServerSchema,
+  MyWorkResponseSchema,
   PluginSchema,
   PluginSummarySchema,
   SearchHitSchema,
@@ -18,6 +19,7 @@ import {
   StandardSummarySchema,
   SystemSchema,
   SystemSummarySchema,
+  TeamWorkResponseSchema,
   UserSchema,
 } from '@lab/contracts'
 import { z, type ZodType } from 'zod'
@@ -75,22 +77,6 @@ const QueueRowSchema = z.object({
   lines: z.number(),
 })
 export type QueueRow = z.infer<typeof QueueRowSchema>
-
-const PrStatusSchema = z.object({
-  label: z.string(),
-  tone: z.enum(['success', 'warning', 'destructive', 'secondary']),
-  hint: z.string(),
-  needsAction: z.boolean(),
-})
-
-const MyReviewSchema = z.object({
-  dataset: z.string(),
-  toReview: z.array(QueueRowSchema),
-  reviewed: z.array(QueueRowSchema),
-  mine: z.array(z.object({ row: QueueRowSchema, status: PrStatusSchema })),
-  actions: z.number(),
-})
-export type MyReview = z.infer<typeof MyReviewSchema>
 
 const AlertSchema = z.object({
   kind: z.string(),
@@ -150,8 +136,9 @@ export const api = {
   },
   datasets: () => request('/api/review/datasets', z.array(DatasetInfoSchema)),
   dataset: (id: string) => request(`/api/review/datasets/${encodeURIComponent(id)}`, DatasetSchema),
-  myReview: (dataset: string, login?: string) =>
-    request(`/api/me/review${query({ dataset, login })}`, MyReviewSchema),
+  myWork: (dataset?: string) => request(`/api/me/work${query({ dataset })}`, MyWorkResponseSchema),
+  teamWork: (filter: { team?: string; dataset?: string }) =>
+    request(`/api/team/work${query(filter)}`, TeamWorkResponseSchema),
   reviewMetrics: (dataset: DatasetId) =>
     request(`/api/metrics/review${query({ dataset })}`, ReviewMetricsResponseSchema),
   doraMetrics: (filter: { team?: string; repo?: string }) =>

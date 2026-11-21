@@ -32,3 +32,18 @@ export {
   type Workflow,
   type WorkflowColumn,
 } from './workflow.js'
+export {
+  blockedByAccount,
+  businessDaysBetween,
+  myTasks,
+  openWork,
+  sameAccount,
+  workLoad,
+  type MyTasks,
+  type OpenWorkItem,
+  type WorkDataset,
+  type WorkInput,
+  type WorkIssue,
+  type WorkLink,
+  type WorkLoad,
+} from './work.js'
