@@ -8,7 +8,7 @@
     "Abaixo de 2, o resumo usa \"dia útil\" no singular, como o painel",
     "O cabeçalho do resumo mostra o nome do conjunto sem parênteses duplicados"
   ],
-  "status": "Code Review",
+  "status": "Concluída",
   "labels": ["plataforma"],
   "epic": "LAB-0 Governança de campanhas",
   "url": null,
@@ -20,6 +20,10 @@
     {
       "status": "Code Review",
       "at": "2026-11-21T03:15:00Z"
+    },
+    {
+      "status": "Concluída",
+      "at": "2026-11-21T04:00:00Z"
     }
   ]
 }

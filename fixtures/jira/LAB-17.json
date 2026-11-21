@@ -1,0 +1,27 @@
+{
+  "key": "LAB-17",
+  "title": "Servidor MCP de contexto sobre o handbook",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "A IA dos devs não conhece os padrões, os sistemas nem o vocabulário do time, e cada AGENTS.md diz uma coisa. Um servidor MCP só de leitura entrega esse contexto com fonte, para qualquer cliente de IA.",
+  "acceptanceCriteria": [
+    "O servidor expõe só ferramentas de leitura: regras para IA, padrão por ID, busca de padrões, ficha e busca de sistemas, glossário, decisões pendentes e busca livre",
+    "Toda resposta cita o arquivo e a seção de origem",
+    "O servidor lê o handbook do repositório por padrão e outro handbook por variável de ambiente, sem dado confidencial no repositório",
+    "Há um handbook de exemplo com as regras reais do laboratório no mesmo formato do handbook do time"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T03:40:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T04:30:00Z"
+    }
+  ]
+}

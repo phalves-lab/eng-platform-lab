@@ -21,6 +21,9 @@
       "entry": ["src/main.tsx"],
       "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
       "ignore": ["src/components/ui/**"]
+    },
+    "tools/mcp-context": {
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   },
   "ignoreDependencies": ["jscpd"]
