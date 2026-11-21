@@ -1,0 +1,289 @@
+{
+  "repo": "lab-demo/notificacoes-worker",
+  "deploys": [
+    {
+      "environment": "production",
+      "sha": "d1a574c65413",
+      "deployedAt": "2026-08-20T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123000",
+      "commitShas": ["32d210a7bd9e", "d1a574c65413"]
+    },
+    {
+      "environment": "production",
+      "sha": "db4797b5f436",
+      "deployedAt": "2026-09-02T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123001",
+      "commitShas": ["cbb07c5579aa", "db4797b5f436"]
+    },
+    {
+      "environment": "production",
+      "sha": "b2056ef65ec5",
+      "deployedAt": "2026-09-11T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123002",
+      "commitShas": ["e4f4b203b609", "33e41d4d1546", "b2056ef65ec5"]
+    },
+    {
+      "environment": "production",
+      "sha": "95cc631a6b58",
+      "deployedAt": "2026-09-23T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123003",
+      "commitShas": ["e509c866bd90", "82dea660a263", "8b710f0262e1", "95cc631a6b58"]
+    },
+    {
+      "environment": "production",
+      "sha": "387224dda6d6",
+      "deployedAt": "2026-10-05T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123004",
+      "commitShas": ["508de28d15b1", "89cfe9d61224", "82ad3788344a", "387224dda6d6"]
+    },
+    {
+      "environment": "production",
+      "sha": "2a1638bff512",
+      "deployedAt": "2026-10-14T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123005",
+      "commitShas": ["0c076092c821", "2a1638bff512"]
+    },
+    {
+      "environment": "production",
+      "sha": "4f69274674c6",
+      "deployedAt": "2026-10-26T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123006",
+      "commitShas": ["387ae3a73f34", "a850a5e511da", "a463ab6c847c", "4f69274674c6"]
+    },
+    {
+      "environment": "production",
+      "sha": "dfd7be6e32b6",
+      "deployedAt": "2026-11-05T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123007",
+      "commitShas": ["b96398e07ce8", "dfd7be6e32b6"]
+    },
+    {
+      "environment": "production",
+      "sha": "dcff0046ee67",
+      "deployedAt": "2026-11-17T14:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/notificacoes-worker/deploys/123008",
+      "commitShas": ["26ce44300652", "866264519a30", "db023ef9328a", "dcff0046ee67"]
+    }
+  ],
+  "changes": [
+    {
+      "pullNumber": 61,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "32d210a7bd9e",
+      "firstCommitAt": "2026-08-08T21:58:00Z",
+      "mergedAt": "2026-08-17T17:36:00Z"
+    },
+    {
+      "pullNumber": 62,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "d1a574c65413",
+      "firstCommitAt": "2026-08-07T01:34:00Z",
+      "mergedAt": "2026-08-18T11:11:00Z"
+    },
+    {
+      "pullNumber": 63,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "cbb07c5579aa",
+      "firstCommitAt": "2026-08-23T19:49:00Z",
+      "mergedAt": "2026-08-29T21:41:00Z"
+    },
+    {
+      "pullNumber": 64,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "db4797b5f436",
+      "firstCommitAt": "2026-08-21T21:06:00Z",
+      "mergedAt": "2026-09-01T18:46:00Z"
+    },
+    {
+      "pullNumber": 65,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "e4f4b203b609",
+      "firstCommitAt": "2026-08-31T23:43:00Z",
+      "mergedAt": "2026-09-08T15:37:00Z"
+    },
+    {
+      "pullNumber": 66,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "33e41d4d1546",
+      "firstCommitAt": "2026-09-02T15:21:00Z",
+      "mergedAt": "2026-09-10T00:35:00Z"
+    },
+    {
+      "pullNumber": 67,
+      "title": "feat: Fila de reenvio de e-mail",
+      "mergeSha": "b2056ef65ec5",
+      "firstCommitAt": "2026-08-26T15:08:00Z",
+      "mergedAt": "2026-09-09T13:43:00Z"
+    },
+    {
+      "pullNumber": 68,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "e509c866bd90",
+      "firstCommitAt": "2026-09-04T07:34:00Z",
+      "mergedAt": "2026-09-20T17:29:00Z"
+    },
+    {
+      "pullNumber": 69,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "82dea660a263",
+      "firstCommitAt": "2026-09-05T17:24:00Z",
+      "mergedAt": "2026-09-19T13:59:00Z"
+    },
+    {
+      "pullNumber": 70,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "8b710f0262e1",
+      "firstCommitAt": "2026-09-04T00:04:00Z",
+      "mergedAt": "2026-09-15T11:15:00Z"
+    },
+    {
+      "pullNumber": 71,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "95cc631a6b58",
+      "firstCommitAt": "2026-09-06T20:37:00Z",
+      "mergedAt": "2026-09-21T23:32:00Z"
+    },
+    {
+      "pullNumber": 72,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "508de28d15b1",
+      "firstCommitAt": "2026-09-12T07:27:00Z",
+      "mergedAt": "2026-09-27T08:08:00Z"
+    },
+    {
+      "pullNumber": 73,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "89cfe9d61224",
+      "firstCommitAt": "2026-09-10T17:28:00Z",
+      "mergedAt": "2026-09-26T22:20:00Z"
+    },
+    {
+      "pullNumber": 74,
+      "title": "feat: Fila de reenvio de e-mail",
+      "mergeSha": "82ad3788344a",
+      "firstCommitAt": "2026-09-20T13:16:00Z",
+      "mergedAt": "2026-10-02T19:54:00Z"
+    },
+    {
+      "pullNumber": 75,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "387224dda6d6",
+      "firstCommitAt": "2026-09-20T22:44:00Z",
+      "mergedAt": "2026-09-30T11:21:00Z"
+    },
+    {
+      "pullNumber": 76,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "0c076092c821",
+      "firstCommitAt": "2026-10-02T07:44:00Z",
+      "mergedAt": "2026-10-08T09:18:00Z"
+    },
+    {
+      "pullNumber": 77,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "2a1638bff512",
+      "firstCommitAt": "2026-09-27T09:23:00Z",
+      "mergedAt": "2026-10-11T01:47:00Z"
+    },
+    {
+      "pullNumber": 78,
+      "title": "feat: Limite de envio por minuto",
+      "mergeSha": "387ae3a73f34",
+      "firstCommitAt": "2026-10-15T19:21:00Z",
+      "mergedAt": "2026-10-21T16:15:00Z"
+    },
+    {
+      "pullNumber": 79,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "a850a5e511da",
+      "firstCommitAt": "2026-10-08T20:47:00Z",
+      "mergedAt": "2026-10-24T08:33:00Z"
+    },
+    {
+      "pullNumber": 80,
+      "title": "feat: Fila de reenvio de e-mail",
+      "mergeSha": "a463ab6c847c",
+      "firstCommitAt": "2026-10-16T02:07:00Z",
+      "mergedAt": "2026-10-23T04:02:00Z"
+    },
+    {
+      "pullNumber": 81,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "4f69274674c6",
+      "firstCommitAt": "2026-10-15T00:18:00Z",
+      "mergedAt": "2026-10-22T17:52:00Z"
+    },
+    {
+      "pullNumber": 82,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "b96398e07ce8",
+      "firstCommitAt": "2026-10-27T05:53:00Z",
+      "mergedAt": "2026-11-01T12:42:00Z"
+    },
+    {
+      "pullNumber": 83,
+      "title": "feat: Modelo de aviso de aprovação",
+      "mergeSha": "dfd7be6e32b6",
+      "firstCommitAt": "2026-10-27T08:00:00Z",
+      "mergedAt": "2026-11-02T17:26:00Z"
+    },
+    {
+      "pullNumber": 84,
+      "title": "feat: Retentativa com espera exponencial",
+      "mergeSha": "26ce44300652",
+      "firstCommitAt": "2026-11-01T05:21:00Z",
+      "mergedAt": "2026-11-16T18:30:00Z"
+    },
+    {
+      "pullNumber": 85,
+      "title": "feat: Fila de reenvio de e-mail",
+      "mergeSha": "866264519a30",
+      "firstCommitAt": "2026-10-25T09:25:00Z",
+      "mergedAt": "2026-11-09T04:40:00Z"
+    },
+    {
+      "pullNumber": 86,
+      "title": "feat: Modelo de aviso de aprovação",
+      "mergeSha": "db023ef9328a",
+      "firstCommitAt": "2026-10-30T13:43:00Z",
+      "mergedAt": "2026-11-13T08:20:00Z"
+    },
+    {
+      "pullNumber": 87,
+      "title": "feat: Modelo de aviso de aprovação",
+      "mergeSha": "dcff0046ee67",
+      "firstCommitAt": "2026-11-01T17:33:00Z",
+      "mergedAt": "2026-11-14T03:47:00Z"
+    },
+    {
+      "pullNumber": 88,
+      "title": "feat: Métricas da fila de envio",
+      "mergeSha": "7490a06affd1",
+      "firstCommitAt": "2026-11-04T23:51:00Z",
+      "mergedAt": "2026-11-18T23:28:00Z"
+    },
+    {
+      "pullNumber": 89,
+      "title": "feat: Fila de reenvio de e-mail",
+      "mergeSha": "87fbf6e44db9",
+      "firstCommitAt": "2026-11-02T04:54:00Z",
+      "mergedAt": "2026-11-18T17:55:00Z"
+    },
+    {
+      "pullNumber": 90,
+      "title": "feat: Modelo de aviso de aprovação",
+      "mergeSha": "5148568f3305",
+      "firstCommitAt": "2026-11-13T02:14:00Z",
+      "mergedAt": "2026-11-18T21:10:00Z"
+    }
+  ]
+}

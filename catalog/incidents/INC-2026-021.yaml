@@ -1,0 +1,7 @@
+id: INC-2026-021
+title: Fila de reenvio parada depois de manutenção do provedor fictício de e-mail
+system: notificacoes
+severity: sev3
+startedAt: '2026-11-04T08:20:00Z'
+endedAt: '2026-11-06T14:35:00Z'
+cause: null

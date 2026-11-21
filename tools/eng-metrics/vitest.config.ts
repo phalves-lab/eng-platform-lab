@@ -6,7 +6,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/cli.ts', 'src/digest-cli.ts', 'src/contract.ts'],
+      exclude: ['src/cli.ts', 'src/digest-cli.ts', 'src/deploy-event-cli.ts', 'src/contract.ts'],
       reporter: ['text-summary', 'lcov'],
       reportsDirectory: 'coverage',
     },

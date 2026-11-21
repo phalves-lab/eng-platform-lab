@@ -1,0 +1,2936 @@
+{
+  "repo": "lab-demo/campanhas-api",
+  "deploys": [
+    {
+      "environment": "production",
+      "sha": "78f9367b1cb6",
+      "deployedAt": "2026-08-17T13:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107000",
+      "commitShas": ["939a0b3a8980", "ff88b136ae73", "78f9367b1cb6"]
+    },
+    {
+      "environment": "production",
+      "sha": "418a97529885",
+      "deployedAt": "2026-08-18T15:57:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107001",
+      "commitShas": ["418a97529885"]
+    },
+    {
+      "environment": "production",
+      "sha": "2ff20ac433d7",
+      "deployedAt": "2026-08-19T14:09:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107002",
+      "commitShas": ["2ff20ac433d7"]
+    },
+    {
+      "environment": "staging",
+      "sha": "f6981ed307fc",
+      "deployedAt": "2026-08-20T15:58:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "b0a5f5143175",
+      "deployedAt": "2026-08-20T16:26:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "f6981ed307fc",
+      "deployedAt": "2026-08-20T17:58:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107003",
+      "commitShas": ["9f809549861c", "003a87065bbd", "f6981ed307fc"]
+    },
+    {
+      "environment": "production",
+      "sha": "b0a5f5143175",
+      "deployedAt": "2026-08-20T18:26:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107005",
+      "commitShas": ["b0a5f5143175"]
+    },
+    {
+      "environment": "staging",
+      "sha": "976a50424c48",
+      "deployedAt": "2026-08-21T12:07:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "976a50424c48",
+      "deployedAt": "2026-08-21T14:07:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107007",
+      "commitShas": ["976a50424c48"]
+    },
+    {
+      "environment": "production",
+      "sha": "84e5f7debbb5",
+      "deployedAt": "2026-08-24T18:28:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107009",
+      "commitShas": ["acf1c6102555", "f211cba401bc", "84e5f7debbb5"]
+    },
+    {
+      "environment": "production",
+      "sha": "15f9428c29dd",
+      "deployedAt": "2026-08-25T17:23:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107010",
+      "commitShas": ["15f9428c29dd"]
+    },
+    {
+      "environment": "production",
+      "sha": "7213dd594750",
+      "deployedAt": "2026-08-25T19:33:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107011",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "6906ab9efa34",
+      "deployedAt": "2026-08-25T20:44:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107013",
+      "commitShas": ["0fc26769dc60", "6906ab9efa34"]
+    },
+    {
+      "environment": "production",
+      "sha": "7213dd594750",
+      "deployedAt": "2026-08-25T20:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107011-retry",
+      "commitShas": ["9fe9bfc17d03", "fcb50b75428e", "7213dd594750"]
+    },
+    {
+      "environment": "production",
+      "sha": "65cd545e2aea",
+      "deployedAt": "2026-08-26T14:07:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107014",
+      "commitShas": ["a923af9456fb", "f2b066c3d9da", "65cd545e2aea"]
+    },
+    {
+      "environment": "staging",
+      "sha": "2d4aacdbec0e",
+      "deployedAt": "2026-08-26T17:38:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "10371b430c08",
+      "deployedAt": "2026-08-26T18:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107015",
+      "commitShas": ["5d38ce7a8f20", "10371b430c08"]
+    },
+    {
+      "environment": "production",
+      "sha": "2d4aacdbec0e",
+      "deployedAt": "2026-08-26T19:38:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107016",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "2d4aacdbec0e",
+      "deployedAt": "2026-08-26T20:19:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107016-retry",
+      "commitShas": ["28ffec43dd4c", "2d4aacdbec0e"]
+    },
+    {
+      "environment": "production",
+      "sha": "a8753a7ff83a",
+      "deployedAt": "2026-08-27T20:01:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107019",
+      "commitShas": ["e3ec86934770", "2c70d4cb7ed6", "a8753a7ff83a"]
+    },
+    {
+      "environment": "staging",
+      "sha": "46170cf7b9c8",
+      "deployedAt": "2026-08-28T13:20:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "94db4999ff2f",
+      "deployedAt": "2026-08-28T14:18:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "46170cf7b9c8",
+      "deployedAt": "2026-08-28T15:20:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107020",
+      "commitShas": ["b3cd8851422e", "46170cf7b9c8"]
+    },
+    {
+      "environment": "production",
+      "sha": "94db4999ff2f",
+      "deployedAt": "2026-08-28T16:18:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107022",
+      "commitShas": ["ab176e74b19e", "b5ac683e816a", "94db4999ff2f"]
+    },
+    {
+      "environment": "production",
+      "sha": "de445de94e95",
+      "deployedAt": "2026-08-28T17:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107024",
+      "commitShas": ["9c4a294d9523", "de445de94e95"]
+    },
+    {
+      "environment": "staging",
+      "sha": "3dab300257d8",
+      "deployedAt": "2026-08-31T12:18:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "3dab300257d8",
+      "deployedAt": "2026-08-31T14:18:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107025",
+      "commitShas": ["3dab300257d8"]
+    },
+    {
+      "environment": "production",
+      "sha": "79316043526d",
+      "deployedAt": "2026-08-31T18:33:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107027",
+      "commitShas": ["50106b9ea27e", "79316043526d"]
+    },
+    {
+      "environment": "production",
+      "sha": "99ef827522df",
+      "deployedAt": "2026-09-01T14:49:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107028",
+      "commitShas": ["99ef827522df"]
+    },
+    {
+      "environment": "staging",
+      "sha": "9adcefc5e034",
+      "deployedAt": "2026-09-01T18:42:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "405871128cce",
+      "deployedAt": "2026-09-01T18:50:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "9adcefc5e034",
+      "deployedAt": "2026-09-01T20:42:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107029",
+      "commitShas": ["7a5cc89de5e7", "9adcefc5e034"]
+    },
+    {
+      "environment": "production",
+      "sha": "405871128cce",
+      "deployedAt": "2026-09-01T20:50:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107031",
+      "commitShas": ["2a9ec3d8b36f", "405871128cce"]
+    },
+    {
+      "environment": "staging",
+      "sha": "3faf84a8e4a7",
+      "deployedAt": "2026-09-02T15:14:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "3faf84a8e4a7",
+      "deployedAt": "2026-09-02T17:14:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107033",
+      "commitShas": ["3faf84a8e4a7"]
+    },
+    {
+      "environment": "staging",
+      "sha": "a286712dbbad",
+      "deployedAt": "2026-09-02T17:51:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "a286712dbbad",
+      "deployedAt": "2026-09-02T19:51:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107035",
+      "commitShas": ["dfb5bd178ae5", "054df8dbfd02", "a286712dbbad"]
+    },
+    {
+      "environment": "production",
+      "sha": "88bf2c3ffdb7",
+      "deployedAt": "2026-09-02T20:16:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107037",
+      "commitShas": ["8b5d48e0783d", "88bf2c3ffdb7"]
+    },
+    {
+      "environment": "production",
+      "sha": "ae1455e65b72",
+      "deployedAt": "2026-09-03T15:11:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107038",
+      "commitShas": ["ae1455e65b72"]
+    },
+    {
+      "environment": "production",
+      "sha": "1ae11043b437",
+      "deployedAt": "2026-09-03T16:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107039",
+      "commitShas": ["1ae11043b437"]
+    },
+    {
+      "environment": "staging",
+      "sha": "ecb73520c4e9",
+      "deployedAt": "2026-09-04T13:15:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "ecb73520c4e9",
+      "deployedAt": "2026-09-04T15:15:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107040",
+      "commitShas": ["ecb73520c4e9"]
+    },
+    {
+      "environment": "staging",
+      "sha": "fc521e318a3b",
+      "deployedAt": "2026-09-04T16:09:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "fc521e318a3b",
+      "deployedAt": "2026-09-04T18:09:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107042",
+      "commitShas": ["0696ac63eef0", "fc521e318a3b"]
+    },
+    {
+      "environment": "production",
+      "sha": "6734374cd30b",
+      "deployedAt": "2026-09-04T19:43:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107044",
+      "commitShas": ["6734374cd30b"]
+    },
+    {
+      "environment": "staging",
+      "sha": "f724d5a5e8e2",
+      "deployedAt": "2026-09-07T16:38:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "429d0683b28d",
+      "deployedAt": "2026-09-07T17:36:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107045",
+      "commitShas": ["429d0683b28d"]
+    },
+    {
+      "environment": "production",
+      "sha": "f724d5a5e8e2",
+      "deployedAt": "2026-09-07T18:38:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107046",
+      "commitShas": ["f724d5a5e8e2"]
+    },
+    {
+      "environment": "production",
+      "sha": "d4b80fac60f2",
+      "deployedAt": "2026-09-08T15:16:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107048",
+      "commitShas": ["d4b80fac60f2"]
+    },
+    {
+      "environment": "staging",
+      "sha": "83b2a15b5b30",
+      "deployedAt": "2026-09-09T16:06:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "28e944639163",
+      "deployedAt": "2026-09-09T16:30:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "83b2a15b5b30",
+      "deployedAt": "2026-09-09T18:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107049",
+      "commitShas": ["83b2a15b5b30"]
+    },
+    {
+      "environment": "production",
+      "sha": "28e944639163",
+      "deployedAt": "2026-09-09T18:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107051",
+      "commitShas": ["b2b2efb15d1a", "28e944639163"]
+    },
+    {
+      "environment": "production",
+      "sha": "7dab255606a1",
+      "deployedAt": "2026-09-09T18:37:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107053",
+      "commitShas": ["54cca648871e", "7dab255606a1"]
+    },
+    {
+      "environment": "staging",
+      "sha": "c348c43f59a8",
+      "deployedAt": "2026-09-10T15:06:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "563f4cb9d056",
+      "deployedAt": "2026-09-10T16:34:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "c348c43f59a8",
+      "deployedAt": "2026-09-10T17:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107054",
+      "commitShas": ["c348c43f59a8"]
+    },
+    {
+      "environment": "production",
+      "sha": "563f4cb9d056",
+      "deployedAt": "2026-09-10T18:34:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107056",
+      "commitShas": ["52935613c9da", "563f4cb9d056"]
+    },
+    {
+      "environment": "staging",
+      "sha": "b37164632a04",
+      "deployedAt": "2026-09-11T16:37:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "b37164632a04",
+      "deployedAt": "2026-09-11T18:37:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107058",
+      "commitShas": ["539683f20423", "b37164632a04"]
+    },
+    {
+      "environment": "production",
+      "sha": "975305f02008",
+      "deployedAt": "2026-09-14T15:24:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107060",
+      "commitShas": ["975305f02008"]
+    },
+    {
+      "environment": "production",
+      "sha": "e1e236860407",
+      "deployedAt": "2026-09-14T18:34:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107061",
+      "commitShas": ["4f5bebbd76da", "e1e236860407"]
+    },
+    {
+      "environment": "staging",
+      "sha": "0ea0aba26156",
+      "deployedAt": "2026-09-15T17:07:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "9b90f3f86bfd",
+      "deployedAt": "2026-09-15T18:47:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107062",
+      "commitShas": ["b6fadd27361c", "9b90f3f86bfd"]
+    },
+    {
+      "environment": "production",
+      "sha": "0ea0aba26156",
+      "deployedAt": "2026-09-15T19:07:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107063",
+      "commitShas": ["0ea0aba26156"]
+    },
+    {
+      "environment": "production",
+      "sha": "03c1dd079ec7",
+      "deployedAt": "2026-09-16T18:36:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107065",
+      "commitShas": ["704895f838ec", "03c1dd079ec7"]
+    },
+    {
+      "environment": "staging",
+      "sha": "c2714caa253e",
+      "deployedAt": "2026-09-17T16:43:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "c2714caa253e",
+      "deployedAt": "2026-09-17T18:43:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107066",
+      "commitShas": ["c2714caa253e"]
+    },
+    {
+      "environment": "staging",
+      "sha": "87c8ac3364d1",
+      "deployedAt": "2026-09-18T13:12:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "87c8ac3364d1",
+      "deployedAt": "2026-09-18T15:12:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107068",
+      "commitShas": ["9b04a2efc6e5", "87c8ac3364d1"]
+    },
+    {
+      "environment": "production",
+      "sha": "038189026a8d",
+      "deployedAt": "2026-09-18T15:56:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107070",
+      "commitShas": ["e81677537c08", "038189026a8d"]
+    },
+    {
+      "environment": "staging",
+      "sha": "eaf852ace021",
+      "deployedAt": "2026-09-18T16:18:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "eaf852ace021",
+      "deployedAt": "2026-09-18T18:18:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107071",
+      "commitShas": ["059c3e829ba2", "eaf852ace021"]
+    },
+    {
+      "environment": "production",
+      "sha": "194c5f196de5",
+      "deployedAt": "2026-09-21T13:03:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107073",
+      "commitShas": ["657b49f7fdcd", "194c5f196de5"]
+    },
+    {
+      "environment": "staging",
+      "sha": "43f6cd6aefb3",
+      "deployedAt": "2026-09-22T13:40:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "43f6cd6aefb3",
+      "deployedAt": "2026-09-22T15:40:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107074",
+      "commitShas": ["de18dc23a42e", "43f6cd6aefb3"]
+    },
+    {
+      "environment": "staging",
+      "sha": "3d3c8e32dd17",
+      "deployedAt": "2026-09-22T17:55:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "72182aee31d5",
+      "deployedAt": "2026-09-22T18:42:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "3d3c8e32dd17",
+      "deployedAt": "2026-09-22T19:55:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107076",
+      "commitShas": ["1d0542ec4216", "3d3c8e32dd17"]
+    },
+    {
+      "environment": "production",
+      "sha": "72182aee31d5",
+      "deployedAt": "2026-09-22T20:42:00Z",
+      "status": "rolled_back",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107078",
+      "commitShas": ["72182aee31d5"]
+    },
+    {
+      "environment": "production",
+      "sha": "31d35685a892",
+      "deployedAt": "2026-09-23T18:25:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107080",
+      "commitShas": ["492b0ce92d28", "31d35685a892"]
+    },
+    {
+      "environment": "production",
+      "sha": "2b90664d3adf",
+      "deployedAt": "2026-09-24T15:43:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107081",
+      "commitShas": ["772f14084c7b", "2b90664d3adf"]
+    },
+    {
+      "environment": "staging",
+      "sha": "81b199b1d07c",
+      "deployedAt": "2026-09-24T17:22:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "4c5b3a994301",
+      "deployedAt": "2026-09-24T18:17:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "81b199b1d07c",
+      "deployedAt": "2026-09-24T19:22:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107082",
+      "commitShas": ["c6088d1b55fa", "81b199b1d07c"]
+    },
+    {
+      "environment": "production",
+      "sha": "4c5b3a994301",
+      "deployedAt": "2026-09-24T20:17:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107084",
+      "commitShas": ["95ab6135699e", "4c5b3a994301"]
+    },
+    {
+      "environment": "staging",
+      "sha": "fef0880e4e79",
+      "deployedAt": "2026-09-25T14:46:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "staging",
+      "sha": "db5c06e2fdf2",
+      "deployedAt": "2026-09-25T15:21:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "fef0880e4e79",
+      "deployedAt": "2026-09-25T16:46:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107086",
+      "commitShas": ["fef0880e4e79"]
+    },
+    {
+      "environment": "production",
+      "sha": "db5c06e2fdf2",
+      "deployedAt": "2026-09-25T17:21:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107088",
+      "commitShas": ["dbe344dcf2c0", "db5c06e2fdf2"]
+    },
+    {
+      "environment": "staging",
+      "sha": "a36742b2753f",
+      "deployedAt": "2026-09-28T11:49:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "a36742b2753f",
+      "deployedAt": "2026-09-28T13:49:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107090",
+      "commitShas": ["f4688611863f", "1403b0c121cd", "a36742b2753f"]
+    },
+    {
+      "environment": "production",
+      "sha": "23e4db911409",
+      "deployedAt": "2026-09-28T17:52:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107092",
+      "commitShas": ["23e4db911409"]
+    },
+    {
+      "environment": "production",
+      "sha": "d13bde445957",
+      "deployedAt": "2026-09-29T16:45:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107093",
+      "commitShas": ["d13bde445957"]
+    },
+    {
+      "environment": "production",
+      "sha": "bf12cbe09314",
+      "deployedAt": "2026-09-29T18:14:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107094",
+      "commitShas": ["bf12cbe09314"]
+    },
+    {
+      "environment": "production",
+      "sha": "2b461af7b8c1",
+      "deployedAt": "2026-09-29T18:17:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107095",
+      "commitShas": ["2b461af7b8c1"]
+    },
+    {
+      "environment": "production",
+      "sha": "a138c3174bee",
+      "deployedAt": "2026-09-30T13:25:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107096",
+      "commitShas": ["892393955f62", "a138c3174bee"]
+    },
+    {
+      "environment": "production",
+      "sha": "6b7c9c87ae96",
+      "deployedAt": "2026-09-30T14:56:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107097",
+      "commitShas": ["830994a02a61", "6b7c9c87ae96"]
+    },
+    {
+      "environment": "staging",
+      "sha": "b6f0aaec3944",
+      "deployedAt": "2026-10-01T11:27:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "b6f0aaec3944",
+      "deployedAt": "2026-10-01T13:27:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107098",
+      "commitShas": ["b6f0aaec3944"]
+    },
+    {
+      "environment": "production",
+      "sha": "82fcf39aa21c",
+      "deployedAt": "2026-10-02T15:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107100",
+      "commitShas": ["82fcf39aa21c"]
+    },
+    {
+      "environment": "staging",
+      "sha": "c10d013a32e3",
+      "deployedAt": "2026-10-05T16:04:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "c10d013a32e3",
+      "deployedAt": "2026-10-05T18:04:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107101",
+      "commitShas": ["2626432c985d", "e62a2942fe86", "c10d013a32e3"]
+    },
+    {
+      "environment": "staging",
+      "sha": "40d0c985ffca",
+      "deployedAt": "2026-10-06T14:15:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "40d0c985ffca",
+      "deployedAt": "2026-10-06T16:15:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107103",
+      "commitShas": ["40d0c985ffca"]
+    },
+    {
+      "environment": "production",
+      "sha": "f398fd5bfe09",
+      "deployedAt": "2026-10-07T20:29:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107105",
+      "commitShas": ["7814a97c2120", "f398fd5bfe09"]
+    },
+    {
+      "environment": "production",
+      "sha": "7f3df7c81b93",
+      "deployedAt": "2026-10-08T19:57:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107106",
+      "commitShas": ["fe3ec6ea717d", "c7f2072882bd", "7f3df7c81b93"]
+    },
+    {
+      "environment": "production",
+      "sha": "5ef78d863971",
+      "deployedAt": "2026-10-09T16:33:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107107",
+      "commitShas": ["5ef78d863971"]
+    },
+    {
+      "environment": "staging",
+      "sha": "8586100fd88d",
+      "deployedAt": "2026-10-09T18:03:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "8586100fd88d",
+      "deployedAt": "2026-10-09T20:03:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107108",
+      "commitShas": ["63f6c3a8bbd3", "8586100fd88d"]
+    },
+    {
+      "environment": "production",
+      "sha": "46cdb58b79dd",
+      "deployedAt": "2026-10-09T20:25:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107110",
+      "commitShas": ["57cc528ef9b3", "46cdb58b79dd"]
+    },
+    {
+      "environment": "production",
+      "sha": "ae7b35385d9d",
+      "deployedAt": "2026-10-12T16:41:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107111",
+      "commitShas": ["72d0a91b4ba8", "ae7b35385d9d"]
+    },
+    {
+      "environment": "staging",
+      "sha": "922870c20628",
+      "deployedAt": "2026-10-12T17:48:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "922870c20628",
+      "deployedAt": "2026-10-12T19:48:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107112",
+      "commitShas": ["922870c20628"]
+    },
+    {
+      "environment": "staging",
+      "sha": "8822f30804eb",
+      "deployedAt": "2026-10-13T16:53:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "8822f30804eb",
+      "deployedAt": "2026-10-13T18:53:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107114",
+      "commitShas": ["8822f30804eb"]
+    },
+    {
+      "environment": "production",
+      "sha": "3cf7a9c956d8",
+      "deployedAt": "2026-10-14T14:24:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107116",
+      "commitShas": ["3cf7a9c956d8"]
+    },
+    {
+      "environment": "production",
+      "sha": "efcacf79a16c",
+      "deployedAt": "2026-10-14T20:20:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107117",
+      "commitShas": ["efcacf79a16c"]
+    },
+    {
+      "environment": "staging",
+      "sha": "65f9ce09d458",
+      "deployedAt": "2026-10-15T11:01:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "65f9ce09d458",
+      "deployedAt": "2026-10-15T13:01:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107118",
+      "commitShas": ["a07939f4dcb1", "65f9ce09d458"]
+    },
+    {
+      "environment": "production",
+      "sha": "eebaac2f7d26",
+      "deployedAt": "2026-10-15T15:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107120",
+      "commitShas": ["3d1087bc5294", "6256f06d6e0d", "eebaac2f7d26"]
+    },
+    {
+      "environment": "production",
+      "sha": "a8d5f495cf3d",
+      "deployedAt": "2026-10-16T18:50:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107121",
+      "commitShas": ["a8d5f495cf3d"]
+    },
+    {
+      "environment": "production",
+      "sha": "ab23631c4129",
+      "deployedAt": "2026-10-19T16:36:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107122",
+      "commitShas": ["ab23631c4129"]
+    },
+    {
+      "environment": "production",
+      "sha": "521323ed4fb8",
+      "deployedAt": "2026-10-19T18:22:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107123",
+      "commitShas": ["60ba19ff25b3", "521323ed4fb8"]
+    },
+    {
+      "environment": "staging",
+      "sha": "3b9ad9f1ae79",
+      "deployedAt": "2026-10-20T17:42:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "3b9ad9f1ae79",
+      "deployedAt": "2026-10-20T19:42:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107124",
+      "commitShas": ["3b9ad9f1ae79"]
+    },
+    {
+      "environment": "staging",
+      "sha": "e253819e53de",
+      "deployedAt": "2026-10-21T15:24:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "e253819e53de",
+      "deployedAt": "2026-10-21T17:24:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107126",
+      "commitShas": ["e253819e53de"]
+    },
+    {
+      "environment": "staging",
+      "sha": "7e945264a2aa",
+      "deployedAt": "2026-10-21T18:06:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "7e945264a2aa",
+      "deployedAt": "2026-10-21T20:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107128",
+      "commitShas": ["7e945264a2aa"]
+    },
+    {
+      "environment": "production",
+      "sha": "d97b1d64d508",
+      "deployedAt": "2026-10-22T15:17:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107130",
+      "commitShas": ["b4c8a741ceb8", "d97b1d64d508"]
+    },
+    {
+      "environment": "production",
+      "sha": "a7c539aa425e",
+      "deployedAt": "2026-10-22T20:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107131",
+      "commitShas": ["c37713d667e8", "a7c539aa425e"]
+    },
+    {
+      "environment": "staging",
+      "sha": "d6873e13aaf5",
+      "deployedAt": "2026-10-23T16:30:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "d6873e13aaf5",
+      "deployedAt": "2026-10-23T18:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107132",
+      "commitShas": ["8014d277bcc6", "b87a6c3bb329", "d6873e13aaf5"]
+    },
+    {
+      "environment": "staging",
+      "sha": "83e3bae3e0d3",
+      "deployedAt": "2026-10-26T15:17:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "83e3bae3e0d3",
+      "deployedAt": "2026-10-26T17:17:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107134",
+      "commitShas": ["7cd1aa3f0e81", "83e3bae3e0d3"]
+    },
+    {
+      "environment": "staging",
+      "sha": "08a8af1204d0",
+      "deployedAt": "2026-10-27T13:13:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "08a8af1204d0",
+      "deployedAt": "2026-10-27T15:13:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107136",
+      "commitShas": ["a46f06d82923", "08a8af1204d0"]
+    },
+    {
+      "environment": "staging",
+      "sha": "cfa438f4c94c",
+      "deployedAt": "2026-10-28T12:22:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "cfa438f4c94c",
+      "deployedAt": "2026-10-28T14:22:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107138",
+      "commitShas": ["cfa438f4c94c"]
+    },
+    {
+      "environment": "production",
+      "sha": "9606a5d03e18",
+      "deployedAt": "2026-10-28T17:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107140",
+      "commitShas": ["9606a5d03e18"]
+    },
+    {
+      "environment": "staging",
+      "sha": "640a01469d7a",
+      "deployedAt": "2026-10-29T14:00:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "640a01469d7a",
+      "deployedAt": "2026-10-29T16:00:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107141",
+      "commitShas": ["640a01469d7a"]
+    },
+    {
+      "environment": "production",
+      "sha": "b8576c9fa4bb",
+      "deployedAt": "2026-10-30T15:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107143",
+      "commitShas": ["7d5aa3a9db64", "b11e81da50df", "b8576c9fa4bb"]
+    },
+    {
+      "environment": "production",
+      "sha": "f36d4f245e88",
+      "deployedAt": "2026-10-30T19:24:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107144",
+      "commitShas": ["f36d4f245e88"]
+    },
+    {
+      "environment": "staging",
+      "sha": "5088cf33b7ed",
+      "deployedAt": "2026-11-02T17:50:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "5088cf33b7ed",
+      "deployedAt": "2026-11-02T19:50:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107145",
+      "commitShas": ["5088cf33b7ed"]
+    },
+    {
+      "environment": "staging",
+      "sha": "25e3cb940246",
+      "deployedAt": "2026-11-03T18:06:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "7d4b6bcc18b0",
+      "deployedAt": "2026-11-03T19:36:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107147",
+      "commitShas": ["7d4b6bcc18b0"]
+    },
+    {
+      "environment": "production",
+      "sha": "25e3cb940246",
+      "deployedAt": "2026-11-03T20:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107148",
+      "commitShas": ["25e3cb940246"]
+    },
+    {
+      "environment": "staging",
+      "sha": "0ec1c3659873",
+      "deployedAt": "2026-11-04T13:33:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "0ec1c3659873",
+      "deployedAt": "2026-11-04T15:33:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107150",
+      "commitShas": ["56f754b37be5", "0ec1c3659873"]
+    },
+    {
+      "environment": "staging",
+      "sha": "34a161c8597a",
+      "deployedAt": "2026-11-05T11:58:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "34a161c8597a",
+      "deployedAt": "2026-11-05T13:58:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107152",
+      "commitShas": ["dd6c0124aec0", "34a161c8597a"]
+    },
+    {
+      "environment": "staging",
+      "sha": "34747632b60b",
+      "deployedAt": "2026-11-05T16:42:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "34747632b60b",
+      "deployedAt": "2026-11-05T18:42:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107154",
+      "commitShas": ["34747632b60b"]
+    },
+    {
+      "environment": "staging",
+      "sha": "2b903a3100d5",
+      "deployedAt": "2026-11-06T12:11:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "2b903a3100d5",
+      "deployedAt": "2026-11-06T14:11:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107156",
+      "commitShas": ["2b903a3100d5"]
+    },
+    {
+      "environment": "staging",
+      "sha": "40cbb8772d11",
+      "deployedAt": "2026-11-06T18:38:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "199fc2361310",
+      "deployedAt": "2026-11-06T20:19:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107158",
+      "commitShas": ["c3043f620832", "199fc2361310"]
+    },
+    {
+      "environment": "production",
+      "sha": "40cbb8772d11",
+      "deployedAt": "2026-11-06T20:38:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107159",
+      "commitShas": ["cd967961c76b", "40cbb8772d11"]
+    },
+    {
+      "environment": "staging",
+      "sha": "3136e3dbf798",
+      "deployedAt": "2026-11-09T16:06:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "3136e3dbf798",
+      "deployedAt": "2026-11-09T18:06:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107161",
+      "commitShas": ["3136e3dbf798"]
+    },
+    {
+      "environment": "staging",
+      "sha": "b4a60af76fff",
+      "deployedAt": "2026-11-10T11:24:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "b4a60af76fff",
+      "deployedAt": "2026-11-10T13:24:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107163",
+      "commitShas": ["edaf420f0349", "b4a60af76fff"]
+    },
+    {
+      "environment": "production",
+      "sha": "5e80bafc67d8",
+      "deployedAt": "2026-11-10T15:26:00Z",
+      "status": "failure",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107165",
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "5e80bafc67d8",
+      "deployedAt": "2026-11-10T16:03:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107165-retry",
+      "commitShas": ["5e80bafc67d8"]
+    },
+    {
+      "environment": "staging",
+      "sha": "48951d14bc58",
+      "deployedAt": "2026-11-11T13:41:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "48951d14bc58",
+      "deployedAt": "2026-11-11T15:41:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107167",
+      "commitShas": ["3c0b2f56a039", "48951d14bc58"]
+    },
+    {
+      "environment": "production",
+      "sha": "e81767932303",
+      "deployedAt": "2026-11-11T19:58:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107169",
+      "commitShas": ["e3b5d672d70f", "e81767932303"]
+    },
+    {
+      "environment": "production",
+      "sha": "32daafe09561",
+      "deployedAt": "2026-11-11T20:01:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107170",
+      "commitShas": ["32daafe09561"]
+    },
+    {
+      "environment": "staging",
+      "sha": "060a761a5d96",
+      "deployedAt": "2026-11-12T11:13:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "060a761a5d96",
+      "deployedAt": "2026-11-12T13:13:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107171",
+      "commitShas": ["7a52b6c069c2", "49b2dc6455e3", "060a761a5d96"]
+    },
+    {
+      "environment": "production",
+      "sha": "f5e8091970f2",
+      "deployedAt": "2026-11-12T17:22:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107173",
+      "commitShas": ["de8047bb270e", "f5e8091970f2"]
+    },
+    {
+      "environment": "production",
+      "sha": "5035aea6e2f0",
+      "deployedAt": "2026-11-13T14:02:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107174",
+      "commitShas": ["88269d61f53c", "5035aea6e2f0"]
+    },
+    {
+      "environment": "production",
+      "sha": "2466a68045f3",
+      "deployedAt": "2026-11-13T17:54:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107175",
+      "commitShas": ["7f6e38e1046a", "2466a68045f3"]
+    },
+    {
+      "environment": "staging",
+      "sha": "2fd645f6ca2d",
+      "deployedAt": "2026-11-16T14:52:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "1965b3457734",
+      "deployedAt": "2026-11-16T16:38:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107176",
+      "commitShas": ["1965b3457734"]
+    },
+    {
+      "environment": "production",
+      "sha": "2fd645f6ca2d",
+      "deployedAt": "2026-11-16T16:52:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107177",
+      "commitShas": ["2fd645f6ca2d"]
+    },
+    {
+      "environment": "production",
+      "sha": "e24b6c89498b",
+      "deployedAt": "2026-11-17T14:27:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107179",
+      "commitShas": ["4b6e63a42c41", "e24b6c89498b"]
+    },
+    {
+      "environment": "staging",
+      "sha": "feb1be85d498",
+      "deployedAt": "2026-11-18T14:11:00Z",
+      "status": "success",
+      "url": null,
+      "commitShas": []
+    },
+    {
+      "environment": "production",
+      "sha": "feb1be85d498",
+      "deployedAt": "2026-11-18T16:11:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107180",
+      "commitShas": ["e84cb674f779", "feb1be85d498"]
+    },
+    {
+      "environment": "production",
+      "sha": "9521cfec7387",
+      "deployedAt": "2026-11-18T17:46:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107182",
+      "commitShas": ["9521cfec7387"]
+    },
+    {
+      "environment": "production",
+      "sha": "784dc6c1cdb2",
+      "deployedAt": "2026-11-19T13:30:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107183",
+      "commitShas": ["784dc6c1cdb2"]
+    },
+    {
+      "environment": "production",
+      "sha": "b5bc3a8a2922",
+      "deployedAt": "2026-11-20T13:59:00Z",
+      "status": "success",
+      "url": "https://example.invalid/lab-demo/campanhas-api/deploys/107184",
+      "commitShas": ["b5bc3a8a2922"]
+    }
+  ],
+  "changes": [
+    {
+      "pullNumber": 401,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "939a0b3a8980",
+      "firstCommitAt": "2026-08-17T00:16:00Z",
+      "mergedAt": "2026-08-17T09:34:00Z"
+    },
+    {
+      "pullNumber": 402,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "ff88b136ae73",
+      "firstCommitAt": "2026-08-16T19:06:00Z",
+      "mergedAt": "2026-08-17T07:03:00Z"
+    },
+    {
+      "pullNumber": 403,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "78f9367b1cb6",
+      "firstCommitAt": "2026-08-17T05:06:00Z",
+      "mergedAt": "2026-08-17T09:54:00Z"
+    },
+    {
+      "pullNumber": 404,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "418a97529885",
+      "firstCommitAt": "2026-08-17T09:10:00Z",
+      "mergedAt": "2026-08-18T04:47:00Z"
+    },
+    {
+      "pullNumber": 405,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "2ff20ac433d7",
+      "firstCommitAt": "2026-08-18T08:44:00Z",
+      "mergedAt": "2026-08-19T00:27:00Z"
+    },
+    {
+      "pullNumber": 406,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "9f809549861c",
+      "firstCommitAt": "2026-08-19T15:19:00Z",
+      "mergedAt": "2026-08-20T08:13:00Z"
+    },
+    {
+      "pullNumber": 407,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "003a87065bbd",
+      "firstCommitAt": "2026-08-19T10:47:00Z",
+      "mergedAt": "2026-08-19T19:13:00Z"
+    },
+    {
+      "pullNumber": 408,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "f6981ed307fc",
+      "firstCommitAt": "2026-08-20T00:12:00Z",
+      "mergedAt": "2026-08-20T03:47:00Z"
+    },
+    {
+      "pullNumber": 409,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "b0a5f5143175",
+      "firstCommitAt": "2026-08-20T03:34:00Z",
+      "mergedAt": "2026-08-20T18:13:00Z"
+    },
+    {
+      "pullNumber": 410,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "976a50424c48",
+      "firstCommitAt": "2026-08-21T06:20:00Z",
+      "mergedAt": "2026-08-21T11:46:00Z"
+    },
+    {
+      "pullNumber": 411,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "acf1c6102555",
+      "firstCommitAt": "2026-08-22T21:14:00Z",
+      "mergedAt": "2026-08-23T11:02:00Z"
+    },
+    {
+      "pullNumber": 412,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "f211cba401bc",
+      "firstCommitAt": "2026-08-23T22:13:00Z",
+      "mergedAt": "2026-08-24T09:46:00Z"
+    },
+    {
+      "pullNumber": 413,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "84e5f7debbb5",
+      "firstCommitAt": "2026-08-22T21:56:00Z",
+      "mergedAt": "2026-08-23T17:13:00Z"
+    },
+    {
+      "pullNumber": 414,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "15f9428c29dd",
+      "firstCommitAt": "2026-08-24T16:20:00Z",
+      "mergedAt": "2026-08-25T07:22:00Z"
+    },
+    {
+      "pullNumber": 415,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "9fe9bfc17d03",
+      "firstCommitAt": "2026-08-25T08:56:00Z",
+      "mergedAt": "2026-08-25T18:41:00Z"
+    },
+    {
+      "pullNumber": 416,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "fcb50b75428e",
+      "firstCommitAt": "2026-08-25T06:54:00Z",
+      "mergedAt": "2026-08-25T18:49:00Z"
+    },
+    {
+      "pullNumber": 417,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "7213dd594750",
+      "firstCommitAt": "2026-08-25T16:05:00Z",
+      "mergedAt": "2026-08-25T18:15:00Z"
+    },
+    {
+      "pullNumber": 418,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "0fc26769dc60",
+      "firstCommitAt": "2026-08-25T08:15:00Z",
+      "mergedAt": "2026-08-25T20:57:00Z"
+    },
+    {
+      "pullNumber": 419,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "6906ab9efa34",
+      "firstCommitAt": "2026-08-25T13:48:00Z",
+      "mergedAt": "2026-08-25T20:49:00Z"
+    },
+    {
+      "pullNumber": 420,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "a923af9456fb",
+      "firstCommitAt": "2026-08-26T01:30:00Z",
+      "mergedAt": "2026-08-26T06:23:00Z"
+    },
+    {
+      "pullNumber": 421,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "f2b066c3d9da",
+      "firstCommitAt": "2026-08-25T12:12:00Z",
+      "mergedAt": "2026-08-26T04:51:00Z"
+    },
+    {
+      "pullNumber": 422,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "65cd545e2aea",
+      "firstCommitAt": "2026-08-25T21:28:00Z",
+      "mergedAt": "2026-08-26T11:19:00Z"
+    },
+    {
+      "pullNumber": 423,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "5d38ce7a8f20",
+      "firstCommitAt": "2026-08-26T11:32:00Z",
+      "mergedAt": "2026-08-26T17:40:00Z"
+    },
+    {
+      "pullNumber": 424,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "10371b430c08",
+      "firstCommitAt": "2026-08-25T23:08:00Z",
+      "mergedAt": "2026-08-26T16:31:00Z"
+    },
+    {
+      "pullNumber": 425,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "28ffec43dd4c",
+      "firstCommitAt": "2026-08-26T12:25:00Z",
+      "mergedAt": "2026-08-26T18:56:00Z"
+    },
+    {
+      "pullNumber": 426,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "2d4aacdbec0e",
+      "firstCommitAt": "2026-08-26T13:45:00Z",
+      "mergedAt": "2026-08-26T18:49:00Z"
+    },
+    {
+      "pullNumber": 427,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "e3ec86934770",
+      "firstCommitAt": "2026-08-26T15:43:00Z",
+      "mergedAt": "2026-08-27T01:01:00Z"
+    },
+    {
+      "pullNumber": 428,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "2c70d4cb7ed6",
+      "firstCommitAt": "2026-08-27T00:42:00Z",
+      "mergedAt": "2026-08-27T09:20:00Z"
+    },
+    {
+      "pullNumber": 429,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "a8753a7ff83a",
+      "firstCommitAt": "2026-08-26T15:54:00Z",
+      "mergedAt": "2026-08-27T06:42:00Z"
+    },
+    {
+      "pullNumber": 430,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "b3cd8851422e",
+      "firstCommitAt": "2026-08-28T04:23:00Z",
+      "mergedAt": "2026-08-28T10:55:00Z"
+    },
+    {
+      "pullNumber": 431,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "46170cf7b9c8",
+      "firstCommitAt": "2026-08-27T19:45:00Z",
+      "mergedAt": "2026-08-28T11:42:00Z"
+    },
+    {
+      "pullNumber": 432,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "ab176e74b19e",
+      "firstCommitAt": "2026-08-28T05:05:00Z",
+      "mergedAt": "2026-08-28T15:41:00Z"
+    },
+    {
+      "pullNumber": 433,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "b5ac683e816a",
+      "firstCommitAt": "2026-08-27T20:35:00Z",
+      "mergedAt": "2026-08-28T16:07:00Z"
+    },
+    {
+      "pullNumber": 434,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "94db4999ff2f",
+      "firstCommitAt": "2026-08-28T07:49:00Z",
+      "mergedAt": "2026-08-28T15:54:00Z"
+    },
+    {
+      "pullNumber": 435,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "9c4a294d9523",
+      "firstCommitAt": "2026-08-27T23:53:00Z",
+      "mergedAt": "2026-08-28T17:02:00Z"
+    },
+    {
+      "pullNumber": 436,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "de445de94e95",
+      "firstCommitAt": "2026-08-28T02:24:00Z",
+      "mergedAt": "2026-08-28T16:57:00Z"
+    },
+    {
+      "pullNumber": 437,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "3dab300257d8",
+      "firstCommitAt": "2026-08-30T04:28:00Z",
+      "mergedAt": "2026-08-30T13:23:00Z"
+    },
+    {
+      "pullNumber": 438,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "50106b9ea27e",
+      "firstCommitAt": "2026-08-31T09:43:00Z",
+      "mergedAt": "2026-08-31T17:25:00Z"
+    },
+    {
+      "pullNumber": 439,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "79316043526d",
+      "firstCommitAt": "2026-08-31T00:51:00Z",
+      "mergedAt": "2026-08-31T15:49:00Z"
+    },
+    {
+      "pullNumber": 440,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "99ef827522df",
+      "firstCommitAt": "2026-08-31T15:28:00Z",
+      "mergedAt": "2026-09-01T06:19:00Z"
+    },
+    {
+      "pullNumber": 441,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "7a5cc89de5e7",
+      "firstCommitAt": "2026-09-01T11:44:00Z",
+      "mergedAt": "2026-09-01T18:37:00Z"
+    },
+    {
+      "pullNumber": 442,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "9adcefc5e034",
+      "firstCommitAt": "2026-09-01T15:06:00Z",
+      "mergedAt": "2026-09-01T19:37:00Z"
+    },
+    {
+      "pullNumber": 443,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "2a9ec3d8b36f",
+      "firstCommitAt": "2026-09-01T01:37:00Z",
+      "mergedAt": "2026-09-01T20:47:00Z"
+    },
+    {
+      "pullNumber": 444,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "405871128cce",
+      "firstCommitAt": "2026-09-01T13:34:00Z",
+      "mergedAt": "2026-09-01T20:44:00Z"
+    },
+    {
+      "pullNumber": 445,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "3faf84a8e4a7",
+      "firstCommitAt": "2026-09-01T17:47:00Z",
+      "mergedAt": "2026-09-02T07:57:00Z"
+    },
+    {
+      "pullNumber": 446,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "dfb5bd178ae5",
+      "firstCommitAt": "2026-09-02T17:37:00Z",
+      "mergedAt": "2026-09-02T19:40:00Z"
+    },
+    {
+      "pullNumber": 447,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "054df8dbfd02",
+      "firstCommitAt": "2026-09-02T14:06:00Z",
+      "mergedAt": "2026-09-02T17:59:00Z"
+    },
+    {
+      "pullNumber": 448,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "a286712dbbad",
+      "firstCommitAt": "2026-09-02T10:55:00Z",
+      "mergedAt": "2026-09-02T17:48:00Z"
+    },
+    {
+      "pullNumber": 449,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "8b5d48e0783d",
+      "firstCommitAt": "2026-09-02T10:07:00Z",
+      "mergedAt": "2026-09-02T20:09:00Z"
+    },
+    {
+      "pullNumber": 450,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "88bf2c3ffdb7",
+      "firstCommitAt": "2026-09-02T16:42:00Z",
+      "mergedAt": "2026-09-02T20:14:00Z"
+    },
+    {
+      "pullNumber": 451,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "ae1455e65b72",
+      "firstCommitAt": "2026-09-02T18:36:00Z",
+      "mergedAt": "2026-09-03T06:24:00Z"
+    },
+    {
+      "pullNumber": 452,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "1ae11043b437",
+      "firstCommitAt": "2026-09-03T13:47:00Z",
+      "mergedAt": "2026-09-03T16:27:00Z"
+    },
+    {
+      "pullNumber": 453,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "ecb73520c4e9",
+      "firstCommitAt": "2026-09-03T02:13:00Z",
+      "mergedAt": "2026-09-03T22:01:00Z"
+    },
+    {
+      "pullNumber": 454,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "0696ac63eef0",
+      "firstCommitAt": "2026-09-04T06:11:00Z",
+      "mergedAt": "2026-09-04T15:51:00Z"
+    },
+    {
+      "pullNumber": 455,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "fc521e318a3b",
+      "firstCommitAt": "2026-09-04T02:09:00Z",
+      "mergedAt": "2026-09-04T17:30:00Z"
+    },
+    {
+      "pullNumber": 456,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "6734374cd30b",
+      "firstCommitAt": "2026-09-04T16:53:00Z",
+      "mergedAt": "2026-09-04T19:29:00Z"
+    },
+    {
+      "pullNumber": 457,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "429d0683b28d",
+      "firstCommitAt": "2026-09-05T22:27:00Z",
+      "mergedAt": "2026-09-06T11:10:00Z"
+    },
+    {
+      "pullNumber": 458,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "f724d5a5e8e2",
+      "firstCommitAt": "2026-09-07T15:14:00Z",
+      "mergedAt": "2026-09-07T18:14:00Z"
+    },
+    {
+      "pullNumber": 459,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "d4b80fac60f2",
+      "firstCommitAt": "2026-09-07T17:14:00Z",
+      "mergedAt": "2026-09-08T10:50:00Z"
+    },
+    {
+      "pullNumber": 460,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "83b2a15b5b30",
+      "firstCommitAt": "2026-09-08T20:03:00Z",
+      "mergedAt": "2026-09-09T03:57:00Z"
+    },
+    {
+      "pullNumber": 461,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "b2b2efb15d1a",
+      "firstCommitAt": "2026-09-09T03:35:00Z",
+      "mergedAt": "2026-09-09T18:23:00Z"
+    },
+    {
+      "pullNumber": 462,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "28e944639163",
+      "firstCommitAt": "2026-09-09T06:53:00Z",
+      "mergedAt": "2026-09-09T18:14:00Z"
+    },
+    {
+      "pullNumber": 463,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "54cca648871e",
+      "firstCommitAt": "2026-09-09T06:48:00Z",
+      "mergedAt": "2026-09-09T18:32:00Z"
+    },
+    {
+      "pullNumber": 464,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "7dab255606a1",
+      "firstCommitAt": "2026-09-09T15:11:00Z",
+      "mergedAt": "2026-09-09T18:35:00Z"
+    },
+    {
+      "pullNumber": 465,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "c348c43f59a8",
+      "firstCommitAt": "2026-09-09T23:48:00Z",
+      "mergedAt": "2026-09-10T15:32:00Z"
+    },
+    {
+      "pullNumber": 466,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "52935613c9da",
+      "firstCommitAt": "2026-09-09T21:35:00Z",
+      "mergedAt": "2026-09-10T17:35:00Z"
+    },
+    {
+      "pullNumber": 467,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "563f4cb9d056",
+      "firstCommitAt": "2026-09-10T12:57:00Z",
+      "mergedAt": "2026-09-10T17:57:00Z"
+    },
+    {
+      "pullNumber": 468,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "539683f20423",
+      "firstCommitAt": "2026-09-10T15:39:00Z",
+      "mergedAt": "2026-09-11T02:19:00Z"
+    },
+    {
+      "pullNumber": 469,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "b37164632a04",
+      "firstCommitAt": "2026-09-10T23:19:00Z",
+      "mergedAt": "2026-09-11T10:58:00Z"
+    },
+    {
+      "pullNumber": 470,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "975305f02008",
+      "firstCommitAt": "2026-09-13T04:00:00Z",
+      "mergedAt": "2026-09-13T15:51:00Z"
+    },
+    {
+      "pullNumber": 471,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "4f5bebbd76da",
+      "firstCommitAt": "2026-09-14T01:46:00Z",
+      "mergedAt": "2026-09-14T17:45:00Z"
+    },
+    {
+      "pullNumber": 472,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "e1e236860407",
+      "firstCommitAt": "2026-09-14T04:10:00Z",
+      "mergedAt": "2026-09-14T17:12:00Z"
+    },
+    {
+      "pullNumber": 473,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "b6fadd27361c",
+      "firstCommitAt": "2026-09-15T01:34:00Z",
+      "mergedAt": "2026-09-15T14:50:00Z"
+    },
+    {
+      "pullNumber": 474,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "9b90f3f86bfd",
+      "firstCommitAt": "2026-09-14T05:12:00Z",
+      "mergedAt": "2026-09-15T01:06:00Z"
+    },
+    {
+      "pullNumber": 475,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "0ea0aba26156",
+      "firstCommitAt": "2026-09-15T02:11:00Z",
+      "mergedAt": "2026-09-15T19:02:00Z"
+    },
+    {
+      "pullNumber": 476,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "704895f838ec",
+      "firstCommitAt": "2026-09-15T21:12:00Z",
+      "mergedAt": "2026-09-16T04:48:00Z"
+    },
+    {
+      "pullNumber": 477,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "03c1dd079ec7",
+      "firstCommitAt": "2026-09-16T11:33:00Z",
+      "mergedAt": "2026-09-16T16:16:00Z"
+    },
+    {
+      "pullNumber": 478,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "c2714caa253e",
+      "firstCommitAt": "2026-09-16T21:34:00Z",
+      "mergedAt": "2026-09-17T17:03:00Z"
+    },
+    {
+      "pullNumber": 479,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "9b04a2efc6e5",
+      "firstCommitAt": "2026-09-17T21:47:00Z",
+      "mergedAt": "2026-09-18T06:38:00Z"
+    },
+    {
+      "pullNumber": 480,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "87c8ac3364d1",
+      "firstCommitAt": "2026-09-18T04:42:00Z",
+      "mergedAt": "2026-09-18T07:51:00Z"
+    },
+    {
+      "pullNumber": 481,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "e81677537c08",
+      "firstCommitAt": "2026-09-18T11:39:00Z",
+      "mergedAt": "2026-09-18T15:24:00Z"
+    },
+    {
+      "pullNumber": 482,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "038189026a8d",
+      "firstCommitAt": "2026-09-17T21:31:00Z",
+      "mergedAt": "2026-09-18T15:30:00Z"
+    },
+    {
+      "pullNumber": 483,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "059c3e829ba2",
+      "firstCommitAt": "2026-09-18T10:35:00Z",
+      "mergedAt": "2026-09-18T16:19:00Z"
+    },
+    {
+      "pullNumber": 484,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "eaf852ace021",
+      "firstCommitAt": "2026-09-18T12:19:00Z",
+      "mergedAt": "2026-09-18T17:04:00Z"
+    },
+    {
+      "pullNumber": 485,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "657b49f7fdcd",
+      "firstCommitAt": "2026-09-20T00:16:00Z",
+      "mergedAt": "2026-09-20T03:02:00Z"
+    },
+    {
+      "pullNumber": 486,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "194c5f196de5",
+      "firstCommitAt": "2026-09-19T10:09:00Z",
+      "mergedAt": "2026-09-20T03:44:00Z"
+    },
+    {
+      "pullNumber": 487,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "de18dc23a42e",
+      "firstCommitAt": "2026-09-21T19:32:00Z",
+      "mergedAt": "2026-09-22T10:02:00Z"
+    },
+    {
+      "pullNumber": 488,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "43f6cd6aefb3",
+      "firstCommitAt": "2026-09-22T00:37:00Z",
+      "mergedAt": "2026-09-22T08:04:00Z"
+    },
+    {
+      "pullNumber": 489,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "1d0542ec4216",
+      "firstCommitAt": "2026-09-22T04:06:00Z",
+      "mergedAt": "2026-09-22T16:31:00Z"
+    },
+    {
+      "pullNumber": 490,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "3d3c8e32dd17",
+      "firstCommitAt": "2026-09-22T03:11:00Z",
+      "mergedAt": "2026-09-22T17:07:00Z"
+    },
+    {
+      "pullNumber": 491,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "72182aee31d5",
+      "firstCommitAt": "2026-09-22T17:36:00Z",
+      "mergedAt": "2026-09-22T20:24:00Z"
+    },
+    {
+      "pullNumber": 492,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "492b0ce92d28",
+      "firstCommitAt": "2026-09-22T21:46:00Z",
+      "mergedAt": "2026-09-23T13:49:00Z"
+    },
+    {
+      "pullNumber": 493,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "31d35685a892",
+      "firstCommitAt": "2026-09-22T14:19:00Z",
+      "mergedAt": "2026-09-23T08:42:00Z"
+    },
+    {
+      "pullNumber": 494,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "772f14084c7b",
+      "firstCommitAt": "2026-09-23T17:29:00Z",
+      "mergedAt": "2026-09-24T04:25:00Z"
+    },
+    {
+      "pullNumber": 495,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "2b90664d3adf",
+      "firstCommitAt": "2026-09-24T05:44:00Z",
+      "mergedAt": "2026-09-24T13:56:00Z"
+    },
+    {
+      "pullNumber": 496,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "c6088d1b55fa",
+      "firstCommitAt": "2026-09-24T01:35:00Z",
+      "mergedAt": "2026-09-24T18:22:00Z"
+    },
+    {
+      "pullNumber": 497,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "81b199b1d07c",
+      "firstCommitAt": "2026-09-23T21:59:00Z",
+      "mergedAt": "2026-09-24T16:30:00Z"
+    },
+    {
+      "pullNumber": 498,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "95ab6135699e",
+      "firstCommitAt": "2026-09-24T10:25:00Z",
+      "mergedAt": "2026-09-24T20:04:00Z"
+    },
+    {
+      "pullNumber": 499,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "4c5b3a994301",
+      "firstCommitAt": "2026-09-24T15:29:00Z",
+      "mergedAt": "2026-09-24T20:11:00Z"
+    },
+    {
+      "pullNumber": 500,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "fef0880e4e79",
+      "firstCommitAt": "2026-09-24T17:22:00Z",
+      "mergedAt": "2026-09-25T10:28:00Z"
+    },
+    {
+      "pullNumber": 501,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "dbe344dcf2c0",
+      "firstCommitAt": "2026-09-25T09:10:00Z",
+      "mergedAt": "2026-09-25T16:53:00Z"
+    },
+    {
+      "pullNumber": 502,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "db5c06e2fdf2",
+      "firstCommitAt": "2026-09-25T00:35:00Z",
+      "mergedAt": "2026-09-25T17:09:00Z"
+    },
+    {
+      "pullNumber": 503,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "f4688611863f",
+      "firstCommitAt": "2026-09-25T19:52:00Z",
+      "mergedAt": "2026-09-26T07:07:00Z"
+    },
+    {
+      "pullNumber": 504,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "1403b0c121cd",
+      "firstCommitAt": "2026-09-25T18:21:00Z",
+      "mergedAt": "2026-09-26T13:05:00Z"
+    },
+    {
+      "pullNumber": 505,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "a36742b2753f",
+      "firstCommitAt": "2026-09-27T11:08:00Z",
+      "mergedAt": "2026-09-27T16:27:00Z"
+    },
+    {
+      "pullNumber": 506,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "23e4db911409",
+      "firstCommitAt": "2026-09-28T11:57:00Z",
+      "mergedAt": "2026-09-28T15:50:00Z"
+    },
+    {
+      "pullNumber": 507,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "d13bde445957",
+      "firstCommitAt": "2026-09-28T10:35:00Z",
+      "mergedAt": "2026-09-28T22:53:00Z"
+    },
+    {
+      "pullNumber": 508,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "bf12cbe09314",
+      "firstCommitAt": "2026-09-29T06:28:00Z",
+      "mergedAt": "2026-09-29T17:17:00Z"
+    },
+    {
+      "pullNumber": 509,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "2b461af7b8c1",
+      "firstCommitAt": "2026-09-29T08:10:00Z",
+      "mergedAt": "2026-09-29T18:16:00Z"
+    },
+    {
+      "pullNumber": 510,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "892393955f62",
+      "firstCommitAt": "2026-09-29T07:07:00Z",
+      "mergedAt": "2026-09-29T23:22:00Z"
+    },
+    {
+      "pullNumber": 511,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "a138c3174bee",
+      "firstCommitAt": "2026-09-29T20:22:00Z",
+      "mergedAt": "2026-09-30T07:32:00Z"
+    },
+    {
+      "pullNumber": 512,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "830994a02a61",
+      "firstCommitAt": "2026-09-29T18:56:00Z",
+      "mergedAt": "2026-09-30T14:00:00Z"
+    },
+    {
+      "pullNumber": 513,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "6b7c9c87ae96",
+      "firstCommitAt": "2026-09-30T03:45:00Z",
+      "mergedAt": "2026-09-30T14:39:00Z"
+    },
+    {
+      "pullNumber": 514,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "b6f0aaec3944",
+      "firstCommitAt": "2026-09-30T14:53:00Z",
+      "mergedAt": "2026-10-01T10:18:00Z"
+    },
+    {
+      "pullNumber": 515,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "82fcf39aa21c",
+      "firstCommitAt": "2026-10-01T23:27:00Z",
+      "mergedAt": "2026-10-02T03:30:00Z"
+    },
+    {
+      "pullNumber": 516,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "2626432c985d",
+      "firstCommitAt": "2026-10-04T19:36:00Z",
+      "mergedAt": "2026-10-05T14:15:00Z"
+    },
+    {
+      "pullNumber": 517,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "e62a2942fe86",
+      "firstCommitAt": "2026-10-04T10:53:00Z",
+      "mergedAt": "2026-10-05T04:38:00Z"
+    },
+    {
+      "pullNumber": 518,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "c10d013a32e3",
+      "firstCommitAt": "2026-10-03T11:13:00Z",
+      "mergedAt": "2026-10-04T05:44:00Z"
+    },
+    {
+      "pullNumber": 519,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "40d0c985ffca",
+      "firstCommitAt": "2026-10-05T18:19:00Z",
+      "mergedAt": "2026-10-05T21:49:00Z"
+    },
+    {
+      "pullNumber": 520,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "7814a97c2120",
+      "firstCommitAt": "2026-10-06T20:43:00Z",
+      "mergedAt": "2026-10-07T04:29:00Z"
+    },
+    {
+      "pullNumber": 521,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "f398fd5bfe09",
+      "firstCommitAt": "2026-10-06T15:10:00Z",
+      "mergedAt": "2026-10-07T02:12:00Z"
+    },
+    {
+      "pullNumber": 522,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "fe3ec6ea717d",
+      "firstCommitAt": "2026-10-08T04:38:00Z",
+      "mergedAt": "2026-10-08T14:58:00Z"
+    },
+    {
+      "pullNumber": 523,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "c7f2072882bd",
+      "firstCommitAt": "2026-10-08T01:08:00Z",
+      "mergedAt": "2026-10-08T04:10:00Z"
+    },
+    {
+      "pullNumber": 524,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "7f3df7c81b93",
+      "firstCommitAt": "2026-10-07T22:32:00Z",
+      "mergedAt": "2026-10-08T02:59:00Z"
+    },
+    {
+      "pullNumber": 525,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "5ef78d863971",
+      "firstCommitAt": "2026-10-08T12:47:00Z",
+      "mergedAt": "2026-10-08T23:07:00Z"
+    },
+    {
+      "pullNumber": 526,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "63f6c3a8bbd3",
+      "firstCommitAt": "2026-10-09T02:42:00Z",
+      "mergedAt": "2026-10-09T18:30:00Z"
+    },
+    {
+      "pullNumber": 527,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "8586100fd88d",
+      "firstCommitAt": "2026-10-09T04:06:00Z",
+      "mergedAt": "2026-10-09T18:11:00Z"
+    },
+    {
+      "pullNumber": 528,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "57cc528ef9b3",
+      "firstCommitAt": "2026-10-09T13:45:00Z",
+      "mergedAt": "2026-10-09T20:16:00Z"
+    },
+    {
+      "pullNumber": 529,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "46cdb58b79dd",
+      "firstCommitAt": "2026-10-09T04:16:00Z",
+      "mergedAt": "2026-10-09T20:23:00Z"
+    },
+    {
+      "pullNumber": 530,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "72d0a91b4ba8",
+      "firstCommitAt": "2026-10-10T11:35:00Z",
+      "mergedAt": "2026-10-11T04:27:00Z"
+    },
+    {
+      "pullNumber": 531,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "ae7b35385d9d",
+      "firstCommitAt": "2026-10-10T08:51:00Z",
+      "mergedAt": "2026-10-10T14:38:00Z"
+    },
+    {
+      "pullNumber": 532,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "922870c20628",
+      "firstCommitAt": "2026-10-12T06:25:00Z",
+      "mergedAt": "2026-10-12T18:30:00Z"
+    },
+    {
+      "pullNumber": 533,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "8822f30804eb",
+      "firstCommitAt": "2026-10-12T16:01:00Z",
+      "mergedAt": "2026-10-13T04:20:00Z"
+    },
+    {
+      "pullNumber": 534,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "3cf7a9c956d8",
+      "firstCommitAt": "2026-10-13T19:55:00Z",
+      "mergedAt": "2026-10-14T09:49:00Z"
+    },
+    {
+      "pullNumber": 535,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "efcacf79a16c",
+      "firstCommitAt": "2026-10-14T04:58:00Z",
+      "mergedAt": "2026-10-14T18:54:00Z"
+    },
+    {
+      "pullNumber": 536,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "a07939f4dcb1",
+      "firstCommitAt": "2026-10-15T03:47:00Z",
+      "mergedAt": "2026-10-15T10:40:00Z"
+    },
+    {
+      "pullNumber": 537,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "65f9ce09d458",
+      "firstCommitAt": "2026-10-15T00:04:00Z",
+      "mergedAt": "2026-10-15T06:45:00Z"
+    },
+    {
+      "pullNumber": 538,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "3d1087bc5294",
+      "firstCommitAt": "2026-10-15T00:12:00Z",
+      "mergedAt": "2026-10-15T15:40:00Z"
+    },
+    {
+      "pullNumber": 539,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "6256f06d6e0d",
+      "firstCommitAt": "2026-10-15T10:44:00Z",
+      "mergedAt": "2026-10-15T14:20:00Z"
+    },
+    {
+      "pullNumber": 540,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "eebaac2f7d26",
+      "firstCommitAt": "2026-10-15T05:36:00Z",
+      "mergedAt": "2026-10-15T13:53:00Z"
+    },
+    {
+      "pullNumber": 541,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "a8d5f495cf3d",
+      "firstCommitAt": "2026-10-16T08:06:00Z",
+      "mergedAt": "2026-10-16T16:53:00Z"
+    },
+    {
+      "pullNumber": 542,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "ab23631c4129",
+      "firstCommitAt": "2026-10-17T21:08:00Z",
+      "mergedAt": "2026-10-18T01:13:00Z"
+    },
+    {
+      "pullNumber": 543,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "60ba19ff25b3",
+      "firstCommitAt": "2026-10-19T01:28:00Z",
+      "mergedAt": "2026-10-19T17:20:00Z"
+    },
+    {
+      "pullNumber": 544,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "521323ed4fb8",
+      "firstCommitAt": "2026-10-19T05:59:00Z",
+      "mergedAt": "2026-10-19T18:12:00Z"
+    },
+    {
+      "pullNumber": 545,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "3b9ad9f1ae79",
+      "firstCommitAt": "2026-10-20T05:44:00Z",
+      "mergedAt": "2026-10-20T18:18:00Z"
+    },
+    {
+      "pullNumber": 546,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "e253819e53de",
+      "firstCommitAt": "2026-10-20T20:53:00Z",
+      "mergedAt": "2026-10-21T01:12:00Z"
+    },
+    {
+      "pullNumber": 547,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "7e945264a2aa",
+      "firstCommitAt": "2026-10-21T06:07:00Z",
+      "mergedAt": "2026-10-21T19:04:00Z"
+    },
+    {
+      "pullNumber": 548,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "b4c8a741ceb8",
+      "firstCommitAt": "2026-10-21T03:57:00Z",
+      "mergedAt": "2026-10-21T23:47:00Z"
+    },
+    {
+      "pullNumber": 549,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "d97b1d64d508",
+      "firstCommitAt": "2026-10-21T18:18:00Z",
+      "mergedAt": "2026-10-22T10:38:00Z"
+    },
+    {
+      "pullNumber": 550,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "c37713d667e8",
+      "firstCommitAt": "2026-10-22T02:20:00Z",
+      "mergedAt": "2026-10-22T17:40:00Z"
+    },
+    {
+      "pullNumber": 551,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "a7c539aa425e",
+      "firstCommitAt": "2026-10-21T23:26:00Z",
+      "mergedAt": "2026-10-22T18:29:00Z"
+    },
+    {
+      "pullNumber": 552,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "8014d277bcc6",
+      "firstCommitAt": "2026-10-22T21:44:00Z",
+      "mergedAt": "2026-10-23T07:29:00Z"
+    },
+    {
+      "pullNumber": 553,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "b87a6c3bb329",
+      "firstCommitAt": "2026-10-22T23:50:00Z",
+      "mergedAt": "2026-10-23T08:09:00Z"
+    },
+    {
+      "pullNumber": 554,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "d6873e13aaf5",
+      "firstCommitAt": "2026-10-23T03:48:00Z",
+      "mergedAt": "2026-10-23T08:42:00Z"
+    },
+    {
+      "pullNumber": 555,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "7cd1aa3f0e81",
+      "firstCommitAt": "2026-10-25T20:34:00Z",
+      "mergedAt": "2026-10-26T12:24:00Z"
+    },
+    {
+      "pullNumber": 556,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "83e3bae3e0d3",
+      "firstCommitAt": "2026-10-25T04:18:00Z",
+      "mergedAt": "2026-10-25T20:17:00Z"
+    },
+    {
+      "pullNumber": 557,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "a46f06d82923",
+      "firstCommitAt": "2026-10-26T11:17:00Z",
+      "mergedAt": "2026-10-27T06:27:00Z"
+    },
+    {
+      "pullNumber": 558,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "08a8af1204d0",
+      "firstCommitAt": "2026-10-26T18:53:00Z",
+      "mergedAt": "2026-10-27T04:48:00Z"
+    },
+    {
+      "pullNumber": 559,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "cfa438f4c94c",
+      "firstCommitAt": "2026-10-27T17:16:00Z",
+      "mergedAt": "2026-10-28T05:07:00Z"
+    },
+    {
+      "pullNumber": 560,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "9606a5d03e18",
+      "firstCommitAt": "2026-10-28T09:59:00Z",
+      "mergedAt": "2026-10-28T16:40:00Z"
+    },
+    {
+      "pullNumber": 561,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "640a01469d7a",
+      "firstCommitAt": "2026-10-28T21:54:00Z",
+      "mergedAt": "2026-10-29T09:30:00Z"
+    },
+    {
+      "pullNumber": 562,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "7d5aa3a9db64",
+      "firstCommitAt": "2026-10-29T18:27:00Z",
+      "mergedAt": "2026-10-30T06:22:00Z"
+    },
+    {
+      "pullNumber": 563,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "b11e81da50df",
+      "firstCommitAt": "2026-10-29T16:20:00Z",
+      "mergedAt": "2026-10-30T12:18:00Z"
+    },
+    {
+      "pullNumber": 564,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "b8576c9fa4bb",
+      "firstCommitAt": "2026-10-30T00:54:00Z",
+      "mergedAt": "2026-10-30T09:51:00Z"
+    },
+    {
+      "pullNumber": 565,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "f36d4f245e88",
+      "firstCommitAt": "2026-10-30T09:14:00Z",
+      "mergedAt": "2026-10-30T16:14:00Z"
+    },
+    {
+      "pullNumber": 566,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "5088cf33b7ed",
+      "firstCommitAt": "2026-11-01T02:08:00Z",
+      "mergedAt": "2026-11-01T16:28:00Z"
+    },
+    {
+      "pullNumber": 567,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "7d4b6bcc18b0",
+      "firstCommitAt": "2026-11-03T02:59:00Z",
+      "mergedAt": "2026-11-03T06:00:00Z"
+    },
+    {
+      "pullNumber": 568,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "25e3cb940246",
+      "firstCommitAt": "2026-11-03T04:16:00Z",
+      "mergedAt": "2026-11-03T19:54:00Z"
+    },
+    {
+      "pullNumber": 569,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "56f754b37be5",
+      "firstCommitAt": "2026-11-04T01:18:00Z",
+      "mergedAt": "2026-11-04T07:12:00Z"
+    },
+    {
+      "pullNumber": 570,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "0ec1c3659873",
+      "firstCommitAt": "2026-11-04T00:37:00Z",
+      "mergedAt": "2026-11-04T10:39:00Z"
+    },
+    {
+      "pullNumber": 571,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "dd6c0124aec0",
+      "firstCommitAt": "2026-11-04T23:41:00Z",
+      "mergedAt": "2026-11-05T12:14:00Z"
+    },
+    {
+      "pullNumber": 572,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "34a161c8597a",
+      "firstCommitAt": "2026-11-04T17:36:00Z",
+      "mergedAt": "2026-11-05T11:40:00Z"
+    },
+    {
+      "pullNumber": 573,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "34747632b60b",
+      "firstCommitAt": "2026-11-05T10:55:00Z",
+      "mergedAt": "2026-11-05T18:10:00Z"
+    },
+    {
+      "pullNumber": 574,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "2b903a3100d5",
+      "firstCommitAt": "2026-11-05T17:00:00Z",
+      "mergedAt": "2026-11-06T04:24:00Z"
+    },
+    {
+      "pullNumber": 575,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "c3043f620832",
+      "firstCommitAt": "2026-11-06T02:53:00Z",
+      "mergedAt": "2026-11-06T18:17:00Z"
+    },
+    {
+      "pullNumber": 576,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "199fc2361310",
+      "firstCommitAt": "2026-11-06T09:21:00Z",
+      "mergedAt": "2026-11-06T18:44:00Z"
+    },
+    {
+      "pullNumber": 577,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "cd967961c76b",
+      "firstCommitAt": "2026-11-06T00:43:00Z",
+      "mergedAt": "2026-11-06T20:23:00Z"
+    },
+    {
+      "pullNumber": 578,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "40cbb8772d11",
+      "firstCommitAt": "2026-11-06T17:02:00Z",
+      "mergedAt": "2026-11-06T20:26:00Z"
+    },
+    {
+      "pullNumber": 579,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "3136e3dbf798",
+      "firstCommitAt": "2026-11-08T23:39:00Z",
+      "mergedAt": "2026-11-09T13:41:00Z"
+    },
+    {
+      "pullNumber": 580,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "edaf420f0349",
+      "firstCommitAt": "2026-11-09T16:55:00Z",
+      "mergedAt": "2026-11-09T22:12:00Z"
+    },
+    {
+      "pullNumber": 581,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "b4a60af76fff",
+      "firstCommitAt": "2026-11-09T11:33:00Z",
+      "mergedAt": "2026-11-10T06:34:00Z"
+    },
+    {
+      "pullNumber": 582,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "5e80bafc67d8",
+      "firstCommitAt": "2026-11-10T09:05:00Z",
+      "mergedAt": "2026-11-10T14:39:00Z"
+    },
+    {
+      "pullNumber": 583,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "3c0b2f56a039",
+      "firstCommitAt": "2026-11-10T21:46:00Z",
+      "mergedAt": "2026-11-11T00:00:00Z"
+    },
+    {
+      "pullNumber": 584,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "48951d14bc58",
+      "firstCommitAt": "2026-11-10T14:27:00Z",
+      "mergedAt": "2026-11-10T21:17:00Z"
+    },
+    {
+      "pullNumber": 585,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "e3b5d672d70f",
+      "firstCommitAt": "2026-11-11T11:36:00Z",
+      "mergedAt": "2026-11-11T17:06:00Z"
+    },
+    {
+      "pullNumber": 586,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "e81767932303",
+      "firstCommitAt": "2026-11-11T03:16:00Z",
+      "mergedAt": "2026-11-11T18:23:00Z"
+    },
+    {
+      "pullNumber": 587,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "32daafe09561",
+      "firstCommitAt": "2026-11-11T14:26:00Z",
+      "mergedAt": "2026-11-11T19:59:00Z"
+    },
+    {
+      "pullNumber": 588,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "7a52b6c069c2",
+      "firstCommitAt": "2026-11-11T19:39:00Z",
+      "mergedAt": "2026-11-12T08:58:00Z"
+    },
+    {
+      "pullNumber": 589,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "49b2dc6455e3",
+      "firstCommitAt": "2026-11-12T02:20:00Z",
+      "mergedAt": "2026-11-12T09:29:00Z"
+    },
+    {
+      "pullNumber": 590,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "060a761a5d96",
+      "firstCommitAt": "2026-11-11T06:36:00Z",
+      "mergedAt": "2026-11-12T01:05:00Z"
+    },
+    {
+      "pullNumber": 591,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "de8047bb270e",
+      "firstCommitAt": "2026-11-12T07:30:00Z",
+      "mergedAt": "2026-11-12T15:53:00Z"
+    },
+    {
+      "pullNumber": 592,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "f5e8091970f2",
+      "firstCommitAt": "2026-11-12T02:25:00Z",
+      "mergedAt": "2026-11-12T14:54:00Z"
+    },
+    {
+      "pullNumber": 593,
+      "title": "feat: Busca por responsável",
+      "mergeSha": "88269d61f53c",
+      "firstCommitAt": "2026-11-12T17:26:00Z",
+      "mergedAt": "2026-11-13T09:40:00Z"
+    },
+    {
+      "pullNumber": 594,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "5035aea6e2f0",
+      "firstCommitAt": "2026-11-13T03:54:00Z",
+      "mergedAt": "2026-11-13T08:50:00Z"
+    },
+    {
+      "pullNumber": 595,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "7f6e38e1046a",
+      "firstCommitAt": "2026-11-13T11:34:00Z",
+      "mergedAt": "2026-11-13T16:56:00Z"
+    },
+    {
+      "pullNumber": 596,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "2466a68045f3",
+      "firstCommitAt": "2026-11-13T02:48:00Z",
+      "mergedAt": "2026-11-13T15:39:00Z"
+    },
+    {
+      "pullNumber": 597,
+      "title": "feat: Regra de aprovação dupla",
+      "mergeSha": "1965b3457734",
+      "firstCommitAt": "2026-11-14T16:03:00Z",
+      "mergedAt": "2026-11-14T18:18:00Z"
+    },
+    {
+      "pullNumber": 598,
+      "title": "feat: Exportação de solicitações",
+      "mergeSha": "2fd645f6ca2d",
+      "firstCommitAt": "2026-11-16T04:29:00Z",
+      "mergedAt": "2026-11-16T16:41:00Z"
+    },
+    {
+      "pullNumber": 599,
+      "title": "feat: Paginação da listagem",
+      "mergeSha": "4b6e63a42c41",
+      "firstCommitAt": "2026-11-16T23:24:00Z",
+      "mergedAt": "2026-11-17T01:52:00Z"
+    },
+    {
+      "pullNumber": 600,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "e24b6c89498b",
+      "firstCommitAt": "2026-11-16T09:29:00Z",
+      "mergedAt": "2026-11-17T03:02:00Z"
+    },
+    {
+      "pullNumber": 601,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "e84cb674f779",
+      "firstCommitAt": "2026-11-17T09:51:00Z",
+      "mergedAt": "2026-11-17T22:42:00Z"
+    },
+    {
+      "pullNumber": 602,
+      "title": "feat: Auditoria de alterações",
+      "mergeSha": "feb1be85d498",
+      "firstCommitAt": "2026-11-17T06:33:00Z",
+      "mergedAt": "2026-11-17T19:32:00Z"
+    },
+    {
+      "pullNumber": 603,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "9521cfec7387",
+      "firstCommitAt": "2026-11-18T12:11:00Z",
+      "mergedAt": "2026-11-18T16:43:00Z"
+    },
+    {
+      "pullNumber": 604,
+      "title": "feat: Filtro de campanhas por área",
+      "mergeSha": "784dc6c1cdb2",
+      "firstCommitAt": "2026-11-18T08:16:00Z",
+      "mergedAt": "2026-11-18T23:14:00Z"
+    },
+    {
+      "pullNumber": 605,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "b5bc3a8a2922",
+      "firstCommitAt": "2026-11-19T08:06:00Z",
+      "mergedAt": "2026-11-19T18:07:00Z"
+    },
+    {
+      "pullNumber": 606,
+      "title": "feat: Validação de período da campanha",
+      "mergeSha": "f25562131e10",
+      "firstCommitAt": "2026-11-20T06:03:00Z",
+      "mergedAt": "2026-11-20T16:46:00Z"
+    },
+    {
+      "pullNumber": 607,
+      "title": "feat: Ajuste de limite de orçamento",
+      "mergeSha": "0c73f1d0953a",
+      "firstCommitAt": "2026-11-20T07:39:00Z",
+      "mergedAt": "2026-11-20T17:12:00Z"
+    }
+  ]
+}

@@ -2,7 +2,12 @@ import 'reflect-metadata'
 import { fileURLToPath } from 'node:url'
 import type { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { MetricSnapshotRepository } from '@lab/database'
+import {
+  ChangeRepository,
+  DeployRepository,
+  IncidentRepository,
+  MetricSnapshotRepository,
+} from '@lab/database'
 import { type IsolatedSchema, createIsolatedSchema } from '@lab/database/testing'
 import { collectPanelData } from '@lab/eng-metrics/collect'
 import request from 'supertest'
@@ -71,5 +76,48 @@ describe.skipIf(!databaseUrl)('portal-api reading from Postgres', () => {
     await request(server).get('/api/review/datasets/lab').expect(404)
     const mine = await request(server).get('/api/me/review?dataset=demo').expect(200)
     expect(mine.body).toMatchObject({ dataset: 'demo', toReview: [], mine: [] })
+  })
+
+  it('computes DORA from the deploys, changes and incidents stored by the worker', async () => {
+    const hoursAgo = (hours: number) => new Date(Date.now() - hours * 3_600_000).toISOString()
+    await new DeployRepository(db.pool).record([
+      {
+        repo: 'lab-demo/campanhas-api',
+        environment: 'production',
+        sha: 'abc1234',
+        deployedAt: hoursAgo(2),
+        status: 'rolled_back',
+        commitShas: ['def5678'],
+      },
+    ])
+    await new ChangeRepository(db.pool).upsert([
+      {
+        repo: 'lab-demo/campanhas-api',
+        pullNumber: 7,
+        mergeSha: 'def5678',
+        firstCommitAt: hoursAgo(12),
+        mergedAt: hoursAgo(4),
+      },
+    ])
+    await new IncidentRepository(db.pool).upsert([
+      {
+        id: 'INC-DB-1',
+        system: 'campanhas',
+        severity: 'sev3',
+        startedAt: hoursAgo(1),
+        endedAt: null,
+      },
+    ])
+
+    const response = await request(app.getHttpServer())
+      .get('/api/metrics/dora?repo=lab-demo/campanhas-api')
+      .expect(200)
+    expect(response.body.summary).toMatchObject({
+      deploymentFrequency: { deploys: 1 },
+      leadTime: { medianHours: 10, changes: 1 },
+      changeFailureRate: { failed: 1, deploys: 1, rate: 1, band: 'low' },
+      timeToRestore: { restored: 0, open: 1, band: null },
+    })
+    expect(response.body.incidents.map((item: { id: string }) => item.id)).toEqual(['INC-DB-1'])
   })
 })

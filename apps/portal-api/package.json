@@ -22,6 +22,7 @@
     "@lab/catalog": "*",
     "@lab/contracts": "*",
     "@lab/database": "*",
+    "@lab/dora": "*",
     "@lab/eng-metrics": "*",
     "@lab/handbook": "*",
     "@nestjs/common": "^12.6.0",

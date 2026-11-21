@@ -8,10 +8,14 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "panel": "tsx src/cli.ts",
-    "digest": "tsx src/digest-cli.ts"
+    "digest": "tsx src/digest-cli.ts",
+    "deploy-event": "tsx src/deploy-event-cli.ts"
   },
   "exports": {
     "./contract": "./src/contract.ts",
     "./collect": "./src/collect.ts"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }

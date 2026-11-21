@@ -1,12 +1,18 @@
 import { parseArgs } from 'node:util'
 import {
   ConversationRepository,
+  ChangeRepository,
+  DeployRepository,
+  IncidentRepository,
   MetricSnapshotRepository,
   createPool,
   runMigrations,
 } from '@lab/database'
 import { collectPanelData } from '@lab/eng-metrics/collect'
 import { createChatRetentionCollector } from './collectors/chat-retention.js'
+import { createDoraCollector } from './collectors/dora/collector.js'
+import { createFixtureSource } from './collectors/dora/fixture-source.js'
+import { createGitHubSource } from './collectors/dora/github-source.js'
 import { createEngMetricsCollector } from './collectors/eng-metrics.js'
 import { loadConfig } from './config.js'
 import { createLogger } from './logger.js'
@@ -35,6 +41,16 @@ const main = async () => {
       createChatRetentionCollector({
         conversations: new ConversationRepository(pool),
         retentionDays: config.chatRetentionDays,
+        intervalMs: config.intervalMs,
+      }),
+      createDoraCollector({
+        catalogFile: config.dora.catalogFile,
+        incidentsDir: config.dora.incidentsDir,
+        fixtures: createFixtureSource(config.dora.fixturesDir),
+        github: config.dora.github ? createGitHubSource(config.dora.github) : null,
+        deploys: new DeployRepository(pool),
+        changes: new ChangeRepository(pool),
+        incidents: new IncidentRepository(pool),
         intervalMs: config.intervalMs,
       }),
     ],

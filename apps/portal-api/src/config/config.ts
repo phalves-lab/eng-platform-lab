@@ -41,6 +41,9 @@ const EnvSchema = z
       z.enum(['true', 'false']).default('false'),
     ),
     PORTAL_GITHUB_WRITE_TOKEN: z.preprocess(emptyAsUnset, z.string().trim().min(1).optional()),
+    PORTAL_DORA_CATALOG: z.string().min(1).default(fromRepo('catalog/dora/repos.yaml')),
+    PORTAL_INCIDENTS_DIR: z.string().min(1).default(fromRepo('catalog/incidents')),
+    PORTAL_DORA_FIXTURES_DIR: z.string().min(1).default(fromRepo('fixtures/dora')),
     PORTAL_LLM_BASE_URL: z.preprocess(emptyAsUnset, z.url().optional()),
     PORTAL_LLM_API_KEY: z.preprocess(emptyAsUnset, z.string().optional()),
     PORTAL_LLM_MODEL: z.preprocess(emptyAsUnset, z.string().optional()),
@@ -104,6 +107,7 @@ export type PortalConfig = {
   github: { token: string | null; apiUrl: string }
   releasesDir: string
   releaseWrite: { enabled: boolean; token: string | null }
+  dora: { catalogFile: string; incidentsDir: string; fixturesDir: string }
   llm: LlmConfig | null
 }
 
@@ -155,6 +159,11 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
     releaseWrite: {
       enabled: value.PORTAL_RELEASE_WRITE_ENABLED === 'true',
       token: value.PORTAL_GITHUB_WRITE_TOKEN ?? null,
+    },
+    dora: {
+      catalogFile: resolve(value.PORTAL_DORA_CATALOG),
+      incidentsDir: resolve(value.PORTAL_INCIDENTS_DIR),
+      fixturesDir: resolve(value.PORTAL_DORA_FIXTURES_DIR),
     },
     llm:
       value.PORTAL_LLM_BASE_URL && value.PORTAL_LLM_API_KEY && value.PORTAL_LLM_MODEL
