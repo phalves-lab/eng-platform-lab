@@ -1,0 +1,29 @@
+{
+  "key": "LAB-51",
+  "title": "Cadastro de projetos e prévia da release",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Quem monta a release precisa ver, antes de abrir a PR, o que entra desde o último corte: PRs agrupados por ticket, SQL e ENV de cada um, autores, checks e alertas, para front e back e na ordem certa de deploy. Esta etapa é só leitura; a geração da release fica para a LAB-53.",
+  "acceptanceCriteria": [
+    "Projetos de release ficam cadastrados em catalog/releases/*.yaml, validados com Zod: nome, repositórios por lado, branches padrão, modo pr ou branch com padrão do nome, labels e ordem de deploy",
+    "O ponto de corte é a última PR mergeada da origem para o destino com a label release; sem ela, vale a última tag",
+    "Os PRs mergeados desde o corte são agrupados por ticket, com SQL e ENV reais, autores unidos e aviso de tickets com vários PRs",
+    "A API devolve a prévia por lado com à frente e atrás, checks do head, PR de release aberta e alertas, com throttle e cache curto",
+    "Sem token do GitHub configurado, as rotas que dependem dele respondem 503 com mensagem clara",
+    "A tela Releases mostra seletor de projeto, lado e branches, resumo, tabela por ticket, blocos de SQL e ENV, checks, alertas e ordem de deploy, com o botão Gerar release desabilitado"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T06:30:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T07:40:00Z"
+    }
+  ]
+}

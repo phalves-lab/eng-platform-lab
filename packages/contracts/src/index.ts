@@ -233,3 +233,5 @@ export const McpServerSchema = z.object({
   install: z.array(McpInstallSchema),
 })
 export type McpServer = z.infer<typeof McpServerSchema>
+
+export * from './releases.js'

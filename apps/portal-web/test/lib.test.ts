@@ -59,8 +59,9 @@ describe('utils and navigation', () => {
     expect(activeItem('/')?.title).toBe('Minha página')
     expect(activeItem('/padroes/ENG-QA-01')?.title).toBe('Padrões')
     expect(activeItem('/entregas/review')?.title).toBe('Review')
+    expect(activeItem('/releases')?.title).toBe('Releases')
     expect(activeItem('/nada')).toBeUndefined()
-    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(10)
+    expect(NAV_GROUPS.flatMap((group) => group.items)).toHaveLength(11)
   })
 })
 

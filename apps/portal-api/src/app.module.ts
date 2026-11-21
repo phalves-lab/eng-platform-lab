@@ -10,6 +10,7 @@ import { CONFIG, type PortalConfig } from './config/config.js'
 import { HandbookModule } from './handbook/handbook.module.js'
 import { HealthController } from './health/health.controller.js'
 import { MetricsModule } from './metrics/metrics.module.js'
+import { ReleasesModule } from './releases/releases.module.js'
 import { ReviewModule } from './review/review.module.js'
 
 const devOnlyVerifier: TokenVerifier = {
@@ -30,6 +31,7 @@ export class AppModule {
         AskModule,
         MetricsModule,
         CatalogModule,
+        ReleasesModule,
       ],
       controllers: [HealthController, MeController],
       providers: [

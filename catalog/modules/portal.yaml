@@ -10,3 +10,4 @@ paths:
   - apps/portal-api/
   - apps/portal-web/
   - packages/
+  - catalog/releases/

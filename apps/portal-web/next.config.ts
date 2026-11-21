@@ -18,6 +18,10 @@ const config: NextConfig = {
       },
     ]
   },
+  webpack: (webpackConfig) => {
+    webpackConfig.resolve.extensionAlias = { '.js': ['.ts', '.js'] }
+    return webpackConfig
+  },
 }
 
 export default config

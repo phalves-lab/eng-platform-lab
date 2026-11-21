@@ -25,6 +25,12 @@ const EnvSchema = z
     PORTAL_LEAD_LOGINS: z.string().default(''),
     PORTAL_MARKETPLACE_DIR: z.string().min(1).default(fromRepo('fixtures/marketplace')),
     PORTAL_AI_CATALOG_DIR: z.string().min(1).default(fromRepo('catalog/ai')),
+    PORTAL_GITHUB_TOKEN: z
+      .string()
+      .optional()
+      .transform((token) => token?.trim() || null),
+    PORTAL_GITHUB_API_URL: z.url().default('https://api.github.com'),
+    PORTAL_RELEASES_DIR: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
     if (!env.DATABASE_URL && !env.PORTAL_PANEL_DATA) {
@@ -55,6 +61,8 @@ export type PortalConfig = {
   leadLogins: string[]
   marketplaceDir: string
   aiCatalogDir: string
+  github: { token: string | null; apiUrl: string }
+  releasesDir: string
 }
 
 /** Parses the environment once at boot and fails fast on invalid or unsafe settings. */
@@ -87,5 +95,12 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
       .filter(Boolean),
     marketplaceDir: resolve(value.PORTAL_MARKETPLACE_DIR),
     aiCatalogDir: resolve(value.PORTAL_AI_CATALOG_DIR),
+    github: {
+      token: value.PORTAL_GITHUB_TOKEN,
+      apiUrl: value.PORTAL_GITHUB_API_URL.replace(/\/$/, ''),
+    },
+    releasesDir: value.PORTAL_RELEASES_DIR
+      ? resolve(value.PORTAL_RELEASES_DIR)
+      : resolve(value.PORTAL_HANDBOOK_DIR, '../catalog/releases'),
   }
 }
