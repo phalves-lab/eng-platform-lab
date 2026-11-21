@@ -1,0 +1,21 @@
+checks:
+  branch-protection: { weight: 20, standard: ENG-GIT-01 }
+  merge-queue: { weight: 10, standard: ENG-GIT-01 }
+  reusable-ci: { weight: 10, standard: ENG-REPO-01 }
+  coverage: { weight: 10, standard: ENG-QA-01 }
+  agents-md: { weight: 10, standard: ENG-REPO-02 }
+  secret-scanning: { weight: 15, standard: ENG-SEC-01 }
+  node-version: { weight: 5, standard: ENG-REPO-03 }
+  dependabot-alerts: { weight: 10, standard: ENG-REPO-04 }
+  code-scanning-alerts: { weight: 5, standard: ENG-REPO-04 }
+  release-flow: { weight: 5, standard: ENG-REPO-05 }
+nodeMajors: [22, 24]
+agentsMaxAgeDays: 90
+alertPenalty: { critical: 40, high: 20, medium: 10, low: 5 }
+coverageMarkers:
+  - diff-coverage
+  - codecov/codecov-action
+  - coverage-summary
+releaseWorkflow: release-summary.yml
+releaseLabels: [release, pre-release-notes]
+levels: { good: 80, attention: 50 }

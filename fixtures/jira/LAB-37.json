@@ -1,0 +1,23 @@
+{
+  "key": "LAB-37",
+  "title": "Documentação do handbook com dono e validade",
+  "area": "Plataforma",
+  "demandType": "Melhoria",
+  "description": "O handbook envelhece sem ninguém perceber e a IA passa a citar regra desatualizada. Cada arquivo, e se preciso cada padrão, passa a ter dono e data da última revisão, e o portal avisa o que passou do prazo, agrupado por dono.",
+  "acceptanceCriteria": [
+    "Os arquivos do handbook têm dono e revisado_em no frontmatter, e um padrão pode declarar Dono e Revisado em próprios",
+    "packages/handbook lê esses campos sem mudar o comportamento do servidor MCP",
+    "Item sem revisão há mais de N meses aparece como vencido, com N configurável e padrão de 6",
+    "GET /api/quality/docs agrupa os itens por dono, com vencidos, vencendo, sem dono ou data e em dia",
+    "A tela Qualidade > Documentação mostra os itens por dono com filtro de situação",
+    "O handbook do laboratório tem datas sintéticas, com alguns itens vencidos"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "documentacao"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T14:20:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T15:30:00Z" }
+  ]
+}

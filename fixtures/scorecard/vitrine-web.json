@@ -1,0 +1,45 @@
+{
+  "defaultBranch": "main",
+  "branches": [
+    {
+      "name": "main",
+      "exists": true,
+      "protection": "classic",
+      "requiresPullRequest": true,
+      "blocksForcePush": true,
+      "blocksDeletion": false,
+      "mergeQueue": false
+    }
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/build.yml",
+      "content": "name: build\njobs:\n  web:\n    uses: lab-ficticio/esteira/.github/workflows/ci-node.yml@v2\n  summary:\n    steps:\n      - run: npx coverage-summary --out \"$GITHUB_STEP_SUMMARY\"\n"
+    }
+  ],
+  "agentsMd": {
+    "present": true,
+    "updatedAt": "2026-11-01T09:00:00.000Z"
+  },
+  "nvmrc": "20",
+  "secretScanning": {
+    "secretScanning": true,
+    "pushProtection": false
+  },
+  "dependabotAlerts": {
+    "critical": 1,
+    "high": 2,
+    "medium": 0,
+    "low": 0
+  },
+  "codeScanning": {
+    "enabled": true,
+    "alerts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  "labels": ["release", "pre-release-notes"]
+}

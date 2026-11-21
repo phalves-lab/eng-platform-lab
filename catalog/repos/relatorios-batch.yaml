@@ -1,0 +1,7 @@
+id: relatorios-batch
+repo: lab-ficticio/relatorios-batch
+name: Relatórios batch
+team: Dados
+description: Repositório fictício do laboratório, legado sem a esteira
+source: fixture
+integrationBranch: develop

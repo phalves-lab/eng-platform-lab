@@ -2,6 +2,8 @@
 title: Handbook do laboratório, glossário
 type: documento
 status: draft
+dono: '@phalves-lab/platform'
+revisado_em: 2026-06-10
 ---
 
 # Glossário

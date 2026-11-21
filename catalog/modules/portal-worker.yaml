@@ -12,3 +12,5 @@ paths:
   - docker-compose.yml
   - catalog/jira/
   - fixtures/jira-board/
+  - catalog/repos/
+  - catalog/scorecard/
