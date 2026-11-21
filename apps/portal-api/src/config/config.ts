@@ -44,6 +44,10 @@ const EnvSchema = z
     PORTAL_DORA_CATALOG: z.string().min(1).default(fromRepo('catalog/dora/repos.yaml')),
     PORTAL_INCIDENTS_DIR: z.string().min(1).default(fromRepo('catalog/incidents')),
     PORTAL_DORA_FIXTURES_DIR: z.string().min(1).default(fromRepo('fixtures/dora')),
+    PORTAL_JIRA_WORKFLOW: z.preprocess(
+      emptyAsUnset,
+      z.string().min(1).default(fromRepo('catalog/jira/workflow.yaml')),
+    ),
     PORTAL_LLM_BASE_URL: z.preprocess(emptyAsUnset, z.url().optional()),
     PORTAL_LLM_API_KEY: z.preprocess(emptyAsUnset, z.string().optional()),
     PORTAL_LLM_MODEL: z.preprocess(emptyAsUnset, z.string().optional()),
@@ -108,6 +112,7 @@ export type PortalConfig = {
   releasesDir: string
   releaseWrite: { enabled: boolean; token: string | null }
   dora: { catalogFile: string; incidentsDir: string; fixturesDir: string }
+  jiraWorkflowPath: string
   llm: LlmConfig | null
 }
 
@@ -165,6 +170,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv): PortalConfig => {
       incidentsDir: resolve(value.PORTAL_INCIDENTS_DIR),
       fixturesDir: resolve(value.PORTAL_DORA_FIXTURES_DIR),
     },
+    jiraWorkflowPath: resolve(value.PORTAL_JIRA_WORKFLOW),
     llm:
       value.PORTAL_LLM_BASE_URL && value.PORTAL_LLM_API_KEY && value.PORTAL_LLM_MODEL
         ? {

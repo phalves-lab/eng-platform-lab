@@ -48,6 +48,8 @@ export const issue = (key: string, overrides: Partial<JiraIssue> = {}): JiraIssu
   component: 'Plataforma',
   issueType: 'Story',
   status: 'Em andamento',
+  summary: 'Item sintético',
+  url: null,
   epicKey: 'LAB-0',
   sprintId: null,
   assignee: 'ana',

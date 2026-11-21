@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "worker": "tsx --conditions=@lab/source src/cli.ts",
+    "collect:jira": "tsx --conditions=@lab/source src/collect-jira.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
@@ -12,6 +13,7 @@
     "@lab/database": "*",
     "@lab/dora": "*",
     "@lab/eng-metrics": "*",
+    "@lab/flow": "*",
     "zod": "^4.6.7"
   }
 }

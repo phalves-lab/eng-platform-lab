@@ -12,6 +12,8 @@ import {
   Plug,
   Puzzle,
   Rocket,
+  SquareKanban,
+  Workflow,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -43,6 +45,8 @@ export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { href: '/entregas/review', title: 'Review', icon: ChartNoAxesCombined },
       { href: '/entregas/dora', title: 'DORA', icon: Gauge },
+      { href: '/entregas/fluxo', title: 'Fluxo', icon: Workflow },
+      { href: '/entregas/boards', title: 'Boards', icon: SquareKanban },
       { href: '/releases', title: 'Releases', icon: Rocket },
     ],
   },

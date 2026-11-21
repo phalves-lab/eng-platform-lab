@@ -7,7 +7,7 @@ export {
 } from './client.js'
 export { MIGRATIONS_DIR, runMigrations, type MigrationOptions } from './migrate.js'
 export { MetricSnapshotRepository, type SaveSnapshotInput } from './metric-snapshots.js'
-export { JiraRepository } from './jira.js'
+export { JiraRepository, type JiraProjectFilter } from './jira.js'
 export {
   ChangeRepository,
   DeployRepository,

@@ -24,6 +24,7 @@
     "@lab/database": "*",
     "@lab/dora": "*",
     "@lab/eng-metrics": "*",
+    "@lab/flow": "*",
     "@lab/handbook": "*",
     "@nestjs/common": "^12.6.0",
     "@nestjs/core": "^12.6.0",

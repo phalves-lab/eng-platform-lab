@@ -41,6 +41,7 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         'deploys',
         'incidents',
         'jira_issues',
+        'jira_sprint_issues',
         'jira_sprints',
         'jira_status_changes',
         'metric_snapshots',
@@ -191,6 +192,73 @@ describe.skipIf(!databaseUrl)('database on Postgres', () => {
         'Em andamento',
         'Concluída',
       ])
+    })
+
+    it('lists issues, transitions, sprints and sprint membership by project', async () => {
+      const repository = new JiraRepository(db.pool)
+      await repository.upsertSprints([
+        {
+          id: 20,
+          project: 'OPS',
+          name: 'OPS Sprint 1',
+          state: 'closed',
+          startsAt: '2026-10-01T12:00:00.000Z',
+          endsAt: '2026-10-15T12:00:00.000Z',
+          completedAt: '2026-10-15T12:00:00.000Z',
+        },
+      ])
+      await repository.upsertIssues([
+        issue('OPS-1', {
+          component: 'Filas',
+          sprintId: 20,
+          summary: 'Reprocessar fila sintética',
+          url: 'https://jira.example.test/browse/OPS-1',
+        }),
+        issue('OPS-2', { component: null, summary: null }),
+      ])
+      await repository.addStatusChanges([
+        {
+          issueKey: 'OPS-1',
+          fromStatus: 'A fazer',
+          toStatus: 'Em andamento',
+          changedAt: '2026-10-02T12:00:00.000Z',
+        },
+      ])
+      const membership = [
+        { sprintId: 20, issueKey: 'OPS-1', addedAt: '2026-10-01T10:00:00.000Z' },
+        { sprintId: 20, issueKey: 'OPS-2', addedAt: null },
+      ]
+      await repository.upsertSprintIssues(membership)
+      await repository.upsertSprintIssues(membership)
+
+      expect(await repository.listProjects()).toEqual(expect.arrayContaining(['LAB', 'OPS']))
+      const issues = await repository.listIssues({ project: 'OPS' })
+      expect(issues.map((item) => item.key)).toEqual(['OPS-1', 'OPS-2'])
+      expect(issues[0]).toMatchObject({
+        summary: 'Reprocessar fila sintética',
+        url: 'https://jira.example.test/browse/OPS-1',
+      })
+      expect((await repository.listIssues()).length).toBeGreaterThan(issues.length)
+      expect(await repository.listStatusChanges({ project: 'OPS' })).toEqual([
+        {
+          issueKey: 'OPS-1',
+          fromStatus: 'A fazer',
+          toStatus: 'Em andamento',
+          changedAt: '2026-10-02T12:00:00.000Z',
+        },
+      ])
+      expect((await repository.listSprints({ project: 'OPS' })).map((s) => s.id)).toEqual([20])
+      expect(await repository.listSprintIssues({ project: 'OPS' })).toEqual(membership)
+      expect(await repository.listSprintIssues({ project: 'LAB' })).toEqual([])
+    })
+
+    it('keeps only https links to the issue in the database', async () => {
+      await expect(
+        db.pool.query(
+          `INSERT INTO jira_issues (key, project, issue_type, status, created_at, url)
+           VALUES ('OPS-9', 'OPS', 'Story', 'A fazer', now(), 'javascript:alert(1)')`,
+        ),
+      ).rejects.toThrow(/check constraint/)
     })
 
     it('rejects issues that break integrity rules in the database', async () => {

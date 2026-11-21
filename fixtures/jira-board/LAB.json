@@ -1,0 +1,1078 @@
+{
+  "project": "LAB",
+  "name": "Laboratório de campanhas",
+  "boardId": 101,
+  "site": "https://jira.example.test",
+  "anchor": "2026-11-20T12:00:00.000Z",
+  "initialStatus": "A fazer",
+  "sprints": [
+    {
+      "id": 1011,
+      "name": "LAB Sprint 1",
+      "state": "closed",
+      "startsAt": "2026-09-21T12:00:00.000Z",
+      "endsAt": "2026-10-05T12:00:00.000Z",
+      "completedAt": "2026-10-05T10:00:00.000Z"
+    },
+    {
+      "id": 1012,
+      "name": "LAB Sprint 2",
+      "state": "closed",
+      "startsAt": "2026-10-05T12:00:00.000Z",
+      "endsAt": "2026-10-19T12:00:00.000Z",
+      "completedAt": "2026-10-19T10:00:00.000Z"
+    },
+    {
+      "id": 1013,
+      "name": "LAB Sprint 3",
+      "state": "closed",
+      "startsAt": "2026-10-19T12:00:00.000Z",
+      "endsAt": "2026-11-02T12:00:00.000Z",
+      "completedAt": "2026-11-02T10:00:00.000Z"
+    },
+    {
+      "id": 1014,
+      "name": "LAB Sprint 4",
+      "state": "closed",
+      "startsAt": "2026-11-02T12:00:00.000Z",
+      "endsAt": "2026-11-16T12:00:00.000Z",
+      "completedAt": "2026-11-16T10:00:00.000Z"
+    },
+    {
+      "id": 1015,
+      "name": "LAB Sprint 5",
+      "state": "active",
+      "startsAt": "2026-11-16T12:00:00.000Z",
+      "endsAt": "2026-11-30T12:00:00.000Z",
+      "completedAt": null
+    }
+  ],
+  "issues": [
+    {
+      "key": "LAB-201",
+      "type": "Epic",
+      "summary": "Métricas de fluxo no portal",
+      "component": "Portal",
+      "epic": null,
+      "assignee": null,
+      "createdAt": "2026-09-12T12:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-18T12:00:00.000Z"
+        }
+      ],
+      "sprints": []
+    },
+    {
+      "key": "LAB-202",
+      "type": "Epic",
+      "summary": "Coleta do Jira",
+      "component": "Coletores",
+      "epic": null,
+      "assignee": null,
+      "createdAt": "2026-09-15T12:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-21T12:00:00.000Z"
+        }
+      ],
+      "sprints": []
+    },
+    {
+      "key": "LAB-203",
+      "type": "Epic",
+      "summary": "Boards por área",
+      "component": "Portal",
+      "epic": null,
+      "assignee": null,
+      "createdAt": "2026-09-16T12:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-22T12:00:00.000Z"
+        }
+      ],
+      "sprints": []
+    },
+    {
+      "key": "LAB-204",
+      "type": "Bug",
+      "summary": "Calcular percentis do tempo de ciclo",
+      "component": null,
+      "epic": null,
+      "assignee": "carla",
+      "createdAt": "2026-09-15T06:00:00.000Z",
+      "resolvedAt": "2026-09-24T09:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-18T16:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-09-23T11:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-09-24T09:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-20T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-205",
+      "type": "Story",
+      "summary": "Gráfico de entregas por semana",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "felipe",
+      "createdAt": "2026-09-17T05:00:00.000Z",
+      "resolvedAt": "2026-09-29T10:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-17T15:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-09-20T00:00:00.000Z"
+        },
+        {
+          "to": "Em andamento",
+          "at": "2026-09-23T15:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-09-29T02:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-09-29T10:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-20T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-206",
+      "type": "Story",
+      "summary": "Filtro por componente na tela de fluxo",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "carla",
+      "createdAt": "2026-09-19T07:00:00.000Z",
+      "resolvedAt": "2026-09-25T20:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-21T15:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-09-24T11:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-09-25T20:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-20T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-207",
+      "type": "Task",
+      "summary": "Paginação da busca de issues",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "elisa",
+      "createdAt": "2026-09-21T15:00:00.000Z",
+      "resolvedAt": "2026-10-02T00:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-24T19:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-09-30T20:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-02T00:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-21T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-208",
+      "type": "Story",
+      "summary": "Respeitar Retry-After no coletor",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "ana",
+      "createdAt": "2026-09-24T02:00:00.000Z",
+      "resolvedAt": "2026-10-17T02:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-26T04:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-15T19:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-17T02:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-24T03:00:00.000Z"
+        },
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-209",
+      "type": "Task",
+      "summary": "Mapear status para categorias",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "davi",
+      "createdAt": "2026-09-25T07:00:00.000Z",
+      "resolvedAt": "2026-10-12T10:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-28T10:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-10-01T07:00:00.000Z"
+        },
+        {
+          "to": "Em andamento",
+          "at": "2026-10-03T19:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-10T13:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-12T10:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-25T08:00:00.000Z"
+        },
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-210",
+      "type": "Story",
+      "summary": "Lista de itens envelhecendo",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "bruno",
+      "createdAt": "2026-09-28T00:00:00.000Z",
+      "resolvedAt": "2026-10-07T01:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-09-29T07:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-05T13:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-07T01:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-28T01:00:00.000Z"
+        },
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-211",
+      "type": "Bug",
+      "summary": "Card de bloqueios ativos",
+      "component": null,
+      "epic": null,
+      "assignee": "felipe",
+      "createdAt": "2026-09-30T16:00:00.000Z",
+      "resolvedAt": "2026-10-11T12:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-01T21:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-10-02T11:00:00.000Z"
+        },
+        {
+          "to": "Em andamento",
+          "at": "2026-10-03T18:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-09T04:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-11T12:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-09-30T17:00:00.000Z"
+        },
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-212",
+      "type": "Bug",
+      "summary": "Fluxo cumulativo de oito semanas",
+      "component": "Portal",
+      "epic": null,
+      "assignee": "davi",
+      "createdAt": "2026-10-01T14:00:00.000Z",
+      "resolvedAt": "2026-10-07T08:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-02T08:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-07T00:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-07T08:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1011,
+          "addedAt": "2026-10-01T15:00:00.000Z"
+        },
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-213",
+      "type": "Bug",
+      "summary": "Previsto contra entregue da sprint",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "ana",
+      "createdAt": "2026-10-04T08:00:00.000Z",
+      "resolvedAt": "2026-10-14T23:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-07T07:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-13T04:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-14T23:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-04T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-214",
+      "type": "Story",
+      "summary": "Progresso de épicos no board",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "davi",
+      "createdAt": "2026-10-06T14:00:00.000Z",
+      "resolvedAt": "2026-10-19T03:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-12T13:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-18T00:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-19T03:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-06T15:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-215",
+      "type": "Bug",
+      "summary": "Ajustar contraste do kanban no tema escuro",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "carla",
+      "createdAt": "2026-10-09T00:00:00.000Z",
+      "resolvedAt": "2026-10-31T19:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-10T22:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-10-13T15:00:00.000Z"
+        },
+        {
+          "to": "Em andamento",
+          "at": "2026-10-19T09:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-30T00:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-31T19:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-09T01:00:00.000Z"
+        },
+        {
+          "id": 1013,
+          "addedAt": "2026-10-18T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-216",
+      "type": "Story",
+      "summary": "Validar workflow versionado no boot",
+      "component": "Portal",
+      "epic": null,
+      "assignee": "carla",
+      "createdAt": "2026-10-11T03:00:00.000Z",
+      "resolvedAt": "2026-10-19T15:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-17T03:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-19T06:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-19T15:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-11T04:00:00.000Z"
+        },
+        {
+          "id": 1013,
+          "addedAt": "2026-10-18T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-217",
+      "type": "Story",
+      "summary": "Testes do adaptador com fetch falso",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "elisa",
+      "createdAt": "2026-10-13T13:00:00.000Z",
+      "resolvedAt": "2026-10-20T05:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-16T08:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-18T04:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-20T05:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-13T14:00:00.000Z"
+        },
+        {
+          "id": 1013,
+          "addedAt": "2026-10-18T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-218",
+      "type": "Bug",
+      "summary": "Upsert idempotente das sprints",
+      "component": null,
+      "epic": null,
+      "assignee": "ana",
+      "createdAt": "2026-10-14T13:00:00.000Z",
+      "resolvedAt": "2026-10-21T08:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-17T05:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-21T02:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-21T08:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1012,
+          "addedAt": "2026-10-14T14:00:00.000Z"
+        },
+        {
+          "id": 1013,
+          "addedAt": "2026-10-18T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-219",
+      "type": "Story",
+      "summary": "Estado de vazio da tela de boards",
+      "component": "Coletores",
+      "epic": null,
+      "assignee": "davi",
+      "createdAt": "2026-10-17T14:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-22T00:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-18T16:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-220",
+      "type": "Task",
+      "summary": "Layout do kanban em 375 px",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "carla",
+      "createdAt": "2026-10-19T15:00:00.000Z",
+      "resolvedAt": "2026-11-01T04:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-24T06:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-31T00:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-01T04:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-19T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-221",
+      "type": "Story",
+      "summary": "Documentar comando do coletor",
+      "component": "Coletores",
+      "epic": null,
+      "assignee": "felipe",
+      "createdAt": "2026-10-21T04:00:00.000Z",
+      "resolvedAt": "2026-10-30T19:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-22T06:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-10-28T13:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-10-30T19:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-21T05:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-222",
+      "type": "Bug",
+      "summary": "Revisar textos da tela de fluxo",
+      "component": "Portal",
+      "epic": "LAB-203",
+      "assignee": "carla",
+      "createdAt": "2026-10-23T13:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-27T02:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-23T14:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-223",
+      "type": "Task",
+      "summary": "Normalizar datas com offset do Jira",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "bruno",
+      "createdAt": "2026-10-25T07:00:00.000Z",
+      "resolvedAt": "2026-11-03T18:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-30T13:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-01T11:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-03T18:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-25T08:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-224",
+      "type": "Task",
+      "summary": "Expor filtros de projeto na API",
+      "component": "Portal",
+      "epic": "LAB-203",
+      "assignee": "carla",
+      "createdAt": "2026-10-27T22:00:00.000Z",
+      "resolvedAt": "2026-11-04T07:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-29T08:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-04T01:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-04T07:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-27T23:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-225",
+      "type": "Story",
+      "summary": "Cache curto das métricas",
+      "component": null,
+      "epic": null,
+      "assignee": "carla",
+      "createdAt": "2026-10-30T10:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-10-31T18:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-11-02T18:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-30T11:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-226",
+      "type": "Story",
+      "summary": "Histograma do tempo de ciclo",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "ana",
+      "createdAt": "2026-10-31T18:00:00.000Z",
+      "resolvedAt": "2026-11-09T06:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-01T21:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-07T02:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-09T06:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1013,
+          "addedAt": "2026-10-31T19:00:00.000Z"
+        },
+        {
+          "id": 1014,
+          "addedAt": "2026-11-01T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-227",
+      "type": "Story",
+      "summary": "Link para a issue no Jira",
+      "component": "Coletores",
+      "epic": null,
+      "assignee": "felipe",
+      "createdAt": "2026-11-03T11:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-05T10:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-08T08:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-03T12:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-228",
+      "type": "Bug",
+      "summary": "Tempo bloqueado por item",
+      "component": "Portal",
+      "epic": null,
+      "assignee": "elisa",
+      "createdAt": "2026-11-04T23:00:00.000Z",
+      "resolvedAt": "2026-11-12T21:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-08T06:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-12T09:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-12T21:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-05T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-229",
+      "type": "Story",
+      "summary": "Agrupar épicos por progresso",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "davi",
+      "createdAt": "2026-11-07T22:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-08T09:00:00.000Z"
+        },
+        {
+          "to": "Bloqueado",
+          "at": "2026-11-09T07:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-07T23:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-230",
+      "type": "Bug",
+      "summary": "Ordenar colunas pelo workflow",
+      "component": "Portal",
+      "epic": "LAB-201",
+      "assignee": "felipe",
+      "createdAt": "2026-11-09T12:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-15T08:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-09T13:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-231",
+      "type": "Bug",
+      "summary": "Ajustar lead time de itens reabertos",
+      "component": "Coletores",
+      "epic": null,
+      "assignee": "carla",
+      "createdAt": "2026-11-11T22:00:00.000Z",
+      "resolvedAt": null,
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-15T09:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-17T18:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-11T23:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-232",
+      "type": "Bug",
+      "summary": "Remover status órfãos do mapa",
+      "component": null,
+      "epic": null,
+      "assignee": "davi",
+      "createdAt": "2026-11-14T10:00:00.000Z",
+      "resolvedAt": "2026-11-19T07:00:00.000Z",
+      "history": [
+        {
+          "to": "Em andamento",
+          "at": "2026-11-15T00:00:00.000Z"
+        },
+        {
+          "to": "Code Review",
+          "at": "2026-11-18T05:00:00.000Z"
+        },
+        {
+          "to": "Concluído",
+          "at": "2026-11-19T07:00:00.000Z"
+        }
+      ],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-14T11:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "key": "LAB-233",
+      "type": "Story",
+      "summary": "Revisar índices do espelho",
+      "component": "Coletores",
+      "epic": "LAB-202",
+      "assignee": "bruno",
+      "createdAt": "2026-11-15T13:00:00.000Z",
+      "resolvedAt": null,
+      "history": [],
+      "sprints": [
+        {
+          "id": 1014,
+          "addedAt": "2026-11-15T14:00:00.000Z"
+        },
+        {
+          "id": 1015,
+          "addedAt": "2026-11-15T16:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}

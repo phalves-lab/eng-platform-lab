@@ -1,0 +1,28 @@
+{
+  "key": "LAB-24",
+  "title": "Métricas de fluxo e tela Entregas > Fluxo",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "Liderança e times precisam ver como o trabalho flui: quanto é entregue por semana, quanto tempo um item leva do início ao fim, quanto está em andamento, o que está envelhecendo e o que está bloqueado, por projeto e por componente.",
+  "acceptanceCriteria": [
+    "Funções puras com teste para entregas por semana, tempo de ciclo em p50, p85 e p95, lead time, WIP, idade dos itens em andamento, bloqueios ativos e tempo bloqueado",
+    "Recorte por projeto e por componente",
+    "GET /api/metrics/flow?project=&component=&weeks= com contrato em packages/contracts",
+    "Tela Entregas > Fluxo com KPIs, gráfico de entregas por semana, distribuição do tempo de ciclo, lista de itens envelhecendo e de bloqueados com link para o Jira",
+    "Estados de vazio, carregamento e erro, responsivo até 375 px, tema claro e escuro"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    {
+      "status": "Em andamento",
+      "at": "2026-11-21T11:00:00Z"
+    },
+    {
+      "status": "Code Review",
+      "at": "2026-11-21T16:00:00Z"
+    }
+  ]
+}

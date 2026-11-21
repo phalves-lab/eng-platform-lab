@@ -19,6 +19,8 @@ export default defineConfig({
         'src/lib/utils.ts',
         'src/lib/delivery.ts',
         'src/lib/dora.ts',
+        'src/lib/flow.ts',
+        'src/lib/boards.ts',
         'src/lib/releases.ts',
         'src/lib/release-write.ts',
         'src/lib/ask-stream.ts',

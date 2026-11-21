@@ -1,19 +1,23 @@
 import { parseArgs } from 'node:util'
 import {
-  ConversationRepository,
   ChangeRepository,
+  ConversationRepository,
   DeployRepository,
   IncidentRepository,
+  JiraRepository,
   MetricSnapshotRepository,
   createPool,
   runMigrations,
 } from '@lab/database'
 import { collectPanelData } from '@lab/eng-metrics/collect'
+import { loadWorkflow } from '@lab/flow'
+import type { Collector } from './collector.js'
 import { createChatRetentionCollector } from './collectors/chat-retention.js'
 import { createDoraCollector } from './collectors/dora/collector.js'
 import { createFixtureSource } from './collectors/dora/fixture-source.js'
 import { createGitHubSource } from './collectors/dora/github-source.js'
 import { createEngMetricsCollector } from './collectors/eng-metrics.js'
+import { createJiraCollector, createJiraSource } from './collectors/jira/index.js'
 import { loadConfig } from './config.js'
 import { createLogger } from './logger.js'
 import { Scheduler } from './scheduler.js'
@@ -29,32 +33,40 @@ const main = async () => {
   })
   logger.info('migrations.applied', { applied: await runMigrations(pool) })
 
-  const scheduler = new Scheduler({
-    logger,
-    collectors: [
-      createEngMetricsCollector({
-        snapshots: new MetricSnapshotRepository(pool),
-        collect: (now) => collectPanelData(config.collect, now),
+  const collectors: Collector[] = [
+    createEngMetricsCollector({
+      snapshots: new MetricSnapshotRepository(pool),
+      collect: (now) => collectPanelData(config.collect, now),
+      intervalMs: config.intervalMs,
+      timeZone: config.timeZone,
+    }),
+    createChatRetentionCollector({
+      conversations: new ConversationRepository(pool),
+      retentionDays: config.chatRetentionDays,
+      intervalMs: config.intervalMs,
+    }),
+    createDoraCollector({
+      catalogFile: config.dora.catalogFile,
+      incidentsDir: config.dora.incidentsDir,
+      fixtures: createFixtureSource(config.dora.fixturesDir),
+      github: config.dora.github ? createGitHubSource(config.dora.github) : null,
+      deploys: new DeployRepository(pool),
+      changes: new ChangeRepository(pool),
+      incidents: new IncidentRepository(pool),
+      intervalMs: config.intervalMs,
+    }),
+  ]
+  if (config.jira) {
+    collectors.push(
+      createJiraCollector({
+        source: createJiraSource(config.jira),
+        repository: new JiraRepository(pool),
+        workflow: await loadWorkflow(config.jira.workflowPath),
         intervalMs: config.intervalMs,
-        timeZone: config.timeZone,
       }),
-      createChatRetentionCollector({
-        conversations: new ConversationRepository(pool),
-        retentionDays: config.chatRetentionDays,
-        intervalMs: config.intervalMs,
-      }),
-      createDoraCollector({
-        catalogFile: config.dora.catalogFile,
-        incidentsDir: config.dora.incidentsDir,
-        fixtures: createFixtureSource(config.dora.fixturesDir),
-        github: config.dora.github ? createGitHubSource(config.dora.github) : null,
-        deploys: new DeployRepository(pool),
-        changes: new ChangeRepository(pool),
-        incidents: new IncidentRepository(pool),
-        intervalMs: config.intervalMs,
-      }),
-    ],
-  })
+    )
+  }
+  const scheduler = new Scheduler({ logger, collectors })
 
   if (values.once) {
     const results = await scheduler.runAll()

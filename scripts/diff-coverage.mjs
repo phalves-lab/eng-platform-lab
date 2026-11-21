@@ -11,6 +11,7 @@ const workspaces = [
   'apps/portal-worker',
   'packages/database',
   'packages/dora',
+  'packages/flow',
   'tools/eng-metrics',
   'tools/mcp-context',
   'tools/review-bot',

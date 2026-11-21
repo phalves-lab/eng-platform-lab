@@ -1,0 +1,20 @@
+categories:
+  - id: todo
+    label: A fazer
+    statuses: [Backlog, A fazer, To Do, Selecionado]
+  - id: in_progress
+    label: Em andamento
+    statuses: [Em andamento, In Progress, Em desenvolvimento]
+  - id: review
+    label: Em review
+    statuses: [Code Review, Em review, Em homologação]
+  - id: blocked
+    label: Bloqueado
+    statuses: [Bloqueado, Impedido, Blocked]
+  - id: done
+    label: Concluído
+    statuses: [Concluído, Concluída, Done, Entregue]
+projects:
+  OPS:
+    in_progress: [Em execução]
+    review: [Validação]
