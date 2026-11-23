@@ -1,12 +1,13 @@
 'use client'
 
 import type { User } from '@lab/contracts'
-import { ChevronsUpDown, Laptop, Moon, Sun } from 'lucide-react'
+import { ChevronsUpDown, Laptop, LogOut, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -19,10 +20,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { signOutOfPortal } from '@/lib/auth-actions'
 
 const ROLE_LABEL: Record<User['role'], string> = { dev: 'Dev', lead: 'Liderança', admin: 'Admin' }
 
-export function NavUser({ user }: { readonly user: User }) {
+export function NavUser({
+  user,
+  canSignOut,
+}: {
+  readonly user: User
+  readonly canSignOut: boolean
+}) {
   const { isMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
   const initials = user.name.slice(0, 2)
@@ -73,6 +81,14 @@ export function NavUser({ user }: { readonly user: User }) {
                 <Laptop aria-hidden /> Sistema
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
+            {canSignOut ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => void signOutOfPortal()}>
+                  <LogOut aria-hidden /> Sair
+                </DropdownMenuItem>
+              </>
+            ) : null}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

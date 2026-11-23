@@ -10,7 +10,13 @@ import { AiUsageModule } from './ai-usage/ai-usage.module.js'
 import { AskModule } from './ask/ask.module.js'
 import { AuthGuard } from './auth/auth.guard.js'
 import { MeController } from './auth/me.controller.js'
-import { TOKEN_VERIFIER, type TokenVerifier, createEntraVerifier } from './auth/token-verifier.js'
+import {
+  TOKEN_VERIFIER,
+  type TokenVerifier,
+  createEntraVerifier,
+  loadRoleMap,
+} from './auth/token-verifier.js'
+import { AuditModule } from './audit/audit.module.js'
 import { CatalogModule } from './catalog/catalog.module.js'
 import { CONFIG, type PortalConfig } from './config/config.js'
 import { DoraModule } from './dora/dora.module.js'
@@ -60,6 +66,7 @@ export class AppModule implements NestModule {
         QualityModule,
         WorkModule,
         ProjectsModule,
+        AuditModule,
       ],
       controllers: [HealthController, MeController],
       providers: [
@@ -77,9 +84,13 @@ export class AppModule implements NestModule {
         ReadinessService,
         {
           provide: TOKEN_VERIFIER,
-          useValue:
+          useFactory: async () =>
             config.auth.mode === 'entra'
-              ? createEntraVerifier(config.auth, config.leadLogins)
+              ? createEntraVerifier(
+                  config.auth,
+                  config.leadLogins,
+                  await loadRoleMap(config.auth.rolesFile),
+                )
               : devOnlyVerifier,
         },
         { provide: APP_GUARD, useClass: ThrottlerGuard },

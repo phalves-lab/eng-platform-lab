@@ -8,14 +8,10 @@ import {
 } from '@lab/contracts'
 import type { ZodType } from 'zod'
 import { ApiError } from '@/lib/api'
-
-const baseUrl = () => process.env.PORTAL_API_URL ?? 'http://localhost:4100'
+import { portalFetch } from '@/lib/portal-fetch'
 
 const get = async <T>(path: string, schema: ZodType<T>): Promise<T> => {
-  const response = await fetch(`${baseUrl()}${path}`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  })
+  const response = await portalFetch(path, { headers: { Accept: 'application/json' } })
   if (!response.ok) throw new ApiError(response.status, `portal-api ${response.status} on ${path}`)
   return schema.parse(await response.json())
 }

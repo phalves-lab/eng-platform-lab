@@ -1,0 +1,22 @@
+{
+  "key": "LAB-40",
+  "title": "Trilha de auditoria do portal",
+  "area": "Plataforma",
+  "demandType": "Nova demanda",
+  "description": "O portal já escreve no GitHub (releases), apaga conversas e mostra dados de outras pessoas para líderes, mas só a release guarda quem fez o quê. A auditoria passa a registrar toda escrita e toda leitura de dados de time num lugar só, consultável por admin, com retenção configurável.",
+  "acceptanceCriteria": [
+    "Tabela de auditoria com quem, quando, o quê, alvo, resultado e IP truncado",
+    "Toda escrita (gerar e publicar release, apagar conversa) e toda leitura de dados de time são registradas por interceptor global, sem depender de cada controller",
+    "GET /api/audit só para admin, com filtros, e tela /admin/auditoria",
+    "Retenção configurável aplicada pelo worker",
+    "A trilha geral referencia o registro de release em release_runs, sem duplicar plano e resultado"
+  ],
+  "status": "Code Review",
+  "labels": ["plataforma", "seguranca"],
+  "epic": "LAB-0 Governança de campanhas",
+  "url": null,
+  "statusHistory": [
+    { "status": "Em andamento", "at": "2026-11-21T16:40:00Z" },
+    { "status": "Code Review", "at": "2026-11-21T19:30:00Z" }
+  ]
+}
