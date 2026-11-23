@@ -13,6 +13,7 @@ RUN set -eu; \
     done; \
     cp -r packages/database/migrations /out/packages/database/; \
     cp -r apps/portal-api/prompts /out/apps/portal-api/; \
+    mkdir -p /out/.github && cp .github/PULL_REQUEST_TEMPLATE.md /out/.github/; \
     cp -r package.json handbook catalog fixtures /out/
 
 FROM ${NODE_IMAGE} AS prod-deps
