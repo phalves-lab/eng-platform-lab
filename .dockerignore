@@ -9,6 +9,7 @@
 !**/.env.example
 .git
 .github
+!.github/PULL_REQUEST_TEMPLATE.md
 .husky
 .kiro
 .claude
